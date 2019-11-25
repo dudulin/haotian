@@ -95,7 +95,10 @@
                 class="input-with-select"
                 style="width: 100%;"
               >
-                <el-button slot="prepend" @click="showRegionChoice">中国<i class="el-icon-arrow-down el-icon--right"></i></el-button>
+                <el-button slot="prepend" @click="showRegionChoice">
+                  中国
+                  <i class="el-icon-arrow-down el-icon--right"></i>
+                </el-button>
                 <div
                   slot="prefix"
                   style="height: 40px;width: 42px;line-height: 40px;font-weight: 700;"
@@ -191,7 +194,7 @@
       </span>
     </el-dialog>
     <el-dialog
-      class="privacyClauseCon"
+      class="regionChoiceCon"
       title="选择地区"
       :visible.sync="regionChoiceCon"
       :close-on-click-modal="false"
@@ -200,25 +203,15 @@
       center
       style="background: rgba(0,13,23,0.9);"
     >
-      <div class="privacyClauseText">
-        <div class="privacyClauseTitle">隐私条款</div>
-        <div
-          class="privacyClauseValue"
-          style="font-weight: 500;color: #222222;"
-        >皓天承诺将保护用户隐私作为一项基本政策，将保护用户隐私作为一项最基本政策，也就是说本政策同样适用于该部分产品或服务。皓天承诺将保护用户隐私作为一项基本政策，皓天承诺将保护用户隐私作为一项最基本政策，也就是说本政策同样适用于该部分产品或服务。</div>
-        <div class="privacyClauseTitle">本政策将帮助您了解以下内容：</div>
+      <div class="regionChoiceInput">
+        <el-input placeholder="请输入内容" suffix-icon="el-icon-search" v-model="input1"></el-input>
       </div>
-      <span slot="footer" class="dialog-footer">
-        <el-button
-          @click="regionChoiceCon = false"
-          style="width: 380px;height: 70px;font-size: 20px;"
-        >不同意</el-button>
-        <el-button
-          type="primary"
-          @click="regionChoiceCon = false"
-          style="width: 380px;height: 70px;font-size: 20px;"
-        >同意并继续</el-button>
-      </span>
+      <div class="regionChoiceABC">
+        <span class="ABC" @click="setABC(item)" v-for="item in ABCarr" :key="item">{{item}}</span>
+      </div>
+      <div>
+
+      </div>
     </el-dialog>
   </div>
 </template>
@@ -228,6 +221,7 @@ import pcHeader from "../../public/header.vue";
 import footerPlus from "../../public/footer-plus.vue";
 import axios from "axios";
 import qs from "qs";
+import py from "../../../common/js/public";
 
 export default {
   data() {
@@ -249,7 +243,8 @@ export default {
       country: [],
       countryCode: "86",
       centerDialogVisible: false,
-      regionChoiceCon: false
+      regionChoiceCon: false,
+      ABCarr: ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","X","Y","Z"]
     };
   },
   created() {
@@ -258,6 +253,9 @@ export default {
     });
   },
   methods: {
+    setABC(item) {
+      debugger
+    },
     registerGo() {
       // 注册按钮
       this.userType = "注册";
@@ -265,11 +263,10 @@ export default {
     },
     showRegionChoice() {
       // 展示 地区选择弹窗
-      this.regionChoiceCon = true
+      this.regionChoiceCon = true;
     },
     registerNext() {
       // 注册 下一步
-      
     },
     loginGo() {
       this.userType = "登录";
@@ -522,7 +519,6 @@ export default {
   }
 
   .privacyClauseCon {
-
     .privacyClauseText {
       height: 423px;
       overflow-y: auto;
@@ -543,6 +539,46 @@ export default {
       box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
       border-radius: 10px;
       background: #ededed;
+    }
+  }
+
+  .regionChoiceCon>>>.el-dialog__header {
+    padding-top: 35px;
+    padding-bottom: 32px;
+
+    .el-dialog__title {
+      font-size: 30px;
+    }
+  }
+
+  .regionChoiceCon>>>.el-dialog__body {
+    height: 423px;
+    padding: 40px 60px;
+    overflow: hidden;
+    border-top: 2px solid #EDEDED;
+
+    .regionChoiceInput .el-input--suffix .el-input__inner {
+      height: 60px;
+      background: #F3F6F9;
+    }
+    .regionChoiceInput .el-input__suffix {
+      margin-right: 15px;
+    }
+    .regionChoiceInput .el-input__icon {
+      font-size: 20px;
+    }
+
+    .regionChoiceABC {
+      margin-top: 28px;
+      font-size: 16px;
+      display: flex;
+      padding-bottom: 15px;
+      border-bottom: 1px solid #DDDDDD;
+
+      .ABC {
+        margin: 0 auto;
+        cursor: pointer;
+      }
     }
   }
 
