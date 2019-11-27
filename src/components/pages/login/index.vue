@@ -36,7 +36,7 @@
           </div>
           <div class="row" v-if="pageType === '3'">
             <div style="display: inline-block;width: 28vw;">
-              <el-input :placeholder="loginPH" v-model="username" class="input-with-select"></el-input>
+              <el-input :placeholder="loginMailbox" v-model="username" class="input-with-select" @blur="usernameBlur" prop="username"></el-input>
             </div>
           </div>
           <div class="row" v-if="pageType === '1'">
@@ -122,7 +122,7 @@
     </el-dialog>
     <el-dialog class="regionChoiceCon" title="选择地区" :visible.sync="regionChoiceCon" :close-on-click-modal="false" :close-on-press-escape="false" width="900px" center style="background: rgba(0,13,23,0.9);">
       <div class="regionChoiceInput">
-        <el-input placeholder="请输入内容" suffix-icon="el-icon-search" v-model="regionChoiceVal"></el-input>
+        <el-input placeholder="请输入关键字" suffix-icon="el-icon-search" v-model="regionChoiceVal"></el-input>
       </div>
       <div class="regionChoiceABC">
         <span class="ABC" @click="setABC('special')" :class="activeABC === 'special' ? 'isActive' : ''">
