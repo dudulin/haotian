@@ -12,28 +12,13 @@
         </div>
         <div v-if="showLogin">
           <div class="loginArea-box">
-            <div
-              class="loginArea"
-              style="width: 140px;margin-left: -14px;margin-right: 15px;"
-              @click="() => pageType='1'"
-              :class="pageType === '1' ? 'is-active': ''"
-            >
+            <div class="loginArea" style="width: 140px;margin-left: -14px;margin-right: 15px;" @click="() => pageType='1'" :class="pageType === '1' ? 'is-active': ''">
               <span style="display: inline-block;padding: 18px 0;margin-top: -2px;">手机号+验证码登录</span>
             </div>
-            <div
-              class="loginArea"
-              style="margin: 0px 44px;"
-              @click="() => pageType='2'"
-              :class="pageType === '2' ? 'is-active': ''"
-            >
+            <div class="loginArea" style="margin: 0px 44px;" @click="() => pageType='2'" :class="pageType === '2' ? 'is-active': ''">
               <span style="display: inline-block;padding: 18px 0;margin-top: -2px;">手机号+密码登录</span>
             </div>
-            <div
-              class="loginArea"
-              style="width: 111px;margin-right: -15px;margin-left: 38px;"
-              @click="() => pageType='3'"
-              :class="pageType === '3' ? 'is-active': ''"
-            >
+            <div class="loginArea" style="width: 111px;margin-right: -15px;margin-left: 38px;" @click="() => pageType='3'" :class="pageType === '3' ? 'is-active': ''">
               <span style="display: inline-block;padding: 18px 0;margin-top: -2px;">邮箱+密码登录</span>
             </div>
             <!-- <span class="type" @click="() => pageType='1'" :class="pageType === '1' ? 'is-active': ''">登录</span>
@@ -41,29 +26,11 @@
           </div>
           <div class="row" v-if="pageType === '1' || pageType === '2'">
             <div class="phoneLogin" style="display: inline-block;width: 28vw;">
-              <el-input
-                :placeholder="loginPH"
-                v-model="username"
-                class="input-with-select"
-                style="width: 100%;"
-              >
-                <el-select
-                  v-model="countryCode"
-                  slot="prepend"
-                  style="width: 100px;"
-                  placeholder="请选择"
-                >
-                  <el-option
-                    v-for="item in country"
-                    :key="item.zh"
-                    :label="item.zh"
-                    :value="item.code"
-                  ></el-option>
+              <el-input :placeholder="loginPH" v-model="username" class="input-with-select" style="width: 100%;">
+                <el-select v-model="countryCode" slot="prepend" style="width: 100px;" placeholder="请选择">
+                  <el-option v-for="item in country" :key="item.zh" :label="item.zh" :value="item.code"></el-option>
                 </el-select>
-                <div
-                  slot="prefix"
-                  style="height: 40px;width: 42px;line-height: 40px;font-weight: 700;"
-                >+{{countryCode}}</div>
+                <div slot="prefix" style="height: 40px;width: 42px;line-height: 40px;font-weight: 700;">+{{countryCode}}</div>
               </el-input>
             </div>
           </div>
@@ -76,11 +43,7 @@
             <span style="width: 20vw;display: inline-block;">
               <el-input placeholder="请输入验证码" v-model="captcha"></el-input>
             </span>
-            <el-button
-              class="resend"
-              @click="sendCode"
-              :disabled="sendCodeDisabled"
-            >{{sendCodeText}}</el-button>
+            <el-button class="resend" @click="sendCode" :disabled="sendCodeDisabled">{{sendCodeText}}</el-button>
           </div>
           <div class="row" v-if="pageType === '2' || pageType === '3'">
             <el-input placeholder="请输入密码" v-model="password" show-password></el-input>
@@ -89,20 +52,12 @@
         <div v-if="!showLogin">
           <div class="row">
             <div class="phoneLogin" style="display: inline-block;width: 28vw;">
-              <el-input
-                :placeholder="loginPH"
-                v-model="username"
-                class="input-with-select"
-                style="width: 100%;"
-              >
+              <el-input :placeholder="loginPH" v-model="username" class="input-with-select" style="width: 100%;">
                 <el-button slot="prepend" @click="showRegionChoice">
                   {{countryZhClick}}
                   <i class="el-icon-arrow-down el-icon--right"></i>
                 </el-button>
-                <div
-                  slot="prefix"
-                  style="height: 40px;width: 42px;line-height: 40px;font-weight: 700;"
-                >+{{countryCodeClick}}</div>
+                <div slot="prefix" style="height: 40px;width: 42px;line-height: 40px;font-weight: 700;">+{{countryCodeClick}}</div>
               </el-input>
             </div>
           </div>
@@ -110,11 +65,7 @@
             <span style="width: 20vw;display: inline-block;">
               <el-input placeholder="请输入验证码" v-model="captcha"></el-input>
             </span>
-            <el-button
-              class="resend"
-              @click="sendCode"
-              :disabled="sendCodeDisabled"
-            >{{sendCodeText}}</el-button>
+            <el-button class="resend" @click="sendCode" :disabled="sendCodeDisabled">{{sendCodeText}}</el-button>
           </div>
         </div>
         <!-- <div class="row" v-if="pageType === '2'">
@@ -155,86 +106,38 @@
     </div>
     <div class="padding-box" style></div>
     <footer-plus theme="blue" />
-    <el-dialog
-      class="privacyClauseCon"
-      title="皓天用户协议及隐私条款"
-      :visible.sync="centerDialogVisible"
-      :show-close="false"
-      :close-on-click-modal="false"
-      :close-on-press-escape="false"
-      width="900px"
-      center
-      style="background: rgba(0,13,23,0.9);"
-    >
+    <el-dialog class="privacyClauseCon" title="皓天用户协议及隐私条款" :visible.sync="centerDialogVisible" :show-close="false" :close-on-click-modal="false" :close-on-press-escape="false" width="900px" center style="background: rgba(0,13,23,0.9);">
       <div class="privacyClauseText">
         <div class="privacyClauseTitle">隐私条款</div>
-        <div
-          class="privacyClauseValue"
-          style="font-weight: 500;color: #222222;"
-        >皓天承诺将保护用户隐私作为一项基本政策，将保护用户隐私作为一项最基本政策，也就是说本政策同样适用于该部分产品或服务。皓天承诺将保护用户隐私作为一项基本政策，皓天承诺将保护用户隐私作为一项最基本政策，也就是说本政策同样适用于该部分产品或服务。</div>
+        <div class="privacyClauseValue" style="font-weight: 500;color: #222222;">皓天承诺将保护用户隐私作为一项基本政策，将保护用户隐私作为一项最基本政策，也就是说本政策同样适用于该部分产品或服务。皓天承诺将保护用户隐私作为一项基本政策，皓天承诺将保护用户隐私作为一项最基本政策，也就是说本政策同样适用于该部分产品或服务。</div>
         <div class="privacyClauseTitle">本政策将帮助您了解以下内容：</div>
-        <div
-          class="privacyClauseValue"
-        >皓天承诺将保护用户隐私作为一项基本政策，将保护用户隐私作为一项最基本政策，也就是说本政策同样适用于该部分产品或服务。皓天承诺将保护用户隐私作为一项基本政策，皓天承诺将保护用户隐私作为一项最基本政策，也就是说本政策同样适用于该部分产品或服务。皓天承诺将保护用户隐私作为一项最基本政策，也就是说本政策同样适用于该部分产品或服务。</div>
+        <div class="privacyClauseValue">皓天承诺将保护用户隐私作为一项基本政策，将保护用户隐私作为一项最基本政策，也就是说本政策同样适用于该部分产品或服务。皓天承诺将保护用户隐私作为一项基本政策，皓天承诺将保护用户隐私作为一项最基本政策，也就是说本政策同样适用于该部分产品或服务。皓天承诺将保护用户隐私作为一项最基本政策，也就是说本政策同样适用于该部分产品或服务。</div>
         <div class="privacyClauseTitle">本政策将帮助您了解以下内容：</div>
-        <div
-          class="privacyClauseValue"
-        >皓天承诺将保护用户隐私作为一项基本政策，将保护用户隐私作为一项最基本政策，也就是说本政策同样适用于该部分产品或服务。皓天承诺将保护用户隐私作为一项基本政策，皓天承诺将保护用户隐私作为一项最基本政策，也就是说本政策同样适用于该部分产品或服务。皓天承诺将保护用户隐私作为一项基本政策，将保护用户隐私作为一项最基本政策，也就是说本政策同样适用于该部分产品或服务。皓天承诺将保护用户隐私作为一项基本政策，皓天承诺将保护用户隐私作为一项最基本政策，也就是说本政策同样适用于该部分产品或服务。皓天承诺将保护用户隐私作为一项基本政策，皓天承诺将保护用户隐私作为一项最基本政策，也就是说本政策同样适用于该部分产品或服务。皓天承诺将保护用户隐私作为一项基本政策，将保护用户隐私作为一项最基本政策，也就是说本政策同样适用于该部分产品或服务。皓天承诺将保护用户隐私作为一项基本政策，皓天承诺将保护用户隐私作为一项最基本政策，也就是说本政策同样适用于该部分产品或服务。</div>
+        <div class="privacyClauseValue">皓天承诺将保护用户隐私作为一项基本政策，将保护用户隐私作为一项最基本政策，也就是说本政策同样适用于该部分产品或服务。皓天承诺将保护用户隐私作为一项基本政策，皓天承诺将保护用户隐私作为一项最基本政策，也就是说本政策同样适用于该部分产品或服务。皓天承诺将保护用户隐私作为一项基本政策，将保护用户隐私作为一项最基本政策，也就是说本政策同样适用于该部分产品或服务。皓天承诺将保护用户隐私作为一项基本政策，皓天承诺将保护用户隐私作为一项最基本政策，也就是说本政策同样适用于该部分产品或服务。皓天承诺将保护用户隐私作为一项基本政策，皓天承诺将保护用户隐私作为一项最基本政策，也就是说本政策同样适用于该部分产品或服务。皓天承诺将保护用户隐私作为一项基本政策，将保护用户隐私作为一项最基本政策，也就是说本政策同样适用于该部分产品或服务。皓天承诺将保护用户隐私作为一项基本政策，皓天承诺将保护用户隐私作为一项最基本政策，也就是说本政策同样适用于该部分产品或服务。</div>
       </div>
       <span slot="footer" class="dialog-footer">
-        <el-button
-          @click="centerDialogVisible = false"
-          style="width: 380px;height: 70px;font-size: 20px;"
-        >不同意</el-button>
-        <el-button
-          type="primary"
-          @click="centerDialogVisible = false"
-          style="width: 380px;height: 70px;font-size: 20px;"
-        >同意并继续</el-button>
+        <el-button @click="centerDialogVisible = false" style="width: 380px;height: 70px;font-size: 20px;">不同意</el-button>
+        <el-button type="primary" @click="centerDialogVisible = false" style="width: 380px;height: 70px;font-size: 20px;">同意并继续</el-button>
       </span>
     </el-dialog>
-    <el-dialog
-      class="regionChoiceCon"
-      title="选择地区"
-      :visible.sync="regionChoiceCon"
-      :close-on-click-modal="false"
-      :close-on-press-escape="false"
-      width="900px"
-      center
-      style="background: rgba(0,13,23,0.9);"
-    >
+    <el-dialog class="regionChoiceCon" title="选择地区" :visible.sync="regionChoiceCon" :close-on-click-modal="false" :close-on-press-escape="false" width="900px" center style="background: rgba(0,13,23,0.9);">
       <div class="regionChoiceInput">
         <el-input placeholder="请输入内容" suffix-icon="el-icon-search" v-model="regionChoiceVal"></el-input>
       </div>
       <div class="regionChoiceABC">
-        <span
-          class="ABC"
-          @click="setABC('special')"
-          :class="activeABC === 'special' ? 'isActive' : ''"
-        >
+        <span class="ABC" @click="setABC('special')" :class="activeABC === 'special' ? 'isActive' : ''">
           <i class="el-icon-star-on"></i>
         </span>
-        <span
-          class="ABC"
-          @click="setABC(item)"
-          v-for="item in ABCarr"
-          :class="activeABC === item ? 'isActive' : ''"
-          :key="item"
-        >{{item}}</span>
+        <span class="ABC" @click="setABC(item)" v-for="item in ABCarr" :class="activeABC === item ? 'isActive' : ''" :key="item">{{item}}</span>
       </div>
       <div class="regionChoiceClick" v-if="activeABC === 'special'">
-        <div
-          class="clickDiv"
-          v-for="item in majorCountry"
-          :key="item.zh"
-          @click="clickCountry(item)"
-        >
+        <div class="clickDiv" v-for="item in majorCountry" :key="item.zh" @click="clickCountry(item)">
           <span class="countryZh">{{item.name}}</span>
           <span class="countryCode">+{{item.code}}</span>
         </div>
       </div>
       <div class="regionChoiceClick" v-if="activeABC !== 'special'">
-        <div class="clickDiv" v-for="item in country" :key="item.zh" @click="clickCountry(item)">
+        <div class="clickDiv" v-for="item in countryABC" :key="item.zh" @click="clickCountry(item)">
           <span class="countryZh">{{item.zh}}</span>
           <span class="countryCode">+{{item.code}}</span>
         </div>
@@ -268,6 +171,7 @@ export default {
       sendCodeDisabled: false,
       country: [],
       majorCountry: [],
+      countryABC: [],
       countryCode: "86",
       centerDialogVisible: false,
       regionChoiceCon: false,
@@ -313,6 +217,14 @@ export default {
     setABC(item) {
       // 选中ABC
       debugger;
+      let that = this
+      that.countryABC = []
+      let countryArr = that.country
+      countryArr.map(i => {
+        if (i.name.substr(0,1) === item) {
+          that.countryABC.push(i)
+        }
+      })
       this.activeABC = item;
     },
     clickCountry(item) {
