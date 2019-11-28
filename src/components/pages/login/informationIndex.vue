@@ -7,10 +7,10 @@
       <div class="login-box">
         <div class="tab-title row">
           <span class="type">账户{{userType}}</span>
+          <!-- <span class="type" @click="() => pageType='1'" style="margin-right: 2vw;" :class="pageType === '1' ? 'is-active': ''">登录</span>
+          <span class="type" @click="() => pageType='2'" :class="pageType === '2' ? 'is-active': ''">注册</span>-->
         </div>
-        <login-index v-if="showLogin"></login-index>
-        <register-index v-if="!showLogin"></register-index>
-        <!-- <div v-if="showLogin">
+        <div v-if="showLogin">
           <div class="loginArea-box">
             <div class="loginArea" style="width: 140px;margin-left: -14px;margin-right: 15px;" @click="loginMode('phoneCode')" :class="pageType === '1' ? 'is-active': ''">
               <span style="display: inline-block;padding: 18px 0;margin-top: -2px;">手机号+验证码登录</span>
@@ -21,6 +21,8 @@
             <div class="loginArea" style="width: 111px;margin-right: -15px;margin-left: 38px;" @click="loginMode('mailboxPassword')" :class="pageType === '3' ? 'is-active': ''">
               <span style="display: inline-block;padding: 18px 0;margin-top: -2px;">邮箱+密码登录</span>
             </div>
+            <!-- <span class="type" @click="() => pageType='1'" :class="pageType === '1' ? 'is-active': ''">登录</span>
+            <span class="type" @click="() => pageType='2'" :class="pageType === '2' ? 'is-active': ''">注册</span>-->
           </div>
           <el-form :model="ruleForm" ref="ruleForm" label-width="100px" class="demo-ruleForm">
           <div class="row" v-if="pageType === '1' || pageType === '2'">
@@ -56,9 +58,8 @@
             </el-form-item>
           </div>
           </el-form>
-        </div> -->
-        <!-- <div v-if="!showLogin">
-          <el-form :model="ruleForm" ref="ruleForm" label-width="100px" class="demo-ruleForm">
+        </div>
+        <div v-if="!showLogin">
           <div class="row">
             <div class="phoneLogin" style="display: inline-block;width: 28vw;">
               <el-form-item class="marginLeft" prop="username">
@@ -80,8 +81,7 @@
             </span>
             <el-button class="resend" @click="sendCode" :disabled="sendCodeDisabled">{{sendCodeText}}</el-button>
           </div>
-          </el-form>
-        </div> -->
+        </div>
         <!-- <div class="row" v-if="pageType === '2'">
           <el-select v-model="registerType" style="width: 6vw;" slot="prepend" placeholder="请选择" @change="handleChange">
             <el-option label="手机号" value="1"></el-option>
@@ -98,10 +98,10 @@
         <!-- <div class="row" v-if="pageType === '2'">
           <el-input placeholder="请再次输入密码" v-model="cPassword" show-password></el-input>
         </div>-->
-        <!-- <div class="row">
+        <div class="row">
           <el-button v-if="showLogin" class="login-btn" type="primary" @click="login">登录</el-button>
           <el-button v-if="!showLogin" class="login-btn" @click="registerNext">下一步</el-button>
-        </div> -->
+        </div>
         <div style="margin-top: -18px;margin-bottom: 15px;">
           <div v-if="!showLogin" style="display: inline-block;margin-right: 110px;font-size: 14px;">
             <span style="margin-right: 5px;">点击"注册"或"继续"即表示同意</span>
@@ -134,7 +134,7 @@
         <el-button type="primary" @click="centerDialogVisible = false" style="width: 380px;height: 70px;font-size: 20px;">同意并继续</el-button>
       </span>
     </el-dialog>
-    <!-- <el-dialog class="regionChoiceCon" title="选择地区" :visible.sync="regionChoiceCon" :close-on-click-modal="false" :close-on-press-escape="false" width="900px" center style="background: rgba(0,13,23,0.9);">
+    <el-dialog class="regionChoiceCon" title="选择地区" :visible.sync="regionChoiceCon" :close-on-click-modal="false" :close-on-press-escape="false" width="900px" center style="background: rgba(0,13,23,0.9);">
       <div class="regionChoiceInput">
         <el-input placeholder="请输入关键字" suffix-icon="el-icon-search" v-model="regionChoiceVal"></el-input>
       </div>
@@ -156,7 +156,7 @@
           <span class="countryCode">+{{item.code}}</span>
         </div>
       </div>
-    </el-dialog> -->
+    </el-dialog>
   </div>
 </template>
 
@@ -164,8 +164,6 @@
 import pcHeader from "../../public/header.vue";
 import footerPlus from "../../public/footer-plus.vue";
 import axios from "axios";
-import loginIndex from "./loginIndex"
-import registerIndex from "./registerIndex"
 // import qs from "qs";
 
 export default {
@@ -238,7 +236,6 @@ export default {
   },
   methods: {
     loginMode(val) {
-      // 登录方式 切换
       this.ruleForm = {
         username: '',
         countryCode: '86',
@@ -275,7 +272,7 @@ export default {
       this.regionChoiceCon = false;
     },
     registerGo() {
-      // 立即注册按钮
+      // 注册按钮
       this.userType = "注册";
       this.showLogin = false;
     },
@@ -345,9 +342,36 @@ export default {
       // 注册 下一步
     },
     loginGo() {
-      // 立即登录按钮
       this.userType = "登录";
       this.showLogin = true;
+      let data = {
+        country_code: this.countryCode,
+        phone: this.username,
+        captcha: this.captcha
+      };
+      this.$http.post("/auth/v1/phone-captcha-login", data).then(res => {
+        if (res.status === 201) {
+          this.$router.push({
+            //核心语句
+            path: "/" //跳转的路径
+          });
+        } else if (res.status === 400) {
+          this.$message({
+            message: "验证码错误",
+            type: "error"
+          });
+        } else if (res.status === 404) {
+          this.$message({
+            message: "验证码已经过期",
+            type: "error"
+          });
+        } else if (res.status === 410) {
+          this.$message({
+            message: "验证码错误次数太多",
+            type: "error"
+          });
+        }
+      });
     },
     showPrivacyClause() {
       // 隐私条款
@@ -542,9 +566,7 @@ export default {
   },
   components: {
     pcHeader,
-    footerPlus,
-    loginIndex,
-    registerIndex
+    footerPlus
   }
 };
 </script>
