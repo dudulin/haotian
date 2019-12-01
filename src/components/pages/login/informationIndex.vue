@@ -1,162 +1,50 @@
 <template>
-  <div id="loginView">
-    <pc-header theme="blue" />
-    <div class="content">
-      <p class="headline">呼吸新鲜空气</p>
-      <p class="text">是每个人生来的权利</p>
-      <div class="login-box">
-        <div class="tab-title row">
-          <span class="type">账户{{userType}}</span>
-          <!-- <span class="type" @click="() => pageType='1'" style="margin-right: 2vw;" :class="pageType === '1' ? 'is-active': ''">登录</span>
-          <span class="type" @click="() => pageType='2'" :class="pageType === '2' ? 'is-active': ''">注册</span>-->
+  <div>
+    <el-form :model="form" ref="form" label-width="100px" class="demo-ruleForm">
+      <div class="row">
+        <div style="display: inline-block;width: 28vw;">
+          <el-form-item>
+            <el-input v-model="form.name" placeholder="请输入您的姓名"></el-input>
+          </el-form-item>
         </div>
-        <div v-if="showLogin">
-          <div class="loginArea-box">
-            <div class="loginArea" style="width: 140px;margin-left: -14px;margin-right: 15px;" @click="loginMode('phoneCode')" :class="pageType === '1' ? 'is-active': ''">
-              <span style="display: inline-block;padding: 18px 0;margin-top: -2px;">手机号+验证码登录</span>
-            </div>
-            <div class="loginArea" style="margin: 0px 44px;" @click="loginMode('phonePassword')" :class="pageType === '2' ? 'is-active': ''">
-              <span style="display: inline-block;padding: 18px 0;margin-top: -2px;">手机号+密码登录</span>
-            </div>
-            <div class="loginArea" style="width: 111px;margin-right: -15px;margin-left: 38px;" @click="loginMode('mailboxPassword')" :class="pageType === '3' ? 'is-active': ''">
-              <span style="display: inline-block;padding: 18px 0;margin-top: -2px;">邮箱+密码登录</span>
-            </div>
-            <!-- <span class="type" @click="() => pageType='1'" :class="pageType === '1' ? 'is-active': ''">登录</span>
-            <span class="type" @click="() => pageType='2'" :class="pageType === '2' ? 'is-active': ''">注册</span>-->
-          </div>
-          <el-form :model="ruleForm" ref="ruleForm" label-width="100px" class="demo-ruleForm">
-          <div class="row" v-if="pageType === '1' || pageType === '2'">
-            <div class="phoneLogin" style="display: inline-block;width: 28vw;">
-              <el-form-item class="marginLeft" prop="username">
-              <el-input :placeholder="loginPH" v-model="ruleForm.username" class="input-with-select" style="width: 100%;">
-                <el-select v-model="ruleForm.countryCode" slot="prepend" style="width: 100px;" placeholder="请选择">
-                  <el-option v-for="item in country" :key="item.zh" :label="item.zh" :value="item.code"></el-option>
-                </el-select>
-                <div slot="prefix" style="height: 40px;width: 42px;line-height: 40px;font-weight: 700;">+{{ruleForm.countryCode}}</div>
-              </el-input>
-              </el-form-item>
-            </div>
-          </div>
-          <div class="row" v-if="pageType === '3'">
-            <div style="display: inline-block;width: 28vw;">
-              <el-form-item class="marginLeft" prop="username">
-                <el-input :placeholder="loginMailbox" v-model="ruleForm.username" class="input-with-select" @blur="usernameBlur" prop="username"></el-input>
-              </el-form-item>
-            </div>
-          </div>
-          <div class="row" v-if="pageType === '1'">
-            <span style="width: 20vw;display: inline-block;">
-              <el-form-item prop="captcha">
-                <el-input placeholder="请输入验证码" v-model="ruleForm.captcha"></el-input>
-              </el-form-item>
-            </span>
-            <el-button class="resend" @click="sendCode" :disabled="sendCodeDisabled">{{sendCodeText}}</el-button>
-          </div>
-          <div class="row" v-if="pageType === '2' || pageType === '3'">
-            <el-form-item class="marginLeft" prop="password">
-              <el-input placeholder="请输入密码" v-model="ruleForm.password" show-password></el-input>
-            </el-form-item>
-          </div>
-          </el-form>
+      </div>
+      <div class="row">
+        <div style="display: inline-block;width: 28vw;text-align: center;font-weight: bold;font-size: 18px;color: #222222;">
+          方便下次登陆 请设置下列登陆方式（选填）
         </div>
-        <div v-if="!showLogin">
-          <div class="row">
-            <div class="phoneLogin" style="display: inline-block;width: 28vw;">
-              <el-form-item class="marginLeft" prop="username">
-                <el-input :placeholder="loginPH" v-model="ruleForm.username" class="input-with-select" style="width: 100%;">
-                  <el-button slot="prepend" @click="showRegionChoice">
-                    {{countryZhClick}}
-                    <i class="el-icon-arrow-down el-icon--right"></i>
-                  </el-button>
-                  <div slot="prefix" style="height: 40px;width: 42px;line-height: 40px;font-weight: 700;">+{{countryCodeClick}}</div>
-                </el-input>
-              </el-form-item>
-            </div>
-          </div>
-          <div class="row">
-            <span style="width: 20vw;display: inline-block;">
-              <el-form-item prop="captcha">
-                <el-input placeholder="请输入验证码" v-model="ruleForm.captcha"></el-input>
-              </el-form-item>
-            </span>
-            <el-button class="resend" @click="sendCode" :disabled="sendCodeDisabled">{{sendCodeText}}</el-button>
-          </div>
-        </div>
-        <!-- <div class="row" v-if="pageType === '2'">
-          <el-select v-model="registerType" style="width: 6vw;" slot="prepend" placeholder="请选择" @change="handleChange">
-            <el-option label="手机号" value="1"></el-option>
-            <el-option label="邮箱" value="2"></el-option>
-          </el-select>
-          <div style="display: inline-block;width: 22vw;">
-            <el-input :placeholder="registerPH" v-model="username" @blur="usernameBlur" prop="username">
-              <el-select v-model="countryCode" slot="prepend" style="width: 120px;" placeholder="请选择" v-if="registerType === '1'">
-                <el-option v-for="item in country" :label="item.zh + ' ' + item.code" :value="item.code"></el-option>
-              </el-select>
+      </div>
+      <div class="row">
+        <div style="display: inline-block;width: 28vw;">
+          <el-form-item class="marginLeft" prop="username">
+            <el-input
+              placeholder="设置邮箱"
+              v-model="form.email"
+              class="input-with-select"
+              style="width: 100%;"
+            >
+            <el-radio slot="suffix" v-model="form.radio" label="emill"> </el-radio>
             </el-input>
-          </div>
-        </div>-->
-        <!-- <div class="row" v-if="pageType === '2'">
-          <el-input placeholder="请再次输入密码" v-model="cPassword" show-password></el-input>
-        </div>-->
-        <div class="row">
-          <el-button v-if="showLogin" class="login-btn" type="primary" @click="login">登录</el-button>
-          <el-button v-if="!showLogin" class="login-btn" @click="registerNext">下一步</el-button>
-        </div>
-        <div style="margin-top: -18px;margin-bottom: 15px;">
-          <div v-if="!showLogin" style="display: inline-block;margin-right: 110px;font-size: 14px;">
-            <span style="margin-right: 5px;">点击"注册"或"继续"即表示同意</span>
-            <el-button class="login-btn" type="text" @click="showPrivacyClause">浩天隐私条款</el-button>
-          </div>
-          <div v-if="!showLogin" style="display: inline-block;font-size: 14px;">
-            <span style="margin-right: 5px;">已有账号？</span>
-            <el-button class="login-btn" type="text" @click="loginGo">立即登录</el-button>
-          </div>
-          <div v-if="showLogin" style="display: inline-block;font-size: 14px;margin-right: -390px;">
-            <span style="margin-right: 5px;">还没有账号？</span>
-            <el-button class="login-btn" type="text" @click="registerGo">立即注册</el-button>
-          </div>
+          </el-form-item>
         </div>
       </div>
+      <div class="row">
+        <div style="display: inline-block;width: 28vw;">
+          <el-form-item class="marginLeft" prop="username">
+            <el-input
+              placeholder="设置密码"
+              v-model="form.email1"
+              class="input-with-select"
+              style="width: 100%;"
+            >
+            <el-radio slot="suffix" v-model="form.radio" label="proww"> </el-radio>
+            </el-input>
+          </el-form-item>
+        </div>
+      </div>
+    </el-form>
+    <div class="row">
+      <el-button class="login-btn" type="primary">完成</el-button>
     </div>
-    <div class="padding-box" style></div>
-    <footer-plus theme="blue" />
-    <el-dialog class="privacyClauseCon" title="皓天用户协议及隐私条款" :visible.sync="centerDialogVisible" :show-close="false" :close-on-click-modal="false" :close-on-press-escape="false" width="900px" center style="background: rgba(0,13,23,0.9);">
-      <div class="privacyClauseText">
-        <div class="privacyClauseTitle">隐私条款</div>
-        <div class="privacyClauseValue" style="font-weight: 500;color: #222222;">皓天承诺将保护用户隐私作为一项基本政策，将保护用户隐私作为一项最基本政策，也就是说本政策同样适用于该部分产品或服务。皓天承诺将保护用户隐私作为一项基本政策，皓天承诺将保护用户隐私作为一项最基本政策，也就是说本政策同样适用于该部分产品或服务。</div>
-        <div class="privacyClauseTitle">本政策将帮助您了解以下内容：</div>
-        <div class="privacyClauseValue">皓天承诺将保护用户隐私作为一项基本政策，将保护用户隐私作为一项最基本政策，也就是说本政策同样适用于该部分产品或服务。皓天承诺将保护用户隐私作为一项基本政策，皓天承诺将保护用户隐私作为一项最基本政策，也就是说本政策同样适用于该部分产品或服务。皓天承诺将保护用户隐私作为一项最基本政策，也就是说本政策同样适用于该部分产品或服务。</div>
-        <div class="privacyClauseTitle">本政策将帮助您了解以下内容：</div>
-        <div class="privacyClauseValue">皓天承诺将保护用户隐私作为一项基本政策，将保护用户隐私作为一项最基本政策，也就是说本政策同样适用于该部分产品或服务。皓天承诺将保护用户隐私作为一项基本政策，皓天承诺将保护用户隐私作为一项最基本政策，也就是说本政策同样适用于该部分产品或服务。皓天承诺将保护用户隐私作为一项基本政策，将保护用户隐私作为一项最基本政策，也就是说本政策同样适用于该部分产品或服务。皓天承诺将保护用户隐私作为一项基本政策，皓天承诺将保护用户隐私作为一项最基本政策，也就是说本政策同样适用于该部分产品或服务。皓天承诺将保护用户隐私作为一项基本政策，皓天承诺将保护用户隐私作为一项最基本政策，也就是说本政策同样适用于该部分产品或服务。皓天承诺将保护用户隐私作为一项基本政策，将保护用户隐私作为一项最基本政策，也就是说本政策同样适用于该部分产品或服务。皓天承诺将保护用户隐私作为一项基本政策，皓天承诺将保护用户隐私作为一项最基本政策，也就是说本政策同样适用于该部分产品或服务。</div>
-      </div>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="centerDialogVisible = false" style="width: 380px;height: 70px;font-size: 20px;">不同意</el-button>
-        <el-button type="primary" @click="centerDialogVisible = false" style="width: 380px;height: 70px;font-size: 20px;">同意并继续</el-button>
-      </span>
-    </el-dialog>
-    <el-dialog class="regionChoiceCon" title="选择地区" :visible.sync="regionChoiceCon" :close-on-click-modal="false" :close-on-press-escape="false" width="900px" center style="background: rgba(0,13,23,0.9);">
-      <div class="regionChoiceInput">
-        <el-input placeholder="请输入关键字" suffix-icon="el-icon-search" v-model="regionChoiceVal"></el-input>
-      </div>
-      <div class="regionChoiceABC">
-        <span class="ABC" @click="setABC('special')" :class="activeABC === 'special' ? 'isActive' : ''">
-          <i class="el-icon-star-on"></i>
-        </span>
-        <span class="ABC" @click="setABC(item)" v-for="item in ABCarr" :class="activeABC === item ? 'isActive' : ''" :key="item">{{item}}</span>
-      </div>
-      <div class="regionChoiceClick" v-if="activeABC === 'special'">
-        <div class="clickDiv" v-for="item in majorCountry" :key="item.zh" @click="clickCountry(item)">
-          <span class="countryZh">{{item.name}}</span>
-          <span class="countryCode">+{{item.code}}</span>
-        </div>
-      </div>
-      <div class="regionChoiceClick" v-if="activeABC !== 'special'">
-        <div class="clickDiv" v-for="item in countryABC" :key="item.zh" @click="clickCountry(item)">
-          <span class="countryZh">{{item.zh}}</span>
-          <span class="countryCode">+{{item.code}}</span>
-        </div>
-      </div>
-    </el-dialog>
   </div>
 </template>
 
@@ -169,64 +57,12 @@ import axios from "axios";
 export default {
   data() {
     return {
-      ruleForm: {
-        username: '',
-        countryCode: '86',
-        captcha: '',
-        sendCodeText: '发送验证码',
-        password: ''
-      },
-      showLogin: true,
-      userType: "登录",
-      loginType: "1", // 1 手机+验证码登录 2 手机+密码 3 邮箱+密码
-      username: "",
-      password: "",
-      cPassword: "",
-      captcha: "",
-      pageType: "1", // 1 登录 2 注册
-      registerType: "1",
-      registerPH: "请输入手机号码",
-      loginPH: "请输入手机号码",
-      loginMailbox: "请输入邮箱",
-      sendCodeText: "发送验证码",
-      sendCodeDisabled: false,
-      country: [],
-      majorCountry: [],
-      countryABC: [],
-      countryCode: "86",
-      centerDialogVisible: false,
-      regionChoiceCon: false,
-      ABCarr: [
-        "A",
-        "B",
-        "C",
-        "D",
-        "E",
-        "F",
-        "G",
-        "H",
-        "I",
-        "J",
-        "K",
-        "L",
-        "M",
-        "N",
-        "O",
-        "P",
-        "Q",
-        "R",
-        "S",
-        "T",
-        "U",
-        "V",
-        "X",
-        "Y",
-        "Z"
-      ],
-      regionChoiceVal: "",
-      activeABC: "special",
-      countryZhClick: "中国",
-      countryCodeClick: "86"
+      form: {
+        name: "",
+        email: '',
+        radio: '',
+        email1: ''
+      }
     };
   },
   created() {
@@ -235,112 +71,6 @@ export default {
     });
   },
   methods: {
-    loginMode(val) {
-      this.ruleForm = {
-        username: '',
-        countryCode: '86',
-        captcha: '',
-        sendCodeText: '发送验证码',
-        password: ''
-      }
-      if (val === 'phoneCode') {
-        this.pageType = '1'
-      }
-      if (val === 'phonePassword') {
-        this.pageType = '2'
-      }
-      if (val === 'mailboxPassword') {
-        this.pageType = '3'
-      }
-    },
-    setABC(item) {
-      // 选中ABC
-      let that = this
-      that.countryABC = []
-      let countryArr = that.country
-      countryArr.map(i => {
-        if (i.name.substr(0,1) === item) {
-          that.countryABC.push(i)
-        }
-      })
-      this.activeABC = item;
-    },
-    clickCountry(item) {
-      // 选中国家
-      this.countryZhClick = item.zh;
-      this.countryCodeClick = item.code;
-      this.regionChoiceCon = false;
-    },
-    registerGo() {
-      // 注册按钮
-      this.userType = "注册";
-      this.showLogin = false;
-    },
-    showRegionChoice() {
-      // 展示 地区选择弹窗
-      this.majorCountry = [
-        {
-          iso_code: "CN",
-          name: "中国",
-          code: "86",
-          zh: "中国",
-          chinese_name: "中国"
-        },
-        {
-          iso_code: "US",
-          name: "USA",
-          code: "1",
-          zh: "美国",
-          chinese_name: "美国"
-        },
-        {
-          chinese_name: '俄罗斯',
-          code: "7",
-          iso_code: "RU",
-          name: "Россия",
-          zh: "俄罗斯"
-        },
-        {
-          chinese_name: '日本',
-          code: "81",
-          iso_code: "JP",
-          name: "ソフトウェア",
-          zh: "日本"
-        },
-        {
-          chinese_name: '德国',
-          code: "49",
-          iso_code: "DE",
-          name: "Bundesrepublik Deutschland",
-          zh: "德国"
-        },
-        {
-          chinese_name: "印度",
-          code: "91",
-          iso_code: "IN",
-          name: "INDIA",
-          zh: "印度"
-        },
-        {
-          chinese_name: "韩国",
-          code: "82",
-          iso_code: "KR",
-          name: "대한민국",
-          zh: "韩国"
-        },
-        {
-          chinese_name: "英国",
-          code: "44",
-          iso_code: "GB",
-          name: "ENGLAND",
-          zh: "英国"
-        }
-      ];
-      this.regionChoiceCon = true;
-    },
-    registerNext() {
-      // 注册 下一步
-    },
     loginGo() {
       this.userType = "登录";
       this.showLogin = true;
@@ -844,9 +574,11 @@ export default {
           margin-bottom: 30px;
         }
       }
+
       .row>>>.el-form-item {
         margin-bottom: 0;
       }
+
       .row>>>.el-form-item .el-form-item__content {
         margin-left: 0 !important;
       }

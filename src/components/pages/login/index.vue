@@ -6,10 +6,11 @@
       <p class="text">是每个人生来的权利</p>
       <div class="login-box">
         <div class="tab-title row">
-          <span class="type">账户{{userType}}</span>
+          <span class="type">{{userType}}</span>
         </div>
-        <login-index v-if="showLogin"></login-index>
-        <register-index v-if="!showLogin"></register-index>
+        <login-index v-if="showLogin === 'login'"></login-index>
+        <register-index v-if="showLogin === 'register'" :regionChoicedata="regionChoiceData" @func="register_next"></register-index>
+        <information-index v-if="showLogin === 'information'"></information-index>
         <!-- <div v-if="showLogin">
           <div class="loginArea-box">
             <div class="loginArea" style="width: 140px;margin-left: -14px;margin-right: 15px;" @click="loginMode('phoneCode')" :class="pageType === '1' ? 'is-active': ''">
@@ -103,15 +104,15 @@
           <el-button v-if="!showLogin" class="login-btn" @click="registerNext">下一步</el-button>
         </div> -->
         <div style="margin-top: -18px;margin-bottom: 15px;">
-          <div v-if="!showLogin" style="display: inline-block;margin-right: 110px;font-size: 14px;">
+          <div v-if="showLogin === 'register'" style="display: inline-block;margin-right: 110px;font-size: 14px;">
             <span style="margin-right: 5px;">点击"注册"或"继续"即表示同意</span>
             <el-button class="login-btn" type="text" @click="showPrivacyClause">浩天隐私条款</el-button>
           </div>
-          <div v-if="!showLogin" style="display: inline-block;font-size: 14px;">
+          <div v-if="showLogin === 'register'" style="display: inline-block;font-size: 14px;">
             <span style="margin-right: 5px;">已有账号？</span>
             <el-button class="login-btn" type="text" @click="loginGo">立即登录</el-button>
           </div>
-          <div v-if="showLogin" style="display: inline-block;font-size: 14px;margin-right: -390px;">
+          <div v-if="showLogin === 'login'" style="display: inline-block;font-size: 14px;margin-right: -390px;">
             <span style="margin-right: 5px;">还没有账号？</span>
             <el-button class="login-btn" type="text" @click="registerGo">立即注册</el-button>
           </div>
@@ -134,7 +135,7 @@
         <el-button type="primary" @click="centerDialogVisible = false" style="width: 380px;height: 70px;font-size: 20px;">同意并继续</el-button>
       </span>
     </el-dialog>
-    <!-- <el-dialog class="regionChoiceCon" title="选择地区" :visible.sync="regionChoiceCon" :close-on-click-modal="false" :close-on-press-escape="false" width="900px" center style="background: rgba(0,13,23,0.9);">
+    <el-dialog class="regionChoiceCon" title="选择地区" :visible.sync="regionChoiceCon" :close-on-click-modal="false" :close-on-press-escape="false" width="900px" center style="background: rgba(0,13,23,0.9);">
       <div class="regionChoiceInput">
         <el-input placeholder="请输入关键字" suffix-icon="el-icon-search" v-model="regionChoiceVal"></el-input>
       </div>
@@ -156,7 +157,7 @@
           <span class="countryCode">+{{item.code}}</span>
         </div>
       </div>
-    </el-dialog> -->
+    </el-dialog>
   </div>
 </template>
 
@@ -166,6 +167,7 @@ import footerPlus from "../../public/footer-plus.vue";
 import axios from "axios";
 import loginIndex from "./loginIndex"
 import registerIndex from "./registerIndex"
+import informationIndex from "./informationIndex"
 // import qs from "qs";
 
 export default {
@@ -178,8 +180,8 @@ export default {
         sendCodeText: '发送验证码',
         password: ''
       },
-      showLogin: true,
-      userType: "登录",
+      showLogin: 'login',
+      userType: "账户登录",
       loginType: "1", // 1 手机+验证码登录 2 手机+密码 3 邮箱+密码
       username: "",
       password: "",
@@ -225,10 +227,12 @@ export default {
         "Y",
         "Z"
       ],
+      regionChoiceData:{
+        countryZhClick: "中国",
+        countryCodeClick: "86"
+      },
       regionChoiceVal: "",
-      activeABC: "special",
-      countryZhClick: "中国",
-      countryCodeClick: "86"
+      activeABC: "special"
     };
   },
   created() {
@@ -237,6 +241,72 @@ export default {
     });
   },
   methods: {
+    register_next(data) {
+      debugger
+      this.showLogin = data,
+      this.userType = "请您完善以下资料"
+    },
+    fatherMethod() {
+      this.majorCountry = [
+        {
+          iso_code: "CN",
+          name: "中国",
+          code: "86",
+          zh: "中国",
+          chinese_name: "中国"
+        },
+        {
+          iso_code: "US",
+          name: "USA",
+          code: "1",
+          zh: "美国",
+          chinese_name: "美国"
+        },
+        {
+          chinese_name: "俄罗斯",
+          code: "7",
+          iso_code: "RU",
+          name: "Россия",
+          zh: "俄罗斯"
+        },
+        {
+          chinese_name: "日本",
+          code: "81",
+          iso_code: "JP",
+          name: "ソフトウェア",
+          zh: "日本"
+        },
+        {
+          chinese_name: "德国",
+          code: "49",
+          iso_code: "DE",
+          name: "Bundesrepublik Deutschland",
+          zh: "德国"
+        },
+        {
+          chinese_name: "印度",
+          code: "91",
+          iso_code: "IN",
+          name: "INDIA",
+          zh: "印度"
+        },
+        {
+          chinese_name: "韩国",
+          code: "82",
+          iso_code: "KR",
+          name: "대한민국",
+          zh: "韩国"
+        },
+        {
+          chinese_name: "英国",
+          code: "44",
+          iso_code: "GB",
+          name: "ENGLAND",
+          zh: "英国"
+        }
+      ]
+      this.regionChoiceCon = true
+    },
     loginMode(val) {
       // 登录方式 切换
       this.ruleForm = {
@@ -270,14 +340,16 @@ export default {
     },
     clickCountry(item) {
       // 选中国家
-      this.countryZhClick = item.zh;
-      this.countryCodeClick = item.code;
-      this.regionChoiceCon = false;
+      this.regionChoiceData = {
+        countryZhClick: item.zh,
+        countryCodeClick: item.code
+      }
+      this.regionChoiceCon = false
     },
     registerGo() {
       // 立即注册按钮
-      this.userType = "注册";
-      this.showLogin = false;
+      this.userType = "账户注册";
+      this.showLogin = 'register'
     },
     showRegionChoice() {
       // 展示 地区选择弹窗
@@ -346,8 +418,8 @@ export default {
     },
     loginGo() {
       // 立即登录按钮
-      this.userType = "登录";
-      this.showLogin = true;
+      this.userType = "账户登录";
+      this.showLogin = 'login'
     },
     showPrivacyClause() {
       // 隐私条款
@@ -544,7 +616,8 @@ export default {
     pcHeader,
     footerPlus,
     loginIndex,
-    registerIndex
+    registerIndex,
+    informationIndex
   }
 };
 </script>
