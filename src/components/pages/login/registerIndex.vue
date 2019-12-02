@@ -50,90 +50,93 @@ export default {
     return {
       ruleForm: {
         username: "",
-        countryCode: "86",
+        countryCode: this.regionChoicedata.countryCodeClick,
         captcha: "",
         password: ""
       },
       loginPH: "请输入手机号码",
       sendCodeText: "发送验证码",
-      sendCodeDisabled: false,
+      sendCodeDisabled: false
     };
   },
   created() {
-    // axios.get("/auth/v1/countries").then(res => {
-    //   this.country = res.data;
-    // });
   },
   methods: {
     showRegionChoice() {
       // 展示 地区选择弹窗
-      this.$parent.fatherMethod()
+      this.$parent.showRegionChoice();
     },
     registerNext() {
       // 注册 下一步
-      debugger
-      this.$emit('func', 'information')
+      this.$emit("func", "information");
+      let data = {
+        country_code: this.ruleForm.countryCode,
+        phone: this.ruleForm.username,
+        captcha: this.ruleForm.captcha,
+        language: "zh_CN",
+        nickname: "Felix"
+      };
+      // data = qs.stringify(data)
+      // this.$http.post("/auth/v1/users", data).then(res => {
+      //   if (res.status === 201) {
+      //     this.$emit("func", "information");
+      //     // this.$router.push({
+      //     //   //核心语句
+      //     //   path: "/" //跳转的路径
+      //     // });
+      //   } else if (res.status === 400) {
+      //     this.$message({
+      //       message: "验证码错误",
+      //       type: "error"
+      //     });
+      //   } else if (res.status === 404) {
+      //     this.$message({
+      //       message: "验证码已经过期",
+      //       type: "error"
+      //     });
+      //   } else if (res.status === 410) {
+      //     this.$message({
+      //       message: "验证码错误次数太多",
+      //       type: "error"
+      //     });
+      //   } else if (res.status === 409) {
+      //     this.$message({
+      //       message: "用户已注册",
+      //       type: "error"
+      //     });
+      //   } else {
+      //     this.$message({
+      //       message: "接口错误",
+      //       type: "error"
+      //     });
+      //   }
+      // });
     },
     sendCode() {
       // 发送验证码
-      if (!this.username) {
+      if (!this.ruleForm.username) {
         return;
       }
-      if (this.pageType === "1") {
-        axios
-          .post(
-            `/auth/v1/countries/${this.countryCode}/phones/${this.username}/phone-login-captcha`
-          )
-          .then(res => {
-            if (res.status === 201) {
-              if (res.data.captcha) {
+      axios
+        .post(
+          `/auth/v1/countries/${this.ruleForm.countryCode}/phones/${this.ruleForm.username}/register-captcha`
+        )
+        .then(res => {
+          if (res.data.captcha) {
+            this.sendCodeDisabled = true;
+            let num = 60;
+            this.sendCodeText = `${num}`;
+            let time = setInterval(() => {
+              num--;
+              this.sendCodeText = `${num}`;
+              if (num === 0) {
                 this.sendCodeDisabled = true;
-                let num = 60;
-                this.sendCodeText = `${num}秒重新发送`;
-                let time = setInterval(() => {
-                  num--;
-                  this.sendCodeText = `${num}秒重新发送`;
-                  if (num === 0) {
-                    this.sendCodeDisabled = true;
-                    this.sendCodeText = "重新发送";
-                    clearInterval(time);
-                  }
-                }, 1000);
+                this.sendCodeText = "重新发送";
+                clearInterval(time);
               }
-            } else if (res.status === 429) {
-              this.$message({
-                message: "验证码请求过于频繁",
-                type: "error"
-              });
-            } else {
-              this.$message({
-                message: "接口错误",
-                type: "error"
-              });
-            }
-          });
-      } else {
-        axios
-          .post(
-            `/auth/v1/countries/${this.countryCode}/phones/${this.username}/register-captcha`
-          )
-          .then(res => {
-            if (res.data.captcha) {
-              this.sendCodeDisabled = true;
-              let num = 60;
-              this.sendCodeText = `${num}秒重新发送`;
-              let time = setInterval(() => {
-                num--;
-                this.sendCodeText = `${num}秒重新发送`;
-                if (num === 0) {
-                  this.sendCodeDisabled = true;
-                  this.sendCodeText = "重新发送";
-                  clearInterval(time);
-                }
-              }, 1000);
-            }
-          });
-      }
+            }, 1000);
+          }
+        });
     }
   },
   components: {}
@@ -141,7 +144,6 @@ export default {
 </script>
 
 <style scoped lang="stylus">
-
 .row {
   margin: 2vh 2vw;
   text-align: left;
