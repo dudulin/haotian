@@ -113,7 +113,7 @@ export default {
     )
   },
   put(url, data) { //  post
-    url = locationBase + url
+    // url = locationBase + url
 
     return axios({
       methods: 'put',
@@ -139,7 +139,7 @@ export default {
     )
   },
   get(url, params) { // get
-    url = locationBase + url
+    // url = locationBase + url
     return axios.get(url).then(
       (response) => {
         return response

@@ -22,7 +22,7 @@
 			</ul>
 		</span>
     <span class="login">
-			<el-button class="manage" icon="el-icon-edit" :style="theme === 'blue' ? blueThemeBtn1 : ''">管理中心</el-button>
+			<el-button class="manage" @click="toAdministrationCenter" icon="el-icon-edit" :style="theme === 'blue' ? blueThemeBtn1 : ''">管理中心</el-button>
 			<el-button class="login" @click="toLogin" type="primary" icon="el-icon-user-solid" :style="theme === 'blue' ? blueThemeBtn2 : ''">登录</el-button>
 		</span>
   </div>
@@ -95,6 +95,9 @@ export default {
     },
     toLogin() {
       this.$router.push({path:'/login'})
+    },
+    toAdministrationCenter() {
+      this.$router.push({path:'/administrationCenter'})
     }
   },
   components: {}

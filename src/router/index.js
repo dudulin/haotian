@@ -6,6 +6,7 @@ import Service from '../components/pages/service/index'
 import Product from '../components/pages/product/index'
 import ProductDetail from '../components/pages/productDetail/index'
 import Login from '../components/pages/login/index'
+import AdministrationCenter from '../components/pages/administrationCenter/index'
 
 Vue.use(Router)
 export default new Router({
@@ -39,6 +40,11 @@ export default new Router({
       path: '/login',
       name: 'login',
       component: Login
+    },
+    {
+      path: '/administrationCenter',
+      name: 'administrationCenter',
+      component: AdministrationCenter
     }
   ]
 })
