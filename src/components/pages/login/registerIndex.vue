@@ -43,8 +43,7 @@ import axios from "axios";
 
 export default {
   props: {
-    regionChoicedata: Object,
-    required: true
+    regionChoicedata: Object
   },
   data() {
     return {
@@ -69,13 +68,13 @@ export default {
     registerNext() {
       // 注册 下一步
       this.$emit("func", "information");
-      let data = {
-        country_code: this.ruleForm.countryCode,
-        phone: this.ruleForm.username,
-        captcha: this.ruleForm.captcha,
-        language: "zh_CN",
-        nickname: "Felix"
-      };
+      // let data = {
+      //   country_code: this.ruleForm.countryCode,
+      //   phone: this.ruleForm.username,
+      //   captcha: this.ruleForm.captcha,
+      //   language: "zh_CN",
+      //   nickname: "Felix"
+      // };
       // data = qs.stringify(data)
       // this.$http.post("/auth/v1/users", data).then(res => {
       //   if (res.status === 201) {

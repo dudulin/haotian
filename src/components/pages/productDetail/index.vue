@@ -1,40 +1,33 @@
 <template>
-  <div id="productD">
+  <div id="product">
     <pc-header theme="blue" />
     <div class="banner">
-      <div class="title">产品详情</div>
+      <div class="title">产品</div>
     </div>
     <div class="content">
-      <div class="back-list">
-        <div class="left">
-          <span class="item" v-for="item in backList" :key="item.id">{{item.text}}</span>
-        </div>
+      <div class="nav">
+        <div class="left">{{menu[activeMenu]}}</div>
         <div class="right">
-          <el-button class="go">返回列表</el-button>
+          <ul class="menu">
+            <li v-for="(item, index) in menu" :key="item.id" :class="activeMenu === index ? 'is-active' : ''" @click="() => activeMenu = index">{{item}}</li>
+          </ul>
         </div>
       </div>
-      <div class="synopsis">
-        <div class="left">
-          <div class="title">
-            <p class="cn">皓洁PTFE针刺毡</p>
-            <p class="en">Haojie PTFE needled felt</p>
-          </div>
-          <div class="msg">
-            PTFE针刺毡是来自于PTFE纤维通过膜裂法拉丝形成的耐高温布袋 <br />
-            在除尘和相关领域都有重点的应用场景
-          </div>
-          <div class="btn-area">
-            <el-button class="inquiry">发起一个询价</el-button>
-            <el-button class="contact">查看联系方式</el-button>
-          </div>
-        </div>
-        <div class="right">
-          <div class="img-box">
-            <img src="./img/pic5.png" alt="">
-          </div>
+      <div style="width: 100%;overflow: hidden;" :style="activeMenu !== 0 ? 'background:rgba(255,255,255,1);' : 'background:rgba(248,248,248,1);'">
+        <div class="breadcrumb" :style="activeMenu !== 0 ? 'background:rgba(255,255,255,1);' : 'background:rgba(248,248,248,1);'">
+          <i class="el-icon-s-home"></i>
+          <el-breadcrumb separator="-">
+            <el-breadcrumb-item><a href="/" style="color: #606266;">首页</a></el-breadcrumb-item>
+            <el-breadcrumb-item>产品</el-breadcrumb-item>
+            <el-breadcrumb-item style="color: #0c7fd0;">{{menu[activeMenu]}}</el-breadcrumb-item>
+          </el-breadcrumb>
         </div>
       </div>
     </div>
+    <!-- <tab1 v-if="activeMenu === 0" />
+    <tab2 v-if="activeMenu === 1" />
+    <tab3 v-if="activeMenu === 2" />
+    <tab4 v-if="activeMenu === 3" /> -->
     <footer-plus theme="white" />
   </div>
 </template>
@@ -42,43 +35,34 @@
 <script>
 import pcHeader from '../../public/header.vue'
 import footerPlus from '../../public/footer-plus.vue'
+// import tab1 from './tab1.vue'
+// import tab2 from './tab2.vue'
+// import tab3 from './tab3.vue'
+// import tab4 from './tab4.vue'
 
 export default {
   data() {
     return {
-      backList: [
-        {
-          text: 'PTFE',
-          params: 'PTFE'
-        },
-        {
-          text: 'PPS',
-          params: 'PPS'
-        },
-        {
-          text: 'NOMEX',
-          params: 'PTFE'
-        },
-        {
-          text: '涤纶',
-          params: 'PTFE'
-        },
-        {
-          text: '丙纶',
-          params: 'PTFE'
-        },
-      ]
+      activeMenu: 3,
+      menu: ['催化滤袋', '针刺粘', '除尘袋', '配件']
     }
+  },
+  created() {
+    
   },
   components: {
     pcHeader,
     footerPlus
+    // tab1,
+    // tab2,
+    // tab3,
+    // tab4
   }
 }
 </script>
 
-<style lang="stylus" scoped>
-#productD
+<style scoped lang="stylus">
+#product
   width: 100%
   min-height: 100%
   position: relative
@@ -94,37 +78,46 @@ export default {
       text-align: left
       color: #fff
   .content
-    width: 1200px
-    margin: 0 auto
-    .back-list
-      width: 100%
-      height: 80px
-      overflow: hidden
-      border-bottom: 1px solid rgba(34,34,34,0.1)
+    width: 100%
+    .nav
+      width: 1180px
+      height: 75px
+      margin: 0 auto
+      box-sizing: border-box
+      border-bottom: 2px solid rgb(237,237,237)
+      display: flex
+      justify-content: space-between
       .left
-        float: left
-        .item
-          font-size: 20px
-          font-family: PingFang SC
-          font-weight: 400
-          color: rgba(0,0,0,1)
-          height: 100%
-          line-height: 80px
-          margin-right: 40px
-          cursor: pointer
-      .right
-        float: right
-        display: flex
         height: 100%
-        align-items: center
-        .go
-          background: rgba(36,142,216,1)
-          font-size: 14px
-          font-family: PingFang SC
-          font-weight: 400
-          color: rgba(255,255,255,1)
-          border-radius: 0
-    .synopsis
-
-
-/style>
+        line-height: 75px
+        font-size: 26px
+      .right
+        height: 100%
+        position: relative
+        .menu
+          position: absolute
+          right: 0
+          top: 0
+          width: 600px
+          height: 75px
+          li
+            height: 75px
+            line-height: 75px
+            font-size: 16px
+            font-weight: 400
+            float: left
+            margin-left: 80px
+            box-sizing: border-box
+            cursor: pointer
+            &.is-active
+              color: #0c7fd0
+              border-bottom: 2px solid #0c7fd0
+    .breadcrumb
+      display: flex
+      width: 1180px
+      margin: 35px auto
+      background: rgba(248,248,248,1)
+      i
+        color: rgb(208,208,208)
+        margin-right: 10px
+</style>
