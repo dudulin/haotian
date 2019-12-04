@@ -105,7 +105,7 @@ export default {
       }
       if (this.pageType === "1") {
         axios
-          .get(
+          .head(
             `auth/v1/countries/${this.ruleForm.countryCode}/phones/${this.ruleForm.username}`
           )
           .then(res => {
@@ -113,7 +113,7 @@ export default {
             if (res.status === 204) {
               // 手机号码已注册
               axios
-                .get(
+                .post(
                   `/auth/v1/countries/${this.ruleForm.countryCode}/phones/${this.ruleForm.username}/phone-login-captcha`
                 )
                 .then(res => {

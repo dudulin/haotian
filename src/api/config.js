@@ -5,7 +5,7 @@ import ElementUI from 'element-ui'
 
 Vue.use(ElementUI)
 
-import qs from 'qs'
+// import qs from 'qs'
 axios.interceptors.request.use(config => { // 这里的config包含每次请求的内容
   return config
 }, err => {
@@ -30,7 +30,9 @@ function checkStatus(url, response) {
     } else {
       Vue.prototype.$alert(`接口：${url}网络错误，错误码为${response.status}`, {
         confirmButtonText: '确定'
-      }).catch(res => {})
+      }).catch(res => {
+        console.log(res)
+      })
       return false
     }
   }
@@ -139,8 +141,22 @@ export default {
     )
   },
   get(url, params) { // get
+    console.log(params)
     // url = locationBase + url
     return axios.get(url).then(
+      (response) => {
+        return response
+      }
+    ).then(
+      (res) => {
+        return res
+      }
+    )
+  },
+  head(url, params) { // get
+    console.log(params)
+    // url = locationBase + url
+    return axios.head(url).then(
       (response) => {
         return response
       }
