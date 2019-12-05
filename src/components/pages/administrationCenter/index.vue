@@ -7,7 +7,7 @@
         <ul>
           <li v-for="i in asideArray" :key="i.title" @click="getPage(i.value)" :class="componentType===i.value?'active':''">
             <a>
-              <i :class="i.iconClass"></i>
+              <img :src="i.imgSrc" style="width:30px;height:30px;margin-left:17px;">
               {{i.title}}
             </a>
           </li>
@@ -23,6 +23,9 @@
 
 <script>
 import pcHeader from "../../public/header.vue";
+import img1 from "./img/icon1.png";
+import img2 from "./img/icon2.png";
+import img3 from "./img/icon3.png";
 import axios from "axios";
 import { components } from "./page/index.js";
 // import qs from "qs";
@@ -34,9 +37,9 @@ export default {
       componentType: 'viewOrder',
       components, // 返回的数据保存起来
       asideArray: [
-        { title: '发起询价', value: 'enquiry', iconClass: 'el-icon-coin' },
-        { title: '查看订单', value: 'viewOrder', iconClass: 'el-icon-s-order' },
-        { title: '我的资料', value: 'myInformation', iconClass: 'el-icon-user' }
+        { title: '发起询价', value: 'enquiry', imgSrc: img1 },
+        { title: '查看订单', value: 'viewOrder', imgSrc: img2 },
+        { title: '我的资料', value: 'myInformation', imgSrc: img3 }
       ]
     };
   },
@@ -75,7 +78,7 @@ export default {
         position: relative;
 
         a {
-          i {
+          img {
             display: block;
             margin-bottom: 10px;
           }
