@@ -5,28 +5,18 @@
     <el-container style="margin-top:100px">
       <el-aside class="aside" width="100px">
         <ul>
-          <li>
-            <div>
-              <i class="el-icon-coin"></i>
-              发起询价
-            </div>
-          </li>
-          <li class="active">
-            <div>
-              <i class="el-icon-s-order"></i>
-              查看订单
-            </div>
-          </li>
-
-          <li>
-            <div>
-              <i class="el-icon-user"></i>
-              我的资料
-            </div>
+          <li v-for="i in asideArray" :key="i.title" @click="getPage(i.value)" :class="componentType===i.value?'active':''">
+            <a>
+              <i :class="i.iconClass"></i>
+              {{i.title}}
+            </a>
           </li>
         </ul>
       </el-aside>
-      <el-main class="main">mainmainmain</el-main>
+      <el-main class="main">
+        <!-- component模版 通过is来获取 -->
+        <component :is="components[componentType]"></component>
+      </el-main>
     </el-container>
   </el-container>
 </template>
@@ -34,12 +24,20 @@
 <script>
 import pcHeader from "../../public/header.vue";
 import axios from "axios";
+import { components } from "./page/index.js";
 // import qs from "qs";
 
 export default {
   data() {
     return {
-      activeABC: ''
+      activeABC: '',
+      componentType: 'viewOrder',
+      components, // 返回的数据保存起来
+      asideArray: [
+        { title: '发起询价', value: 'enquiry', iconClass: 'el-icon-coin' },
+        { title: '查看订单', value: 'viewOrder', iconClass: 'el-icon-s-order' },
+        { title: '我的资料', value: 'myInformation', iconClass: 'el-icon-user' }
+      ]
     };
   },
   created() {
@@ -48,8 +46,8 @@ export default {
     });
   },
   methods: {
-    setABC(item) {
-      this.activeABC = item
+    getPage(value) {
+      this.componentType = value
     }
   },
   components: {
@@ -76,7 +74,7 @@ export default {
         color: #fff;
         position: relative;
 
-        div {
+        a {
           i {
             display: block;
             margin-bottom: 10px;
@@ -93,7 +91,8 @@ export default {
   }
 
   .main {
-    background-color: #F6F9FB;
+    background-color: #F7F8FC;
+    padding: 0;
   }
 }
 </style>
