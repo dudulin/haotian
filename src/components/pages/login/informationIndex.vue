@@ -39,8 +39,8 @@
 </template>
 
 <script>
-import pcHeader from "../../public/header.vue";
-import footerPlus from "../../public/footer-plus.vue";
+// import pcHeader from "../../public/header.vue";
+// import footerPlus from "../../public/footer-plus.vue";
 import axios from "axios";
 // import qs from "qs";
 

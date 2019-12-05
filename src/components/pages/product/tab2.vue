@@ -40,7 +40,7 @@
       <div class="msg">
         <p class="title">{{item.name}}</p>
         <div class="btn-area">
-          <span class="detail" @click="showDetail">查看详情</span>
+          <span class="detail">查看详情</span>
           <span class="price">查看详情</span>
         </div>
       </div>
@@ -102,9 +102,6 @@ export default {
 		}
 	},
 	methods: {
-    showDetail() {
-      this.$router.push({path:'/ProductDetail'})
-    },
 		handleChange() {
 
 		}
