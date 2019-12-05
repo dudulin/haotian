@@ -27,146 +27,127 @@ function format({ fmt = 'yyyy-MM-dd', date = new Date() }) {
   }
   return fmt;
 }
+// 3.根路径用于 测试接口, 发布时候改成空字符串就可以
+let baseUrl = '/testApi/'
 
-export default {
-  format,
-  checkType,
-  setCondition: function (that, data, config) {
-    let flag = data.flag
-    let value = data.value
-    let condition = config ? [config] : that.data.condition
-
-    if (condition.length) {
-      condition.forEach(item => {
-        if (!that.$store.state[that.tabName][item.name]) {
-          Vue.set(that.$store.state[that.tabName], item.name, {
-            flag: {},
-            condition: {}
-          })
-        }
-        let property = item.property
-        if (!that.$store.state[that.tabName][item.name].flag) {
-          Vue.set(that.$store.state[that.tabName][item.name], 'flag', {})
-        }
-        if (!that.$store.state[that.tabName][item.name].condition) {
-          Vue.set(that.$store.state[that.tabName][item.name], 'condition', {})
-        }
-        Vue.set(that.$store.state[that.tabName][item.name].flag, property, flag)
-        Vue.set(that.$store.state[that.tabName][item.name].condition, property, value)
-      })
+// 4. 表格的正则表达式
+let rules = {
+  check0: (rule, value, callback) => {
+    /* 不能为空 */
+    let message = ''
+    switch (true) {
+      case /^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/.test(value):
+        message = '请输入正确的邮箱'
+        break
+    }
+    if (message) {
+      callback(new Error(message))
+    } else {
+      callback()
     }
   },
-  rules: {
-    check0: (rule, value, callback) => {
-      /* 不能为空 */
-      let message = ''
-      switch (true) {
-        case /^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/.test(value):
-          message = '请输入正确的邮箱'
-          break
-      }
-      if (message) {
-        callback(new Error(message))
-      } else {
-        callback()
-      }
-    },
-    check1: (rule, value, callback) => {
-      /* 正常字符 */
-      let message = ''
-      switch (true) {
-        case /^1[3456789]\d{9}$/.test(value):
-          message = '您输入的电话号码不正确'
-          break
-      }
-      if (message) {
-        callback(new Error(message))
-      } else {
-        callback()
-      }
-    },
-    check2: (rule, value, callback) => {
-      /* 正整数 */
-      let message = ''
-      switch (true) {
-        case /^.{0}$/.test(value):
-          message = ''
-          break
-        case !/^\d+$/.test(value):
-          message = '只能输入正整数'
-          break
-        default:
-          break
-      }
-      if (message) {
-        callback(new Error(message))
-      } else {
-        callback()
-      }
-    },
-    check3: (rule, value, callback) => {
-      /* 带小数的数字 */
-      let message = ''
-      switch (true) {
-        case /^.{0}$/.test(value):
-          message = ''
-          break
-        case !/^\d+(\.\d+)?$/.test(value):
-          message = '只能由数字和小数点构成'
-          break
-        default:
-          break
-      }
-      if (message) {
-        callback(new Error(message))
-      } else {
-        callback()
-      }
-    },
-    check4: (rule, value, callback) => {
-      /* 可以为空 */
-      let message = ''
-      switch (true) {
-        case /^.{0}$/.test(value):
-          message = ''
-          break
-        default:
-          break
-      }
-      if (message) {
-        callback(new Error(message))
-      } else {
-        callback()
-      }
-    },
-    check5: (rule, value, callback) => {
-      /* 整数 */
-      let message = ''
-      switch (true) {
-        case !/^-?\d+$/.test(value):
-          message = '只能整数'
-          break
-        default:
-          break
-      }
-      if (message) {
-        callback(new Error(message))
-      } else {
-        callback()
-      }
-    },
-    check6: (rule, value, callback) => {
-      /* 检测结尾.proto */
-      let message = ''
-      let val = value.split('.')
-      if (val[val.length - 1] !== 'proto') {
-        message = '请以 .proto 结尾'
-      }
-      if (message) {
-        callback(new Error(message))
-      } else {
-        callback()
-      }
+  check1: (rule, value, callback) => {
+    /* 正常字符 */
+    let message = ''
+    switch (true) {
+      case /^1[3456789]\d{9}$/.test(value):
+        message = '您输入的电话号码不正确'
+        break
+    }
+    if (message) {
+      callback(new Error(message))
+    } else {
+      callback()
+    }
+  },
+  check2: (rule, value, callback) => {
+    /* 正整数 */
+    let message = ''
+    switch (true) {
+      case /^.{0}$/.test(value):
+        message = ''
+        break
+      case !/^\d+$/.test(value):
+        message = '只能输入正整数'
+        break
+      default:
+        break
+    }
+    if (message) {
+      callback(new Error(message))
+    } else {
+      callback()
+    }
+  },
+  check3: (rule, value, callback) => {
+    /* 带小数的数字 */
+    let message = ''
+    switch (true) {
+      case /^.{0}$/.test(value):
+        message = ''
+        break
+      case !/^\d+(\.\d+)?$/.test(value):
+        message = '只能由数字和小数点构成'
+        break
+      default:
+        break
+    }
+    if (message) {
+      callback(new Error(message))
+    } else {
+      callback()
+    }
+  },
+  check4: (rule, value, callback) => {
+    /* 可以为空 */
+    let message = ''
+    switch (true) {
+      case /^.{0}$/.test(value):
+        message = ''
+        break
+      default:
+        break
+    }
+    if (message) {
+      callback(new Error(message))
+    } else {
+      callback()
+    }
+  },
+  check5: (rule, value, callback) => {
+    /* 整数 */
+    let message = ''
+    switch (true) {
+      case !/^-?\d+$/.test(value):
+        message = '只能整数'
+        break
+      default:
+        break
+    }
+    if (message) {
+      callback(new Error(message))
+    } else {
+      callback()
+    }
+  },
+  check6: (rule, value, callback) => {
+    /* 检测结尾.proto */
+    let message = ''
+    let val = value.split('.')
+    if (val[val.length - 1] !== 'proto') {
+      message = '请以 .proto 结尾'
+    }
+    if (message) {
+      callback(new Error(message))
+    } else {
+      callback()
     }
   }
+}
+
+export {
+  format,
+  checkType,
+  baseUrl,
+  rules
 }

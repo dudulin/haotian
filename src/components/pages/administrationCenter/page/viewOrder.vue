@@ -21,10 +21,12 @@
 
 <script>
 import {components} from "./../viewOrderPage/index.js";
+import {baseUrl} from '../../../../common/js/tool.js'
 export default {
   data() {
     return {
       components,
+      baseUrl,
       // componentType:'orderReview',
       componentType:'productManagement', // debugger 开发中页面
       asideArray: [
@@ -38,7 +40,7 @@ export default {
     }
   },
   created() {
-
+    console.log(this.baseUrl,11111111111)
   },
   methods: {
    getPage(value){
