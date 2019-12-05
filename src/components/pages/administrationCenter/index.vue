@@ -7,7 +7,7 @@
         <ul>
           <li v-for="i in asideArray" :key="i.title" @click="getPage(i.value)" :class="componentType===i.value?'active':''">
             <a>
-              <img :src="i.imgSrc" style="width:30px;height:30px;margin-left:17px;">
+              <img :src="i.imgSrc" draggable="false">
               {{i.title}}
             </a>
           </li>
@@ -81,6 +81,10 @@ export default {
           img {
             display: block;
             margin-bottom: 10px;
+            width:30px;
+            height:30px;
+            margin-left:17px;
+            user-select:none;
           }
 
           white-space: nowrap;
