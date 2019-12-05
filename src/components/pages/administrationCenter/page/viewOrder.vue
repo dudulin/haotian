@@ -13,7 +13,7 @@
         </li>
       </ul>
     </el-aside>
-    <el-main style="padding:0">
+    <el-main style="padding:30px 80px;">
       <component :is="components[componentType]"></component>
     </el-main>
   </el-container>
