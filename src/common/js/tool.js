@@ -32,11 +32,25 @@ let baseUrl = '/testApi/'
 
 // 4. 表格的正则表达式
 let rules = {
-  check0: (rule, value, callback) => {
+   check0: (rule, value, callback) => {
+     /* 不能为空 */
+     let message = ''
+     switch (true) {
+       case /^.{0}$/.test(value):
+         message = '内容不能为空'
+         break
+     }
+     if (message) {
+       callback(new Error(message))
+     } else {
+       callback()
+     }
+   },
+  checkEmail: (rule, value, callback) => {
     /* 不能为空 */
     let message = ''
     switch (true) {
-      case /^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/.test(value):
+      case !/^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/.test(value):
         message = '请输入正确的邮箱'
         break
     }
@@ -46,11 +60,11 @@ let rules = {
       callback()
     }
   },
-  check1: (rule, value, callback) => {
+  checkPhone: (rule, value, callback) => {
     /* 正常字符 */
     let message = ''
     switch (true) {
-      case /^1[3456789]\d{9}$/.test(value):
+      case !/^1[3456789]\d{9}$/.test(value):
         message = '您输入的电话号码不正确'
         break
     }
