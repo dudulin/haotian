@@ -85,7 +85,7 @@
           <el-form-item
             style="margin-bottom:10px"
             prop="captcha"
-            :rules="pageType!=='1'?[]:flag?thisRules.code:thisRules.one"
+            :rules="pageType!=='1'?[]:message?thisRules.code:thisRules.one"
           >
             <el-input placeholder="请输入验证码" v-model="ruleForm.captcha"></el-input>
           </el-form-item>
@@ -122,8 +122,10 @@ export default {
         captcha: "",
         password: ""
       },
-      flag:true,
-      message:22222222222333,
+      /* 这个是验证码 发送给后端之后的校验,如果有问题,
+        例如 验证码错误,都填入  message 中, 没问题要改成空字符串
+      */
+      message: '',
       pageType: "1", // 1 登录 2 注册
       loginPH: "请输入手机号码",
       loginMailbox: "请输入邮箱",
@@ -314,7 +316,6 @@ export default {
       const that = this
       this.$refs.ruleForm.validate((valid) => {
         if (valid) { // 通过验证 执行数据提交
-          console.log('ok------------')
           that.login()
         } else {
           return false;
@@ -330,7 +331,7 @@ export default {
       this.flag = false
       let that = this
       setTimeout(() => {
-        that.$refs.ruleForm.validate(i=>{return false})
+        that.$refs.ruleForm.validate(() => { return false })
       }, 3000);
       if (this.pageType === '1') {
         url = 'auth/v1/phone-captcha-login'
