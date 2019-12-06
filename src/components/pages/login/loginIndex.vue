@@ -1,13 +1,28 @@
 <template>
   <div>
     <div class="loginArea-box">
-      <div class="loginArea" style="width: 140px;margin-left: -14px;margin-right: 15px;" @click="loginMode('1')" :class="pageType === '1' ? 'is-active': ''">
+      <div
+        class="loginArea"
+        style="width: 140px;margin-left: -14px;margin-right: 15px;"
+        @click="loginMode('1')"
+        :class="pageType === '1' ? 'is-active': ''"
+      >
         <span style="display: inline-block;padding: 18px 0;margin-top: -2px;">手机号+验证码登录</span>
       </div>
-      <div class="loginArea" style="margin: 0px 44px;" @click="loginMode('2')" :class="pageType === '2' ? 'is-active': ''">
+      <div
+        class="loginArea"
+        style="margin: 0px 44px;"
+        @click="loginMode('2')"
+        :class="pageType === '2' ? 'is-active': ''"
+      >
         <span style="display: inline-block;padding: 18px 0;margin-top: -2px;">手机号+密码登录</span>
       </div>
-      <div class="loginArea" style="width: 111px;margin-right: -15px;margin-left: 38px;" @click="loginMode('3')" :class="pageType === '3' ? 'is-active': ''">
+      <div
+        class="loginArea"
+        style="width: 111px;margin-right: -15px;margin-left: 38px;"
+        @click="loginMode('3')"
+        :class="pageType === '3' ? 'is-active': ''"
+      >
         <span style="display: inline-block;padding: 18px 0;margin-top: -2px;">邮箱+密码登录</span>
       </div>
       <!-- <span class="type" @click="() => pageType='1'" :class="pageType === '1' ? 'is-active': ''">登录</span>
@@ -16,33 +31,74 @@
     <el-form :model="ruleForm" ref="ruleForm" label-width="100px" class="demo-ruleForm">
       <div class="row" v-if="pageType === '1' || pageType === '2'">
         <div class="phoneLogin" style="display: inline-block;width: 28vw;">
-          <el-form-item style="margin-bottom:10px" class="marginLeft" prop="username" :rules="pageType==='3'?[]:thisRules.phone">
-            <el-input :placeholder="loginPH" v-model="ruleForm.username" class="input-with-select" style="width: 100%;">
-              <el-select v-model="ruleForm.countryCode" slot="prepend" style="width: 100px;" placeholder="请选择">
-                <el-option v-for="item in country" :key="item.zh" :label="item.zh" :value="item.code"></el-option>
+          <el-form-item
+            style="margin-bottom:10px"
+            class="marginLeft"
+            prop="username"
+            :rules="pageType==='3'?[]:thisRules.phone"
+          >
+            <el-input
+              :placeholder="loginPH"
+              v-model="ruleForm.username"
+              class="input-with-select"
+              style="width: 100%;"
+            >
+              <el-select
+                v-model="ruleForm.countryCode"
+                slot="prepend"
+                style="width: 100px;"
+                placeholder="请选择"
+              >
+                <el-option
+                  v-for="item in country"
+                  :key="item.zh"
+                  :label="item.zh"
+                  :value="item.code"
+                ></el-option>
               </el-select>
-              <div slot="prefix" style="height: 40px;width: 42px;line-height: 40px;font-weight: 700;">+{{ruleForm.countryCode}}</div>
+              <div
+                slot="prefix"
+                style="height: 40px;width: 42px;line-height: 40px;font-weight: 700;"
+              >+{{ruleForm.countryCode}}</div>
             </el-input>
           </el-form-item>
         </div>
       </div>
       <div class="row" v-if="pageType === '3'">
         <div style="display: inline-block;width: 28vw;">
-          <el-form-item style="margin-bottom:10px" class="marginLeft" prop="username" :rules="pageType!=='3'?[]:thisRules.email">
-            <el-input :placeholder="loginMailbox" v-model="ruleForm.username" class="input-with-select"></el-input>
+          <el-form-item
+            style="margin-bottom:10px"
+            class="marginLeft"
+            prop="username"
+            :rules="pageType!=='3'?[]:thisRules.email"
+          >
+            <el-input
+              :placeholder="loginMailbox"
+              v-model="ruleForm.username"
+              class="input-with-select"
+            ></el-input>
           </el-form-item>
         </div>
       </div>
       <div class="row" v-if="pageType === '1'">
         <span style="width: 20vw;display: inline-block;">
-          <el-form-item style="margin-bottom:10px" prop="captcha" :rules="pageType!=='1'?[]:thisRules.one">
+          <el-form-item
+            style="margin-bottom:10px"
+            prop="captcha"
+            :rules="pageType!=='1'?[]:flag?thisRules.code:thisRules.one"
+          >
             <el-input placeholder="请输入验证码" v-model="ruleForm.captcha"></el-input>
           </el-form-item>
         </span>
         <el-button class="resend" @click="sendCode" :disabled="sendCodeDisabled">{{sendCodeText}}</el-button>
       </div>
       <div class="row" v-if="pageType === '2' || pageType === '3'">
-        <el-form-item style="margin-bottom:18px" class="marginLeft" prop="password" :rules="pageType!=='1'?thisRules.one:[]">
+        <el-form-item
+          style="margin-bottom:18px"
+          class="marginLeft"
+          prop="password"
+          :rules="pageType!=='1'?thisRules.one:[]"
+        >
           <el-input placeholder="请输入密码" v-model="ruleForm.password" show-password></el-input>
         </el-form-item>
       </div>
@@ -55,9 +111,10 @@
 
 <script>
 import axios from "axios";
-import {rules} from '../../../common/js/tool.js'
+import { rules } from '../../../common/js/tool.js'
 export default {
   data() {
+    const that = this
     return {
       ruleForm: {
         username: "",
@@ -65,6 +122,8 @@ export default {
         captcha: "",
         password: ""
       },
+      flag:true,
+      message:22222222222333,
       pageType: "1", // 1 登录 2 注册
       loginPH: "请输入手机号码",
       loginMailbox: "请输入邮箱",
@@ -82,12 +141,18 @@ export default {
         ],
         one: [ /* 1.不能空 */
           { validator: rules.check0, trigger: 'blur' }
+        ],
+        code: [ /* 1.验证码 */
+          {            validator: (rule, value, callback) => {
+              callback(new Error(that.message))
+
+            }, trigger: 'blur'          }
         ]
       },
     };
   },
   created() {
-    console.log(rules,'dserses')
+    console.log(rules, 'dserses')
     axios.get("/auth/v1/countries").then(res => {
       this.country = res.data;
     });
@@ -100,7 +165,7 @@ export default {
         captcha: "",
         password: ""
       };
-      if(this.pageType != val){
+      if (this.pageType != val) {
         this.resetForm()
       }
       this.pageType = val;
@@ -245,16 +310,16 @@ export default {
       });
     },
     /* 检查填写的数据是否正常 */
-    checkRules(){
+    checkRules() {
       const that = this
       this.$refs.ruleForm.validate((valid) => {
-          if (valid) { // 通过验证 执行数据提交
-            console.log('ok------------')
-            that.login()
-          } else {
-            return false;
-          }
-        });
+        if (valid) { // 通过验证 执行数据提交
+          console.log('ok------------')
+          that.login()
+        } else {
+          return false;
+        }
+      });
     },
     resetForm() {
       this.$refs.ruleForm.resetFields();
@@ -262,6 +327,11 @@ export default {
     login() {
       let url = ''
       let data = {}
+      this.flag = false
+      let that = this
+      setTimeout(() => {
+        that.$refs.ruleForm.validate(i=>{return false})
+      }, 3000);
       if (this.pageType === '1') {
         url = 'auth/v1/phone-captcha-login'
         data = {
