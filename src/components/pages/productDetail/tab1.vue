@@ -30,14 +30,42 @@
           </div>
         </div>
       </div>
-      <div style="height: 290px;">
-        <div></div>
+      <div style="width: 1180px;margin: 0 auto;display: flex;border-bottom: 1px dashed;height: 290px;">
+        <div style="width: 30%;margin-right: 10%;padding: 70px 0;">
+          <div style="font-size: 24px;text-align: left;margin-bottom: 18px;">产品参数</div>
+          <div v-for="val in valueArr" :key="val">
+            <div style="text-align: left;font-size: 26px;">{{val}}</div>
+          </div>
+        </div>
+        <div style="width: 60%;padding: 70px 0;text-align: left;font-size: 16px;">
+          <div v-for="item in okkk" :key="item">
+            <div>{{item}}</div>
+          </div>
+        </div>
       </div>
-      <div style="height: 558px;">
-        <div></div>
+      <div style="width: 1180px;margin: 0 auto;display: flex;border-bottom: 1px dashed;height: 558px;">
+        <div style="padding: 70px 0;">
+          <div style="font-size: 24px;text-align: left;margin-bottom: 18px;">产品性能</div>
+          <div style="text-align: left;font-size: 26px;">Product</div>
+          <div style="text-align: left;font-size: 26px;">performance</div>
+        </div>
+        <div style="padding: 70px 0;">
+          <div>sdasdaf</div>
+          <div>
+            <ul>
+              <li>ssss</li>
+              <li>ssss</li>
+              <li>ssss</li>
+            </ul>
+          </div>
+        </div>
       </div>
-      <div style="height: 696px;">
-        <div></div>
+      <div style="width: 1180px;margin: 0 auto;display: flex;height: 696px;">
+        <div>
+          <div>产品性能</div>
+          <div>Productperformance</div>
+        </div>
+        <div>aaaadfasdf</div>
       </div>
     </div>
     <div style="height: 350px;width:100%;background:rgb(244,244,244);"></div>
@@ -48,6 +76,8 @@
 export default {
   data() {
     return {
+      valueArr: ['Product','parameter'],
+      okkk: ['PTFE针刺毡是采用PTFE(聚四氟乙烯纤维)经三维针刺而成的一种过滤材料。','PTFE纤维为大分子线性结构，','PTFE针刺毡因而具有极强的耐温、耐磨、耐腐、耐化学稳定性，','广泛适用于钢铁、电力、垃圾焚烧等各种恶劣的烟气过滤环境。']
     }
   },
   created() {
@@ -81,6 +111,7 @@ export default {
       }
     }
   }
+
   .productsCon {
     height: 622px;
 
@@ -90,6 +121,7 @@ export default {
       width: 1180px;
       position: relative;
     }
+
     .productsImg {
       display: inline-block;
       position: absolute;
@@ -101,6 +133,7 @@ export default {
         height: 380px;
       }
     }
+
     .productsBtn {
       height: 300px;
       background-image: url('./img/bg2.png');
