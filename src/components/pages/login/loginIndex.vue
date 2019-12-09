@@ -30,7 +30,7 @@
     </div>
     <el-form :model="ruleForm" ref="ruleForm" label-width="100px" class="demo-ruleForm">
       <div class="row" v-if="pageType === '1' || pageType === '2'">
-        <div class="phoneLogin" style="display: inline-block;width: 28vw;">
+        <div class="phoneLogin" style="display: inline-block;width: 100%;">
           <el-form-item
             style="margin-bottom:10px"
             class="marginLeft"
@@ -65,7 +65,7 @@
         </div>
       </div>
       <div class="row" v-if="pageType === '3'">
-        <div style="display: inline-block;width: 28vw;">
+        <div style="display: inline-block;width: 100%;">
           <el-form-item
             style="margin-bottom:10px"
             class="marginLeft"
@@ -81,7 +81,7 @@
         </div>
       </div>
       <div class="row" v-if="pageType === '1'">
-        <span style="width: 20vw;display: inline-block;">
+        <span style="width: 75%;display: inline-block;">
           <el-form-item
             style="margin-bottom:10px"
             prop="captcha"
@@ -390,7 +390,7 @@ export default {
 <style scoped lang="stylus">
 .loginArea-box {
   border-top: 2px solid #E5E5E5;
-  width: 28vw;
+  width: 538px;
   margin: auto;
 
   .loginArea {
