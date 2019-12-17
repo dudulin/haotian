@@ -28,7 +28,7 @@ export default {
       components,
       baseUrl,
       // componentType:'orderReview',
-      componentType:'productManagement', // debugger 开发中页面
+      componentType:'SalesmanManagement', // debugger 开发中页面
       asideArray: [
         { title: '订单总览' ,value:'orderReview'},
         { title: '客户管理' ,value:'customerManagement'},
