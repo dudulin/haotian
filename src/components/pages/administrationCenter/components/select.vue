@@ -1,7 +1,7 @@
 <template>
   <div style="display:inline-block;">
     <span class="myLabel">{{title}}</span>
-    <el-select style="font-weight:700;" v-model="value" class="hasLabel" clearable placeholder="请选择" @change="selectChange">
+    <el-select style="font-weight:700;" v-model="value1" class="hasLabel" clearable placeholder="请选择" @change="selectChange">
       <el-option v-for="item in selectData" :key="item.value" :label="item.label" :value="item.value" ></el-option>
     </el-select>
   </div>
@@ -11,6 +11,7 @@
 export default {
   data() {
     return {
+      value1:'0'
     }
   },
   props: {

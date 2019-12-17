@@ -56,7 +56,7 @@
     </el-table>
     <!-- 下 50px -->
     <div style="text-align: right;">
-      <el-button type="primary">确定</el-button>
+      <el-button type="primary" class="bigBtn" @click="btnClick">确定</el-button>
     </div>
   </div>
 </template>
@@ -144,12 +144,13 @@ export default {
         { label: '客户状态', prop: 'aa7' },
         { label: '最近电话回访', prop: 'aa8' },
         { label: '最近成交记录', prop: 'aa9' }
-      ]
-
+      ],
+      message1:'gn28881',
+      message2:'张三'
     }
   },
   created() {
-    console.log(JSON.stringify({ title: '销售员管理' ,value:'SalesmanManagement'}))
+    console.log(JSON.stringify({ title: '销售员管理', value: 'SalesmanManagement' }))
   },
   methods: {
     selectionChange(val) {
@@ -160,6 +161,22 @@ export default {
     },
     tableClick() {
       console.log(arguments)
+    },
+    btnClick() {
+      let content= `你添加了${this.message1}客户名称为 <span style="color:#3293D7">${this.message2}</span> 的客户 <p style="font-size:30px;line-height:50px;">是否确认添加？</p>`
+      this.$confirm(content, '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        dangerouslyUseHTMLString:true,
+        cancelButtonClass:'bigBtn',
+        confirmButtonClass:'bigBtn',
+        customClass:'width600',
+        center: true
+      }).then(() => {
+        
+      }).catch(() => {
+       
+      })
     }
   },
   computed: {},
@@ -177,13 +194,15 @@ export default {
 
   .myTable {
     background: transparent;
+
     .el-table__body-wrapper table {
       border-collapse: separate;
       border-spacing: 0 10px;
     }
-    thead tr,thead tr th{
-      background transparent;
-      border:none;
+
+    thead tr, thead tr th {
+      background: transparent;
+      border: none;
     }
 
     .el-checkbox__inner {
@@ -204,9 +223,11 @@ export default {
   .radioStyle {
     font-size: 18px;
     line-height: 40px;
-    .el-radio__label{
-      font-size 18px
+
+    .el-radio__label {
+      font-size: 18px;
     }
+
     .el-radio__inner {
       width: 25px;
       height: 25px;
@@ -228,5 +249,12 @@ export default {
       min-width: 30px;
     }
   }
+}
+.bigBtn{
+  width 158px
+  height 55px
+}
+.width600{
+  width 600px
 }
 </style>
