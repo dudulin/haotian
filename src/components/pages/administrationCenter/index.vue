@@ -44,9 +44,9 @@ export default {
     };
   },
   created() {
-    axios.get("/auth/v1/countries").then(res => {
-      this.country = res.data;
-    });
+    // axios.get("/auth/v1/countries").then(res => {
+    //   this.country = res.data;
+    // });
   },
   methods: {
     getPage(value) {

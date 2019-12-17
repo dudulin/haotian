@@ -14,7 +14,7 @@
       </ul>
     </el-aside>
     <el-main style="padding:30px 80px;">
-      <component :is="components[componentType]"></component>
+      <component :is="components[componentType]" :callBack="getPage"></component>
     </el-main>
   </el-container>
 </template>
@@ -27,8 +27,7 @@ export default {
     return {
       components,
       baseUrl,
-      // componentType:'orderReview',
-      componentType:'SalesmanManagement', // debugger 开发中页面
+      componentType:'detail1', // debugger 开发中页面
       asideArray: [
         { title: '订单总览' ,value:'orderReview'},
         { title: '客户管理' ,value:'customerManagement'},
@@ -40,7 +39,6 @@ export default {
     }
   },
   created() {
-    console.log(this.baseUrl,11111111111)
   },
   methods: {
    getPage(value){
