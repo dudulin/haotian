@@ -68,9 +68,16 @@
           <div style="text-align: left;font-size: 26px;">Specification</div>
           <div style="text-align: left;font-size: 26px;">table</div>
         </div>
-        <div style="width: 60%;padding: 70px 0;text-align: left;font-size: 16px;color: #000000;">
-          <div v-for="item in okkk" :key="item">
-            <div>{{item}}</div>
+        <div style="width: 60%;padding: 70px 0;">
+          <div style="width: 100%;">
+            <div v-for="(item, index) in stDiv" :key="index.toString()">
+              <div style="display: inline-block;width: 20%;float: left;margin-bottom: 20px;">
+                <img :src="item.img" alt="">
+                <div style="margin-top: 20px;">{{item.label}}</div>
+                <div style="margin-top: 10px;margin-bottom: 20px;">{{item.value}}</div>
+                <img src="./img/line.png" alt="">
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -97,7 +104,40 @@ export default {
       ultext: ['持续工作温度250度以上，瞬间温度280度。',
         '完全不怕酸碱和氧化，几乎不可燃。',
         '唯一不会老化的纤维。',
-        '满足最恶劣的工况，具有极长的使用寿命，通常使用寿命在4年以上。']
+        '满足最恶劣的工况，具有极长的使用寿命，通常使用寿命在4年以上。'],
+      stDiv: [{
+        img: './img/SJ.png',
+        label: '材质',
+        value: '100%PTFE'
+      }, {
+        img: './img/YL.png',
+        label: '克重(g/m2)',
+        value: '800'
+      }, {
+        img: './img/FK.png',
+        label: '厚度(mm)',
+        value: '1.0~1.5'
+      }, {
+        img: './img/YX.png',
+        label: '透气率(L/m/S)',
+        value: '30~60'
+      }, {
+        img: './img/AX.png',
+        label: '材质',
+        value: '100%PTFE'
+      }, {
+        img: './img/AX.png',
+        label: '材质',
+        value: '100%PTFE'
+      }, {
+        img: './img/AX.png',
+        label: '材质',
+        value: '100%PTFE'
+      }, {
+        img: './img/AX.png',
+        label: '材质',
+        value: '100%PTFE'
+      }]
     }
   },
   created() {
