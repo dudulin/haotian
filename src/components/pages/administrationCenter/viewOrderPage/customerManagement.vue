@@ -290,19 +290,31 @@ export default {
     }
   }
 }
+.colorBlue{
+  color:#0C7FD0
+}
+.box1 {
+  min-height: 90px;
+  border-bottom: 1px solid #ddd;
+  padding: 20px 5%;
+  >div{
+    border:1px dashed #824
+  }
+}
+.box1:nth-of-type(2){
+  padding: 20px 0;
+}
 
 .testUl {
-  padding: 20px 0;
   overflow: hidden;
-
+  display flex;
   li {
-    float: left;
-    width: 450px;
+    flex-grow:1
     height: 110px;
     border-right: 1px dashed #ddd;
     position: relative;
 
-    div {
+    >div {
       position: absolute;
       width: 180px;
       left: 50%;
@@ -316,15 +328,17 @@ export default {
 
       span {
         color: #B0B0B0;
-        i{
-          margin-left 8px
-          opacity:0
+
+        i {
+          margin-left: 8px;
+          opacity: 0;
           cursor: pointer;
         }
       }
-      span:hover{
-        i{
-          opacity:1
+
+      span:hover {
+        i {
+          opacity: 1;
         }
       }
 
@@ -374,6 +388,21 @@ export default {
 
   li:last-of-type {
     border: none;
+  }
+}
+
+.tableStyl1 {
+  height: 100%;
+  flex-grow:1
+  margin: 0 70px
+  td{
+    vertical-align:middle;
+    padding    2px
+  }
+  tr:first-of-type {
+    td {
+      border-bottom: 1px dashed #824;
+    }
   }
 }
 </style>

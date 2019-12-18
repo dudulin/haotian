@@ -10,10 +10,10 @@
     </div>
     <!-- 中 自适应 -->
     <div style="background:#fff;flex-grow:1;">
-      <div style="min-height:90px;border-bottom:1px solid #ddd;">
-        <h1>我们已经听到了你的需求!</h1>
-        <h5>客户代表将在24小时之内给你回复</h5>
-        <div style="margin-left:200px;margin-right:200px;">
+      <div class="box1">
+        <div style="padding:0 50px;">
+          <h1 style="font-size:35px;font-weight:400;line-height:75px;">我们已经听到了你的需求!</h1>
+          <h5 style="margin-bottom:20px;">客户代表将在<span class="colorBlue">24小时</span>之内给你回复</h5>
           <el-steps :active="0" align-center class="myStep">
             <el-step title="询盘" class="active" description="2019-09-04 16:23:56"></el-step>
             <el-step title="成交" description></el-step>
@@ -24,63 +24,83 @@
           </el-steps>
         </div>
       </div>
-      <div style="min-height:90px;border-bottom:1px solid #ddd;">
-        <ul class="testUl">
-          <li>
-            <div>
-              <p>
-                <b>绍辉</b>
-                <span class="style1">客户代表</span>
-              </p>
-              <p>
-                <span>电话</span>15672900012
-              </p>
-              <p>
-                <span>邮箱</span>SH@hotian.com
-              </p>
-            </div>
-          </li>
-          <li>
-            <div>
-              <p>
-                <span>客户</span>
-                <span >恒大大</span>
-              </p>
-              <p>
-                <span>电话</span>18292992992
-              </p>
-              <p class="style3">
-                查看客户详情
-                <i class="el-icon-arrow-right"></i>
-              </p>
-            </div>
-          </li>
-          <li>
-            <div>
-              <p>
-                <span>客户</span>
-                <span >恒大大<i class="el-icon-edit"></i></span> 
-              </p>
-              <p>
-                <span>电话</span>18292992992
-              </p>
-              <p class="style3">
-                查看客户详情
-                <i class="el-icon-arrow-right"></i>
-              </p>
-            </div>
-          </li>
-        </ul>
+      <div class="box1">
+        <div>
+          <ul class="testUl">
+            <li>
+              <div>
+                <p>
+                  <b>绍辉</b>
+                  <span class="style1">客户代表</span>
+                </p>
+                <p>
+                  <span>电话</span>15672900012
+                </p>
+                <p>
+                  <span>邮箱</span>SH@hotian.com
+                </p>
+              </div>
+            </li>
+            <li>
+              <div>
+                <p>
+                  <span>客户</span>
+                  <span>恒大大</span>
+                </p>
+                <p>
+                  <span>电话</span>18292992992
+                </p>
+                <p class="style3">
+                  查看客户详情
+                  <i class="el-icon-arrow-right"></i>
+                </p>
+              </div>
+            </li>
+            <li>
+              <div>
+                <p>
+                  <span>客户</span>
+                  <span>
+                    恒大大
+                    <i class="el-icon-edit"></i>
+                  </span>
+                </p>
+                <p>
+                  <span>电话</span>18292992992
+                </p>
+                <p class="style3">
+                  查看客户详情
+                  <i class="el-icon-arrow-right"></i>
+                </p>
+              </div>
+            </li>
+          </ul>
+        </div>
       </div>
-      <div style="min-height:90px;border-bottom:1px solid #ddd;">
-         <div style="margin-left:140px;border:1px solid #ddd;min-height:90px;text-align:left;">
-           <h1 style="font-size:26px;font-weight:400;">订单详情</h1>
-           <div style="background:#eee;min-height:44px;">
-             <img src="../img/1.png" alt="" style="width:80px;height:80px;">
-           </div>
-         </div>
+      <div class="box1">
+        <div>
+          <h1 style="font-size:26px;font-weight:400;">订单详情</h1>
+          <div style="background:#eee;height:80px;display: flex;justify-content:space-between">
+            <img src="../img/1.png" alt style="width:80px;height:100%;" />
+            <table class="tableStyl1">
+              <tr>
+                <td>1</td>
+                <td>2</td>
+                <td>3</td>
+                <td>4</td>
+              </tr>
+              <tr>
+                <td>1</td>
+                <td>2</td>
+                <td>3</td>
+                <td>4</td>
+              </tr>
+            </table>
+          </div>
+        </div>
       </div>
-      <div style="min-height:90px;border-bottom:1px solid #ddd;">
+      <div class="box1">
+        <div></div>
       </div>
     </div>
   </div>
@@ -119,7 +139,9 @@ export default {
       })
     }
   },
-  computed: {},
+  computed: {
+
+  },
   components: {
   }
 }
