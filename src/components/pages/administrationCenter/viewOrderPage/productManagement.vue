@@ -1,6 +1,158 @@
 
 <template>
-  <div>
-    <h1>{ title: '产品管理' ,value:'productManagement'}</h1>
+  <div class="bigBox">
+    <!-- 上 50px -->
+    <div class="box">
+      <div class="item">
+        <el-radio-group v-model="radio" class="radioStyle">
+          <el-radio :label="1">无显示</el-radio>
+          <el-radio :label="2">滤布</el-radio>
+        </el-radio-group>
+      </div>
+      <div class="item">
+        <my-select title="隶属模块" :selectData="selectData1" :selectChange="selectChange" :value="selectValue1" style="margin-right:20px;"></my-select>
+        <my-select title="产品子类" :selectData="selectData2" :selectChange="selectChange" :value="selectValue2" style="margin-right:20px;"></my-select>
+      </div>
+    </div>
+    <!-- 中 自适应 -->
+    <el-table class="myTable" ref="multipleTable" :data="tableData" tooltip-effect="dark" style="width: 100%;flex-grow:1;" @selection-change="selectionChange">
+      <el-table-column type="selection" width="55"></el-table-column>
+      <el-table-column prop="aa1" label="产品编号">
+      </el-table-column>
+      <el-table-column prop="aa2" label="产品名称">
+      </el-table-column>
+      <el-table-column prop="aa3" label="产品规格">
+      </el-table-column>
+      <el-table-column prop="aa4" label="隶属模块">
+      </el-table-column>
+      <el-table-column prop="aa5" label="产品子类">
+      </el-table-column>
+      <el-table-column label="产品图片">
+        <template>
+          <img src="./../img/1.png" style="width: 60px;" alt="">
+        </template>
+      </el-table-column>
+      <el-table-column prop="aa7" label="变更时间">
+      </el-table-column>
+      <el-table-column label="操作">
+        <template slot-scope="scope">
+          <el-button size="medium" type="primary" @click="tableClick(scope.$index, scope.row)">查看详情</el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+    <!-- 下 50px -->
+    <div style="text-align: right;">
+      <el-button icon="el-icon-delete" class="bigBtn" @click="btnClick" style="width: 60px;height: 50px;"></el-button>
+      <el-button icon="el-icon-circle-plus-outline" class="bigBtn" @click="btnClick" style="width: 60px;height: 50px;"></el-button>
+    </div>
   </div>
 </template>
+
+
+<script>
+import mySelect from '../components/select'
+export default {
+  data() {
+    return {
+      radio: 1,
+      tableData: [
+        {
+          aa1: 'aa1',
+          aa2: 'aa2',
+          aa3: 'aa3',
+          aa4: 'aa4',
+          aa5: 'aa5',
+          aa6: 'aa6',
+          aa7: 'aa7'
+        },
+        {
+          aa1: 'aa1',
+          aa2: 'aa2',
+          aa3: 'aa3',
+          aa4: 'aa4',
+          aa5: 'aa5',
+          aa6: 'aa6',
+          aa7: 'aa7'
+        },
+        {
+          aa1: 'aa1',
+          aa2: 'aa2',
+          aa3: 'aa3',
+          aa4: 'aa4',
+          aa5: 'aa5',
+          aa6: 'aa6',
+          aa7: 'aa7'
+        }
+      ],
+      tableSelectData: [],
+      selectData1: [
+        {
+          value: '0',
+          label: '27'
+        }, {
+          value: '',
+          label: 'label'
+        }
+      ],
+      selectData2: [
+        {
+          value: '0',
+          label: '未成交'
+        }, {
+          value: '1',
+          label: '未投标'
+        }, {
+          value: '2',
+          label: '已经中标'
+        }, {
+          value: '3',
+          label: '已经成交'
+        }, {
+          value: '4',
+          label: '流失客户'
+        }
+      ],
+      selectValue1: '0',
+      selectValue2: '0',
+      message1: 'gn28881',
+      message2: '张三'
+    }
+  },
+  created() {
+    console.log(JSON.stringify({ title: '销售员管理', value: 'SalesmanManagement' }))
+  },
+  methods: {
+    selectionChange(val) {
+      this.tableSelectData = val;
+    },
+    selectChange(value) {
+      this.selectValue1 = value
+    },
+    tableClick() {
+      console.log(arguments)
+    },
+    btnClick() {
+      let content = `你添加了${this.message1}客户名称为 <span style="color:#3293D7">${this.message2}</span> 的客户 <p style="font-size:30px;line-height:50px;">是否确认添加？</p>`
+      this.$confirm(content, '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        dangerouslyUseHTMLString: true,
+        cancelButtonClass: 'bigBtn',
+        confirmButtonClass: 'bigBtn',
+        customClass: 'width300',
+        center: true
+      }).then(() => {
+
+      }).catch(() => {
+
+      })
+    }
+  },
+  computed: {},
+  components: {
+    mySelect
+  }
+}
+</script>
+<style lang="stylus">
+</style>
