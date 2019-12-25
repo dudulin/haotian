@@ -28,15 +28,15 @@
       <el-table-column prop="aa5" label="产品子类">
       </el-table-column>
       <el-table-column label="产品图片">
-        <template>
-          <img src="./../img/1.png" style="width: 60px;" alt="">
+        <template slot-scope="scope">
+          <img src="./img/pic5.png" style="width: 60px;" alt="">
         </template>
       </el-table-column>
       <el-table-column prop="aa7" label="变更时间">
       </el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
-          <el-button size="medium" type="primary" @click="tableClick(scope.$index, scope.row)">查看详情</el-button>
+          <el-button size="medium" type="primary" @click="showDetail(scope.$index, scope.row)">查看详情</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -45,6 +45,48 @@
       <el-button icon="el-icon-delete" class="bigBtn" @click="btnClick" style="width: 60px;height: 50px;"></el-button>
       <el-button icon="el-icon-circle-plus-outline" class="bigBtn" @click="btnClick" style="width: 60px;height: 50px;"></el-button>
     </div>
+    <el-dialog title="收货地址" :visible.sync="dialogFormVisible" style="text-align: left;">
+      <el-form ref="form" :model="sizeForm" label-width="80px">
+        <div><span>aa</span>22222</div>
+        <el-form-item label="活动名称">
+          <el-input v-model="sizeForm.name"></el-input>
+        </el-form-item>
+        <el-form-item label="活动名称">
+          <el-input v-model="sizeForm.name"></el-input>
+        </el-form-item>
+        <el-form-item label="活动区域">
+          <el-select v-model="sizeForm.region" placeholder="请选择活动区域" style="width: 200px;margin-right: 50px;">
+            <el-option label="区域一" value="shanghai"></el-option>
+            <el-option label="区域二" value="beijing"></el-option>
+          </el-select>
+          <el-input v-model="sizeForm.name" style="width: 480px;margin-right: 50px;"></el-input>
+          <el-button type="primary" @click="onSubmit">立即创建</el-button>
+        </el-form-item>
+        <el-form-item label="活动区域">
+          <el-select v-model="sizeForm.region" placeholder="请选择活动区域" style="width: 200px;margin-right: 50px;">
+            <el-option label="区域一" value="shanghai"></el-option>
+            <el-option label="区域二" value="beijing"></el-option>
+          </el-select>
+          <el-input v-model="sizeForm.name" style="width: 480px;margin-right: 50px;"></el-input>
+          <el-button type="primary" @click="onSubmit">立即创建</el-button>
+        </el-form-item>
+        <el-form-item label="活动区域">
+          <el-select v-model="sizeForm.region" placeholder="请选择活动区域" style="width: 200px;margin-right: 50px;">
+            <el-option label="区域一" value="shanghai"></el-option>
+            <el-option label="区域二" value="beijing"></el-option>
+          </el-select>
+          <el-input v-model="sizeForm.name" style="width: 480px;margin-right: 50px;"></el-input>
+          <el-button type="primary" @click="onSubmit">立即创建</el-button>
+        </el-form-item>
+        <el-form-item label="特殊资源">
+          <el-input type="textarea" v-model="sizeForm.resource"></el-input>
+        </el-form-item>
+        <el-form-item size="large">
+          <el-button type="primary" @click="onSubmit">立即创建</el-button>
+          <el-button>取消</el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
   </div>
 </template>
 
@@ -54,6 +96,17 @@ import mySelect from '../components/select'
 export default {
   data() {
     return {
+      sizeForm: {
+          name: '',
+          region: '',
+          date1: '',
+          date2: '',
+          delivery: false,
+          type: [],
+          resource: '',
+          desc: ''
+        },
+      dialogFormVisible: false,
       radio: 1,
       tableData: [
         {
@@ -122,14 +175,17 @@ export default {
     console.log(JSON.stringify({ title: '销售员管理', value: 'SalesmanManagement' }))
   },
   methods: {
+     onSubmit() {
+        console.log('submit!');
+      },
     selectionChange(val) {
       this.tableSelectData = val;
     },
     selectChange(value) {
       this.selectValue1 = value
     },
-    tableClick() {
-      console.log(arguments)
+    showDetail() {
+      this.dialogFormVisible = true
     },
     btnClick() {
       let content = `你添加了${this.message1}客户名称为 <span style="color:#3293D7">${this.message2}</span> 的客户 <p style="font-size:30px;line-height:50px;">是否确认添加？</p>`
@@ -155,4 +211,7 @@ export default {
 }
 </script>
 <style lang="stylus">
+.bigBox .el-dialog {
+  width: 1000px;
+}
 </style>
