@@ -78,29 +78,40 @@
         </div>
       </div>
       <div class="box1">
-        <div>
-          <h1 style="font-size:26px;font-weight:400;">订单详情</h1>
-          <div style="background:#eee;height:80px;display: flex;justify-content:space-between">
+        <div style="padding:0 5%;">
+          <h1 style="font-size:26px;font-weight:400;text-align:left;">订单详情</h1>
+          <div style="display: flex;justify-content:space-between">
             <img src="../img/1.png" alt style="width:80px;height:100%;" />
             <table class="tableStyl1">
-              <tr>
-                <td>1</td>
-                <td>2</td>
-                <td>3</td>
-                <td>4</td>
+              <tr class="colorGray">
+                <td>产品名称</td>
+                <td>产品型号</td>
+                <td>产品数量</td>
+                <td>产品类型</td>
               </tr>
               <tr>
-                <td>1</td>
-                <td>2</td>
-                <td>3</td>
-                <td>4</td>
+                <td>除尘大化500G</td>
+                <td>2.15米</td>
+                <td>2000米</td>
+                <td>布料</td>
               </tr>
             </table>
           </div>
         </div>
       </div>
       <div class="box1">
-        <div></div>
+        <div style="padding:0 5%;">
+          <h1 style="font-size:26px;font-weight:400;text-align:left;">收货地址</h1>
+          <div style="display: flex;justify-content:space-between">
+            <ul class="ulStyle2">
+              <li><span >收件人</span>柠檬</li>
+              <li><span >联系电话</span>备注</li>
+              <li><span >配送地址</span>吉林省白城市镇赉县长江路, 10021</li>
+              <li class="colorBlue"><span >备注 <sup >*</sup></span>这里单子比较急，请优先排单生产 </li>
+            </ul>
+            
+          </div>
+        </div>
       </div>
     </div>
   </div>

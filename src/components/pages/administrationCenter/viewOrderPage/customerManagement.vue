@@ -293,6 +293,23 @@ export default {
 .colorBlue{
   color:#0C7FD0
 }
+.colorGray{
+  color:#9F9F9F
+}
+.ulStyle2{
+  text-align: left;
+  line-height: 40px;
+  span{
+    color:#9F9F9F
+    width: 180px;
+    display: inline-block;
+    sup{
+      color:red;
+      font-weight 700
+      font-size 20px
+    }
+  }
+}
 .box1 {
   min-height: 90px;
   border-bottom: 1px solid #ddd;
