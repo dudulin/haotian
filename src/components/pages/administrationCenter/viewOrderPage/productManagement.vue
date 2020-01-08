@@ -29,7 +29,7 @@
       </el-table-column>
       <el-table-column label="产品图片">
         <template slot-scope="scope">
-          <img src="./img/pic5.png" style="width: 60px;" alt="">
+          <img src="../img/1.png" style="width: 60px;" alt="">
         </template>
       </el-table-column>
       <el-table-column prop="aa7" label="变更时间">
@@ -43,47 +43,61 @@
     <!-- 下 50px -->
     <div style="text-align: right;">
       <el-button icon="el-icon-delete" class="bigBtn" @click="btnClick" style="width: 60px;height: 50px;"></el-button>
-      <el-button icon="el-icon-circle-plus-outline" class="bigBtn" @click="btnClick" style="width: 60px;height: 50px;"></el-button>
+      <el-button icon="el-icon-circle-plus-outline" class="bigBtn" @click="showDetail" style="width: 60px;height: 50px;"></el-button>
     </div>
-    <el-dialog title="收货地址" :visible.sync="dialogFormVisible" style="text-align: left;">
-      <el-form ref="form" :model="sizeForm" label-width="80px">
-        <div><span>aa</span>22222</div>
-        <el-form-item label="活动名称">
-          <el-input v-model="sizeForm.name"></el-input>
+    <el-dialog title="收货地址" :visible.sync="dialogFormVisible" style="text-align: left;" :close-on-press-escape="false" :close-on-click-modal="false">
+      <el-form ref="form" :model="productManage" label-width="80px">
+        <div style="height: 40px;margin-bottom: 22px;line-height: 40px;">
+          <span style="font-size: 14px;width: 71px;display: inline-block;padding-left: 11px;">商品编号:</span>22222</div>
+        <el-form-item label="商品名称:">
+          <el-input v-model="productManage.productName"></el-input>
         </el-form-item>
-        <el-form-item label="活动名称">
-          <el-input v-model="sizeForm.name"></el-input>
+        <el-form-item label="商品规格:">
+          <el-input v-model="productManage.productNorms"></el-input>
         </el-form-item>
-        <el-form-item label="活动区域">
-          <el-select v-model="sizeForm.region" placeholder="请选择活动区域" style="width: 200px;margin-right: 50px;">
-            <el-option label="区域一" value="shanghai"></el-option>
-            <el-option label="区域二" value="beijing"></el-option>
-          </el-select>
-          <el-input v-model="sizeForm.name" style="width: 480px;margin-right: 50px;"></el-input>
-          <el-button type="primary" @click="onSubmit">立即创建</el-button>
+        <el-form-item label="隶属模块:">
+          <div v-for="(item, index) in productManage.modular" :key="index.toString()" style="margin-bottom: 15px;">
+            <el-select v-model="item.modularSelect" placeholder="请选择隶属模块" style="width: 150px;margin-right: 40px;">
+              <el-option label="区域一" value="shanghai"></el-option>
+              <el-option label="区域二" value="beijing"></el-option>
+            </el-select>
+            <el-input v-model="item.modularInput" style="width: 480px;margin-right: 40px;"></el-input>
+            <el-button type="primary" @click="addModular">新增</el-button>
+          </div>
         </el-form-item>
-        <el-form-item label="活动区域">
-          <el-select v-model="sizeForm.region" placeholder="请选择活动区域" style="width: 200px;margin-right: 50px;">
-            <el-option label="区域一" value="shanghai"></el-option>
-            <el-option label="区域二" value="beijing"></el-option>
-          </el-select>
-          <el-input v-model="sizeForm.name" style="width: 480px;margin-right: 50px;"></el-input>
-          <el-button type="primary" @click="onSubmit">立即创建</el-button>
+        <el-form-item label="隶属子类:">
+          <div v-for="(item, index) in productManage.children" :key="index.toString()" style="margin-bottom: 15px;">
+            <el-select v-model="item.childrenSelect" placeholder="请选择隶属子级" style="width: 150px;margin-right: 40px;">
+              <el-option label="区域一" value="shanghai"></el-option>
+              <el-option label="区域二" value="beijing"></el-option>
+            </el-select>
+            <el-input v-model="item.childrenInput" style="width: 480px;margin-right: 40px;"></el-input>
+            <el-button type="primary" @click="addChildren">新增</el-button>
+          </div>
         </el-form-item>
-        <el-form-item label="活动区域">
-          <el-select v-model="sizeForm.region" placeholder="请选择活动区域" style="width: 200px;margin-right: 50px;">
-            <el-option label="区域一" value="shanghai"></el-option>
-            <el-option label="区域二" value="beijing"></el-option>
-          </el-select>
-          <el-input v-model="sizeForm.name" style="width: 480px;margin-right: 50px;"></el-input>
-          <el-button type="primary" @click="onSubmit">立即创建</el-button>
+        <el-form-item label="所属行业:">
+          <div v-for="(item, index) in productManage.industry" :key="index.toString()" style="margin-bottom: 15px;">
+            <el-select v-model="item.industrySelect" placeholder="请选择隶属子级" style="width: 150px;margin-right: 40px;">
+              <el-option label="区域一" value="shanghai"></el-option>
+              <el-option label="区域二" value="beijing"></el-option>
+            </el-select>
+            <el-input v-model="item.industryInput" style="width: 480px;margin-right: 40px;"></el-input>
+            <el-button type="primary" @click="addIndustry">新增</el-button>
+          </div>
         </el-form-item>
-        <el-form-item label="特殊资源">
-          <el-input type="textarea" v-model="sizeForm.resource"></el-input>
+        <el-form-item label="产品图片:">
+          <el-upload class="upload-demo" action="https://jsonplaceholder.typicode.com/posts/" :on-preview="handlePictureCardPreview" :on-remove="handleRemove" :file-list="fileList" list-type="picture">
+            <el-button size="small" type="primary">点击上传</el-button>
+          </el-upload>
+          <el-dialog :visible.sync="showImg" append-to-body>
+            <img width="100%" :src="dialogImageUrl" alt="">
+          </el-dialog>
         </el-form-item>
-        <el-form-item size="large">
-          <el-button type="primary" @click="onSubmit">立即创建</el-button>
-          <el-button>取消</el-button>
+        <el-form-item label="产品描述:">
+          <el-input type="textarea" :rows="2" :cols="70" v-model="productManage.describe"></el-input>
+        </el-form-item>
+        <el-form-item size="large" style="text-align: right;">
+          <el-button type="primary" @click="onSubmit">确认</el-button>
         </el-form-item>
       </el-form>
     </el-dialog>
@@ -96,16 +110,27 @@ import mySelect from '../components/select'
 export default {
   data() {
     return {
-      sizeForm: {
-          name: '',
-          region: '',
-          date1: '',
-          date2: '',
-          delivery: false,
-          type: [],
-          resource: '',
-          desc: ''
-        },
+      productManage: {
+        productName: '',
+        productNorms: '',
+        modular: [{
+          modularSelect: '',
+          modularInput: ''
+        }],
+        children: [{
+          childrenSelect: '',
+          childrenInput: ''
+        }],
+        industry: [{
+          industrySelect: '',
+          industryInput: ''
+        }],
+        describe: ''
+      },
+      fileList: [],
+      dialogImageUrl: '',
+      showImg: false,
+      disabled: false,
       dialogFormVisible: false,
       radio: 1,
       tableData: [
@@ -175,16 +200,64 @@ export default {
     console.log(JSON.stringify({ title: '销售员管理', value: 'SalesmanManagement' }))
   },
   methods: {
-     onSubmit() {
-        console.log('submit!');
-      },
+    addModular() {
+      this.productManage.modular.push({
+        modularSelect: '',
+        modularInput: ''
+      })
+    },
+    addChildren() {
+      this.productManage.children.push({
+        childrenSelect: '',
+        childrenInput: ''
+      })
+    },
+    addIndustry() {
+      this.productManage.industry.push({
+        industrySelect: '',
+        industryInput: ''
+      })
+    },
+    handleRemove(file, fileList) {
+      console.log(file, fileList);
+    },
+    handlePictureCardPreview(file) {
+      this.dialogImageUrl = file.url;
+      this.showImg = true;
+    },
+    handleDownload(file) {
+      console.log(file);
+    },
+    onSubmit() {
+      debugger
+      console.log(this.productManage);
+    },
     selectionChange(val) {
       this.tableSelectData = val;
     },
     selectChange(value) {
       this.selectValue1 = value
     },
-    showDetail() {
+    showDetail(index, row) {
+      if (row) {
+        this.productManage = {
+          productName: row.aa1,
+          productNorms: row.aa2,
+          modular: [{
+            modularSelect: '',
+            modularInput: row.aa3
+          }],
+          children: [{
+            childrenSelect: '',
+            childrenInput: row.aa4
+          }],
+          industry: [{
+            industrySelect: '',
+            industryInput: row.aa5
+          }],
+          describe: row.aa6
+        }
+      }
       this.dialogFormVisible = true
     },
     btnClick() {
@@ -211,7 +284,8 @@ export default {
 }
 </script>
 <style lang="stylus">
+
 .bigBox .el-dialog {
-  width: 1000px;
+  width: 900px;
 }
 </style>

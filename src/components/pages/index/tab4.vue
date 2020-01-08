@@ -22,7 +22,9 @@
 			</div>
 		</div>
 		<div class="right">
-
+			<div class="img">
+				<img src="./img/bg7.png" alt="" style="display: inline-block;height: 100%;max-width: 100%;">
+			</div>
 		</div>
 	</div>
 </div>
@@ -103,7 +105,7 @@ export default {
     .left
       width: 620px
       height: 100%
-      margin: 10vh 80px
+      margin: 10vh 0px 10vh 80px;
       padding-bottom: 70px
       box-sizing: border-box
       .text
@@ -155,5 +157,8 @@ export default {
       overflow: hidden
       flex: 1
       margin-left: 30px
-      background: url('./img/bg7.png')
+			.img {
+				// background: url('./img/bg7.png')
+			}
+      
 </style>

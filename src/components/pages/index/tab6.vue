@@ -32,7 +32,7 @@
 			</div>
 		</div>
   </div>
-	<div style="height: 350px;width:100%;background:#fff;position:absolute;bottom: 0;">
+	<div style="height: 230px;width:100%;background:#fff;position:absolute;bottom: 0;">
 		<footer-plus theme="white" />
 	</div>
 </div>
@@ -55,7 +55,6 @@ export default {
     width: 100%;
     height: 100%
     background: url('./img/bg10.png')
-    display: flex
     flex-direction: column
     .box
       width: 100%

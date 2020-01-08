@@ -100,17 +100,17 @@ export default {
 <style lang="stylus">
   #footer-plus
     width: 100%
-    height: 350px
+    height: 210px
     position: absolute
     bottom: 0
     left: 0
     right: 0
     .content
-      height: 290px
+      // height: 290px
       width: 100%
-      padding: 60px 80px 0
+      padding: 00px 80px 0
       box-sizing: border-box
-      display: flex
+      // display: flex
       justify-content: space-between
       align-items: center
       .left
