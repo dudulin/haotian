@@ -27,15 +27,16 @@
 		</div>
 		<div class="right">
 			<div class="item" :style="'background-image: url('+bg1+')'">
+        <div class="backgroundAAA" style="position: absolute;width: 220px;height: 440px;cursor: pointer;"></div>
 				<span class="num">01</span>
 				<span class="cn">除尘流程设计</span>
 				<span class="en">Dust removal<br /> process design</span>
 			</div>
 			<div class="item" style="margin-top: 55px;">
-
+        <div class="backgroundAAA" style="position: absolute;width: 220px;height: 440px;cursor: pointer;"></div>
 			</div>
 			<div class="item" :style="'background-image: url('+bg2+')'">
-
+        <div class="backgroundAAA" style="position: absolute;width: 220px;height: 440px;cursor: pointer;"></div>
 			</div>
 		</div>
 	</div>
@@ -122,7 +123,9 @@ export default {
         float: left
         width: 220px
         height: 440px
-        background-image: url('./img/bg3.png')
+        background-image: url('./img/bg3.png')        
+        .backgroundAAA:hover
+          background: rgba(3, 169, 244, 0.45);
         span
           display: block
         .num

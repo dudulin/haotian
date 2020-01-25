@@ -21,7 +21,7 @@
           </select>
           <span style="display: flex;" v-if="searchIn === 'phone'">
             <span class="num86" @click="showRegionChoice" style="cursor: pointer;">
-              <span class="text">+ 86</span>
+              <span class="text">+ {{regionChoiceData.countryCodeClick}}</span>
             </span>
             <el-input v-model="input" placeholder="请输入手机号码" clearable></el-input>
             <el-button type="primary">查询</el-button>
@@ -43,84 +43,29 @@
         </swiper-slide>
       </swiper>
     </div>
-    <div
-      style="width: 100%;
-    height: 100%;
-    position: absolute;
-    background: rgba(0,0,0,0.5);
-    z-index: 2000;"
-      v-if="dialogVisible"
-    >
-      <div
-        style="position: relative;
-    background: #fff;
-    width: 70%;
-    margin: auto;
-    top: 50%;
-    height: 600px;
-    margin-top: -300px;"
-      >
-        <div
-          style="width: 52px;
-    display: inline-block;
-    float: right;
-    margin-right: 11px;"
-        >
-          <el-button
-            type="text"
-            icon="el-icon-close"
-            style="color: #303133;font-size: 25px;"
-            @click="dialogVisible = false"
-          ></el-button>
+    <div class="popPageBackground" v-if="dialogVisible">
+      <div class="popPageContent">
+        <div class="popPageOffCon">
+          <el-button type="text" icon="el-icon-close" style="color: #303133;font-size: 25px;" @click="offPage"></el-button>
         </div>
-        <div
-          style="height: 80px;
-    line-height: 80px;
-    font-size: 30px;
-    padding-left: 80px;border-bottom: 2px solid #e1e1e1;"
-        >选择地区</div>
-        <div class="regionChoiceInput">
-          <el-input
-            placeholder="请输入关键字"
-            suffix-icon="el-icon-search"
-            v-model="regionChoiceVal"
-            @change="regionChoiceSearch"
-          ></el-input>
+        <div class="popPageTitle">选择地区</div>
+        <div class="popPageInput">
+          <el-input placeholder="请输入关键字" suffix-icon="el-icon-search" v-model="regionChoiceVal" @change="regionChoiceSearch"></el-input>
         </div>
         <div class="regionChoiceABC">
-          <span
-            class="ABC"
-            @click="setABC('special')"
-            :class="activeABC === 'special' ? 'isActive' : ''"
-          >
+          <span class="ABC" @click="setABC('special')" :class="activeABC === 'special' ? 'isActive' : ''">
             <i class="el-icon-star-on"></i>
           </span>
-          <span
-            class="ABC"
-            @click="setABC(item)"
-            v-for="item in ABCarr"
-            :class="activeABC === item ? 'isActive' : ''"
-            :key="item"
-          >{{item}}</span>
+          <span class="ABC" @click="setABC(item)" v-for="item in ABCarr" :class="activeABC === item ? 'isActive' : ''" :key="item">{{item}}</span>
         </div>
         <div class="regionChoiceClick" v-if="activeABC === 'special'">
-          <div
-            class="clickDiv"
-            v-for="item in majorCountry"
-            :key="item.zh"
-            @click="clickCountry(item)"
-          >
+          <div class="clickDiv" v-for="item in majorCountry" :key="item.zh" @click="clickCountry(item)">
             <span class="countryZh">{{item.name}}</span>
             <span class="countryCode">+{{item.code}}</span>
           </div>
         </div>
         <div class="regionChoiceClick" v-if="activeABC !== 'special'">
-          <div
-            class="clickDiv"
-            v-for="item in countryABC"
-            :key="item.zh"
-            @click="clickCountry(item)"
-          >
+          <div class="clickDiv" v-for="item in countryABC" :key="item.zh" @click="clickCountry(item)">
             <span class="countryZh">{{item.zh}}</span>
             <span class="countryCode">+{{item.code}}</span>
           </div>
@@ -229,6 +174,15 @@ export default {
     });
   },
   methods: {
+    clickCountry(item) {
+      // 选中国家
+      this.regionChoiceData = {
+        countryZhClick: item.zh,
+        countryCodeClick: item.code
+      }
+      this.$emit("mousewheelFuc", "false");
+      this.dialogVisible = false
+    },
     regionChoiceSearch(val) {
       // 地区选择 中文 或 非中文 输入 搜索
       let that = this;
@@ -249,7 +203,12 @@ export default {
         });
       }
     },
+    offPage() {
+      this.$emit("mousewheelFuc", "false");
+      this.dialogVisible = false
+    },
     showRegionChoice() {
+      this.$emit("mousewheelFuc", "true");
       // 展示 地区选择弹窗
       this.majorCountry = [
         {
@@ -329,7 +288,7 @@ export default {
     swiper,
     swiperSlide
   }
-};
+}
 </script>
 
 <style scoped lang="stylus">
@@ -338,85 +297,127 @@ export default {
   height: 100%;
   background: url('./img/bg1.png');
 
-  .regionChoiceInput .el-input--suffix .el-input__inner {
-    height: 60px;
-    background: #F3F6F9;
-  }
+  .popPageBackground {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 2000;
 
-  .regionChoiceInput .el-input__suffix {
-    margin-right: 15px;
-  }
+    .popPageContent {
+      position: relative;
+      background: #fff;
+      width: 70%;
+      margin: auto;
+      top: 50%;
+      height: 600px;
+      margin-top: -300px;
 
-  .regionChoiceInput .el-input__icon {
-    font-size: 20px;
-  }
-
-  .regionChoiceABC {
-    margin-top: 28px;
-    font-size: 16px;
-    display: flex;
-    padding-bottom: 15px;
-    border-bottom: 1px solid #DDDDDD;
-
-    .ABC {
-      margin: 0 auto;
-      cursor: pointer;
-
-      &.isActive {
-        color: #007FD7;
-      }
-    }
-  }
-
-  .regionChoiceClick {
-    margin-top: 25px;
-    height: 280px;
-    overflow-y: auto;
-
-    .clickDiv {
-      display: inline-block;
-      width: 50%;
-      font-size: 22px;
-      margin-bottom: 15px;
-      cursor: pointer;
-
-      .countryZh {
-        color: #222222;
-      }
-
-      .countryCode {
-        color: #999999;
+      .popPageOffCon {
+        width: 52px;
+        display: inline-block;
         float: right;
-        margin-right: 50px;
+        margin-right: 11px;
+      }
+
+      .popPageTitle {
+        height: 80px;
+        line-height: 80px;
+        font-size: 30px;
+        padding-left: 80px;
+        border-bottom: 2px solid #e1e1e1;
+      }
+
+      .popPageInput>>>.el-input {
+        width: 85%;
+        margin-top: 10px;
+        border: 1px solid #e1e1e1;
+        height: 60px;
+        border-radius: 4px;
+      }
+
+      .popPageInput>>>.el-input--suffix .el-input__inner {
+        height: 60px;
+        background: #F3F6F9;
+        color: #606266;
+      }
+
+      .popPageInput>>>.el-input__suffix {
+        margin-right: 15px;
+      }
+
+      .popPageInput>>>.el-input__icon {
+        font-size: 20px;
+      }
+
+      .regionChoiceABC {
+        margin-top: 28px;
+        font-size: 16px;
+        display: flex;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #DDDDDD;
+
+        .ABC {
+          margin: 0 auto;
+          cursor: pointer;
+
+          &.isActive {
+            color: #007FD7;
+          }
+        }
+      }
+
+      .regionChoiceClick {
+        margin-top: 25px;
+        height: 280px;
+        overflow-y: auto;
+
+        .clickDiv {
+          display: inline-block;
+          width: 50%;
+          font-size: 22px;
+          margin-bottom: 15px;
+          cursor: pointer;
+
+          .countryZh {
+            color: #222222;
+          }
+
+          .countryCode {
+            color: #999999;
+            float: right;
+            margin-right: 50px;
+          }
+        }
+
+        .clickDiv:hover {
+          .countryZh {
+            color: #007FD7;
+          }
+
+          .countryCode {
+            color: #007FD7;
+          }
+        }
+      }
+
+      .regionChoiceClick::-webkit-scrollbar {
+        width: 4px;
+        height: 1px;
+      }
+
+      .regionChoiceClick::-webkit-scrollbar-thumb {
+        border-radius: 10px;
+        box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+        background: #999999;
+      }
+
+      .regionChoiceClick::-webkit-scrollbar-track {
+        box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+        border-radius: 10px;
+        background: #ededed;
       }
     }
-
-    .clickDiv:hover {
-      .countryZh {
-        color: #007FD7;
-      }
-
-      .countryCode {
-        color: #007FD7;
-      }
-    }
-  }
-
-  .regionChoiceClick::-webkit-scrollbar {
-    width: 4px;
-    height: 1px;
-  }
-
-  .regionChoiceClick::-webkit-scrollbar-thumb {
-    border-radius: 10px;
-    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
-    background: #999999;
-  }
-
-  .regionChoiceClick::-webkit-scrollbar-track {
-    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
-    border-radius: 10px;
-    background: #ededed;
   }
 
   .headline {
