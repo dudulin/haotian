@@ -28,7 +28,7 @@
       <el-table-column prop="aa5" label="产品子类">
       </el-table-column>
       <el-table-column label="产品图片">
-        <template slot-scope="scope">
+        <template>
           <img src="../img/1.png" style="width: 60px;" alt="">
         </template>
       </el-table-column>
