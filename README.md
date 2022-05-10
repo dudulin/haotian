@@ -59,3 +59,16 @@ vue -h   没有 vue ui 版本太低导致
 vue2 的vue cli 最新版本就是 2.9.6
 
 为什么公司一样的安装，公司的是 vue3   家里面的 是vue2 的操作？？？？
+
+可以使用 yarn 
+npm i -g yarn
+yarn      yarn run serve
+
+太多问题  
+用完全的 vue2 方法 不使用 vue create   不使用yarn
+
+    vue init webpack project_4          ------- 正常运行
+    cd project_4 
+    npm run dev 
+    --open package.json 浏览器自动 打开
+    vue 全部都是组件 不再书写 html js
