@@ -42,3 +42,20 @@ $ npm install -g vue-cli
 
  npm install --save-dev webpack-dev-server
  修复热更新问题  配置 vue.config.js：   devServer: { port: 3000, open: true, hot: true,//自动保存 },
+
+ github 拉取下来的项目要到 cd project_3  npm i
+
+ node 的版本太高运行不了  https://github.com/coreybutler/nvm-windows/releases/tag/1.1.9
+ nvm ls   // 查看目前已经安装的版本
+ nvm install 10.5.0  // 安装指定的版本的nodejs
+ nvm use 10.5.0  // 使用指定版本的nodejs
+删除node_module文件   
+npm cache clean --force       package-lock.json文件也删除     ==>4048
+cnpm i   才解决
+vue -h   没有 vue ui 版本太低导致
+
+
+
+vue2 的vue cli 最新版本就是 2.9.6
+
+为什么公司一样的安装，公司的是 vue3   家里面的 是vue2 的操作？？？？
