@@ -58,7 +58,7 @@ vue -h   没有 vue ui 版本太低导致
 
 vue2 的vue cli 最新版本就是 2.9.6
 
-为什么公司一样的安装，公司的是 vue3   家里面的 是vue2 的操作？？？？
+为什么公司一样的安装，公司的是 vue3   家里面的 是vue2 的操作？？？？  ------- 公司之前安装了 @vue/cli
 
 可以使用 yarn 
 npm i -g yarn
@@ -72,3 +72,21 @@ yarn      yarn run serve
     npm run dev 
     --open package.json 浏览器自动 打开
     vue 全部都是组件 不再书写 html js
+
+
+  npmrc文件删除掉：npm config ls -l可以查看文件位置：userconfig = “C:\Users\Administrator\.npmrc”
+  where vue  ------- 全部删除 之后 npm uninstall -g @vue/cli   ---------- npm install -g vue-cli
+  vue -V   => 2.9.6   
+  vue - h   终于正常
+
+
+  找到根目录下的.eslintrc.js文件，在 rules中添加：
+"space-before-function-paren": 0。
+
+  只有在main.js  里面引用了 vue 和 router  根 vue  其他vue 文件 只是配置好 对外暴露配置
+  export default {}
+
+  组件 3 部分  template script  style
+
+
+  # 编辑好 vue 的代码片段 方便使用 还可以迭代优化 ctrl+shift+p => snippets
