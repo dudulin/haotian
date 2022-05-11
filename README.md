@@ -81,7 +81,7 @@ yarn      yarn run serve
 
 
   找到根目录下的.eslintrc.js文件，在 rules中添加：
-"space-before-function-paren": 0。
+"space-before-function-paren": 0 
 
   只有在main.js  里面引用了 vue 和 router  根 vue  其他vue 文件 只是配置好 对外暴露配置
   export default {}
@@ -90,3 +90,33 @@ yarn      yarn run serve
 
 
   # 编辑好 vue 的代码片段 方便使用 还可以迭代优化 ctrl+shift+p => snippets
+
+  // ==============
+  vue init webpack project_5   => runtime-only => cd project_5
+  1.修改 根目录下的.eslintrc.js文件  => rules =>  "space-before-function-paren": 0
+
+1. package.json => scripts = > dev = > --open
+
+  app.vue -- 主入口文件
+
+  Path Intellisense  --- 路径补全工具
+
+  npm i element-ui -S
+
+  main.js => 
+  import { Button, Tab } from 'element-ui';
+  import 'element-ui/lib/theme-chalk/index.css'
+  Vue.use(Button, Tab)
+
+  vue cli2 的插件安装 
+  还是 npm i -S pack_name  
+  -S 依赖 必须的，element-ui
+  -D 开发依赖，不打包上线 类似 webpack
+
+  Vue.prototype.$http = axios  // 修改原本的异步
+  axios 使用 时候去看 文档
+
+  rap2 接口网站 http://rap2.taobao.org/account/login
+
+
+  settting.json => "javascript.format.semicolons": "remove",  => 格式化 去分号设置 
