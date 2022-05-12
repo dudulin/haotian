@@ -32,11 +32,11 @@
     </el-dialog>
     <el-tabs type="border-card" v-model="tabsChoice">
       <el-tab-pane :name="pageKey" label="页面">
-        <Page :ref="pageKey" @callback="getData(pageKey)" :testValueCopy="testValueCopy" :trueValueCopy="trueValueCopy">
+        <Page :ref="pageKey" @callback="getData" :testValueCopy="testValueCopy" :trueValueCopy="trueValueCopy">
         </Page>
       </el-tab-pane>
       <el-tab-pane :name="interfaceKey" label="数据源接口">
-        <interface :ref="interfaceKey" @callback="getData(interfaceKey)" :testValueCopy="testValueCopy"
+        <interface :ref="interfaceKey" @callback="getData" :testValueCopy="testValueCopy"
           :trueValueCopy="trueValueCopy"></interface>
       </el-tab-pane>
     </el-tabs>
@@ -48,22 +48,23 @@
 
     <div class="tableTitle"><span>页面数据</span>
     </div>
-    <el-table :data="tableData" height="250" border v-loading="loading">
-      <el-table-column prop="date" label="参数" width="180">
+    <el-table :data="tableData" border v-loading="loading">
+      <el-table-column prop="title" label="参数" width="180">
       </el-table-column>
-      <el-table-column prop="name" label="测试环境数据">
+      <el-table-column prop="testValue" label="测试环境数据">
       </el-table-column>
-      <el-table-column prop="name" label="线上环境数据">
+      <el-table-column prop="trueValue" label="线上环境数据">
       </el-table-column>
       <el-table-column label="校验结果">
         <template slot-scope="scope">
-          <el-link :type="scope.row.type">{{ scope.row.address }}</el-link>
+          <el-link :type="scope.row.type">{{ scope.row.message }}</el-link>
         </template>
       </el-table-column>
     </el-table>
     <el-row>
       <el-col :span="24">
-        <div class="grid-content bg-purple-light">总结：</div>
+        总结：
+        <p style="white-space: pre-wrap">{{ ui.summary }}</p>
       </el-col>
     </el-row>
   </div>
@@ -88,27 +89,19 @@ export default {
         trueBtnType: 'success', // 按钮下的 文字 状态
         trueBtnMessage: '??ddd?', // 按钮下的 文字 内容
         dialogTestVisible: false, // 测试数据弹窗 显示隐藏
-        dialogTrueVisible: false // 线上数据弹窗 显示隐藏
+        dialogTrueVisible: false, // 线上数据弹窗 显示隐藏
+        summary: '' // 总结
       },
       testValueCopy: null, // 复制的测试数据
       trueValueCopy: null, // 复制的线上数据
       tabsChoice: 'pageVue', // tabs 选择内容
       loading: false,
       tableData: [{
-        date: '审批流ID',
-        name: '王小虎',
-        type: 'primary',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '文件上传路径',
-        name: '王小虎',
-        type: 'info',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '接口名称',
-        name: '王小虎',
-        type: 'warning',
-        address: '异常数据'
+        title: '接口名称',
+        testValue: ['sss', 'ddd'],
+        trueValue: ['sss', 'ddd'],
+        message: '这个是提升内容',
+        type: 'danger'
       }]
     }
   },
@@ -139,9 +132,7 @@ export default {
         default:
           break
       }
-      console.log(this.tabsChoice, 3333333)
       // 4.数据插入 table  加载完成
-      console.log(this.testValueCopy)
     },
     btnTestCopyClick() { // 导入测试数据按钮
       this.ui.dialogTestVisible = true
@@ -152,19 +143,44 @@ export default {
       this.trueValueCopy = null // 清空数据
     },
     /* 逻辑函数 名称以 对象目的 命名 */
-    getData(title) {
-      switch (title) {
-        case this.pageKey:
-
-          break
-        case this.interfaceKey:
-
-          break
-
-        default:
-          break
-      }
+    getData(data) { // 子组件函数执行之后的回调函数
+      let demo = [
+        {
+          title: '审批流ID',
+          testValue: [2, 77, 44],
+          trueValue: [32, 687, 77],
+          message: '异常审批流ID 有相同',
+          type: 'warning'
+        },
+        {
+          title: '接口名称',
+          testValue: ['sss', 'ddd'],
+          trueValue: ['sss', 'ddd'],
+          message: '接口名称 有相同',
+          type: 'danger'
+        }
+      ]
+      console.log(data, '返回数据')
+      this.tableData = demo
+      let summary = ''
+      this.tableData.forEach(i => {
+        if (i.type === 'danger' || i.type === 'warning') {
+          summary += `${i.message} \n`
+        }
+      })
+      console.log(summary)
+      this.ui.summary = summary
       this.loading = false
+    }
+  },
+  watch: {
+    testValueCopy: {
+      handler(newVal, oldVal) {
+      },
+      // 立即处理 进入页面就触发
+      immediate: true,
+      // 深度监听 属性的变化
+      deep: true
     }
   }
 
