@@ -8,12 +8,12 @@
   </div>
 </template>
 <script>
-const cityOptions = ['dd', '北京', '广州', '深圳']
+const cityOptions = ['数据源地址', '命名空救', '接口名称']
 export default {
   data() {
     return {
       checkAll: false,
-      checkedCities: ['上海', '北京'],
+      checkedCities: ['数据源地址', '命名空救', '接口名称'],
       cities: cityOptions,
       isIndeterminate: true
     }
@@ -27,6 +27,10 @@ export default {
       let checkedCount = value.length
       this.checkAll = checkedCount === this.cities.length
       this.isIndeterminate = checkedCount > 0 && checkedCount < this.cities.length
+    },
+    checkData(title) {
+      console.log(`执行${title} 数据统计`)
+      this.$emit('pageCallback', [15, 54, 6])
     }
   }
 }

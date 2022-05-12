@@ -120,3 +120,22 @@ yarn      yarn run serve
 
 
   settting.json => "javascript.format.semicolons": "remove",  => 格式化 去分号设置 
+
+  ---
+  ##项目逻辑
+  1.导入 测试数据 和线上 数据
+  2.tabs 选择对应参数 勾选
+  3.校验生产 table 和 总结
+
+  --页面 和 数据源 校验规则 不一样
+  页面数据 ------ 传到 page.vue      进行加工 返回 
+  接口数据 ------ 传到 interface.vue 进行加工 返回 
+
+  返回的table 数据 显示
+
+  this.$emit('pageCallback', [])
+
+  ref 被用来给元素或子组件注册引用信息。引用信息将会注册在父组件的 $refs 对象上
+
+   this.$refs.mychild.parentHandleclick()
+  ---
