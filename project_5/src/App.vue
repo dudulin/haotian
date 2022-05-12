@@ -3,25 +3,31 @@
     <el-row>
       <el-col :span="24" style="text-align:center;margin: 30px 0;">
         <el-button @click="btnTestCopyClick" type="primary">导入测试环境数据</el-button>
-        <el-link class="btnMessage" :type="testBtnType" v-if="!!testBtnMessage">{{ testBtnMessage }}</el-link>
+        <el-link class="btnMessage" :type="ui.testBtnType" v-if="!!ui.testBtnMessage">{{
+            ui.testBtnMessage
+        }}
+        </el-link>
         <el-button @click="btnTrueCopyClick" type="primary">导入线上环境数据</el-button>
-        <el-link class="btnMessage" :type="trueBtnType" v-if="!!trueBtnMessage">{{ trueBtnMessage }}</el-link>
+        <el-link class="btnMessage" :type="ui.trueBtnType" v-if="!!ui.trueBtnMessage">{{
+            ui.trueBtnMessage
+        }}
+        </el-link>
       </el-col>
     </el-row>
-    <el-dialog title="测试数据" :visible.sync="dialogTestVisible" width="30%">
+    <el-dialog title="测试数据" :visible.sync="ui.dialogTestVisible" width="30%">
       <el-input type="textarea" :rows="4" placeholder="请输入内容" v-model.trim="testValueCopy">
       </el-input>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="dialogTestVisible = false">取 消</el-button>
-        <el-button type="primary" @click="dialogTestVisible = false">确 定</el-button>
+        <el-button @click="ui.dialogTestVisible = false">取 消</el-button>
+        <el-button type="primary" @click="ui.dialogTestVisible = false">确 定</el-button>
       </span>
     </el-dialog>
-    <el-dialog title="线上数据" :visible.sync="dialogTrueVisible" width="30%">
+    <el-dialog title="线上数据" :visible.sync="ui.dialogTrueVisible" width="30%">
       <el-input type="textarea" :rows="4" placeholder="请输入内容" v-model.trim="trueValueCopy">
       </el-input>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="dialogTrueVisible = false">取 消</el-button>
-        <el-button type="primary" @click="dialogTrueVisible = false">确 定</el-button>
+        <el-button @click="ui.dialogTrueVisible = false">取 消</el-button>
+        <el-button type="primary" @click="ui.dialogTrueVisible = false">确 定</el-button>
       </span>
     </el-dialog>
     <el-tabs type="border-card" v-model="tabsChoice">
@@ -76,15 +82,17 @@ export default {
     return {
       pageKey: 'pageVue', // 多处绑定 命名很容易弄错 统一规划
       interfaceKey: 'interfaceVue',
-      dialogTestVisible: false, // 测试数据弹窗 显示隐藏
-      dialogTrueVisible: false, // 线上数据弹窗 显示隐藏
+      ui: { // 影响页面显示的参数 统一放这里
+        testBtnType: 'primary', // 按钮下的 文字 状态
+        testBtnMessage: '???', // 按钮下的 文字 内容
+        trueBtnType: 'success', // 按钮下的 文字 状态
+        trueBtnMessage: '??ddd?', // 按钮下的 文字 内容
+        dialogTestVisible: false, // 测试数据弹窗 显示隐藏
+        dialogTrueVisible: false // 线上数据弹窗 显示隐藏
+      },
       testValueCopy: null, // 复制的测试数据
       trueValueCopy: null, // 复制的线上数据
       tabsChoice: 'pageVue', // tabs 选择内容
-      testBtnType: 'primary', // 按钮下的 文字 状态
-      testBtnMessage: '???', // 按钮下的 文字 内容
-      trueBtnType: 'success', // 按钮下的 文字 状态
-      trueBtnMessage: '??ddd?', // 按钮下的 文字 内容
       loading: false,
       tableData: [{
         date: '审批流ID',
@@ -107,14 +115,15 @@ export default {
   methods: {
     /* 事件函数 名称以 对象+事件 命名 */
     btnCheckClick() { // 校验按钮
+      let ui = this.ui
       // 1.校验 数据是否都 复制
       if (!this.testValueCopy) {
-        this.testBtnType = 'warning'
-        this.testBtnMessage = '请导入测试数据'
+        ui.testBtnType = 'warning'
+        ui.testBtnMessage = '请导入测试数据'
       }
       if (!this.trueValueCopy) {
-        this.trueBtnType = 'warning'
-        this.trueBtnMessage = '请导入线上数据'
+        ui.trueBtnType = 'warning'
+        ui.trueBtnMessage = '请导入线上数据'
       }
       // 2.复制的数据 是否和 tabs 选择对应
       // 3.数据传给对应 子组件 table 加载 中
@@ -135,11 +144,11 @@ export default {
       console.log(this.testValueCopy)
     },
     btnTestCopyClick() { // 导入测试数据按钮
-      this.dialogTestVisible = true
+      this.ui.dialogTestVisible = true
       this.testValueCopy = null // 清空数据
     },
     btnTrueCopyClick() { // 导入线上数据按钮
-      this.dialogTrueVisible = true
+      this.ui.dialogTrueVisible = true
       this.trueValueCopy = null // 清空数据
     },
     /* 逻辑函数 名称以 对象目的 命名 */
