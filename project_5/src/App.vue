@@ -120,11 +120,11 @@ export default {
       // 3.数据传给对应 子组件 table 加载 中
       this.loading = true
       switch (this.tabsChoice) {
-        case 'page':
-          this.$refs.pageVue.checkData(this.tabsChoice) // 执行子组件函数
+        case this.pageKey:
+          this.$refs[this.pageKey].checkData(this.tabsChoice) // 执行子组件函数
           break
-        case 'interface':
-          this.$refs.interfaceVue.checkData(this.tabsChoice) // 执行子组件函数
+        case this.interfaceKey:
+          this.$refs[this.interfaceKey].checkData(this.tabsChoice) // 执行子组件函数
           break
 
         default:
