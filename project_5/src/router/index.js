@@ -6,6 +6,7 @@ import Page from '../components/Page'
 Vue.use(Router)
 
 export default new Router({
+  mode: 'hash',
   routes: [
     {
       path: '/',

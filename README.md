@@ -139,3 +139,12 @@ yarn      yarn run serve
 
    this.$refs.mychild.parentHandleclick()
   ---
+  npm run build  ===> 报错： because its MIME type ('text/html') is not
+  
+
+  问题其实就是css样式获取不到，在build>webpack.prod.conf.js>output里添加
+
+  publicPath: './'      => 修复了
+
+  图标丢失 
+  在 build/webpack.prod.conf.js 中, rules: utils.styleLoaders =》将  extract: true =>  extract: false
