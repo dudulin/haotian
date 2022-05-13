@@ -19,7 +19,7 @@
       </el-input>
       <span slot="footer" class="dialog-footer">
         <el-button @click="ui.dialogTestVisible = false">取 消</el-button>
-        <el-button type="primary" @click="ui.dialogTestVisible = false">确 定</el-button>
+        <el-button type="primary" @click="btn1">确 定</el-button>
       </span>
     </el-dialog>
     <el-dialog title="线上数据" :visible.sync="ui.dialogTrueVisible" width="30%">
@@ -27,17 +27,17 @@
       </el-input>
       <span slot="footer" class="dialog-footer">
         <el-button @click="ui.dialogTrueVisible = false">取 消</el-button>
-        <el-button type="primary" @click="ui.dialogTrueVisible = false">确 定</el-button>
+        <el-button type="primary" @click="btn2">确 定</el-button>
       </span>
     </el-dialog>
     <el-tabs type="border-card" v-model="tabsChoice">
       <el-tab-pane :name="pageKey" label="页面">
-        <Page :ref="pageKey" @callback="getData" :testValueCopy="testValueCopy" :trueValueCopy="trueValueCopy">
+        <Page :ref="pageKey" @callback="getData" :testValue="testValueCopy" :trueValue="trueValueCopy">
         </Page>
       </el-tab-pane>
       <el-tab-pane :name="interfaceKey" label="数据源接口">
-        <interface :ref="interfaceKey" @callback="getData" :testValueCopy="testValueCopy"
-          :trueValueCopy="trueValueCopy"></interface>
+        <interface :ref="interfaceKey" @callback="getData" :testValue="testValueCopy" :trueValue="trueValueCopy">
+        </interface>
       </el-tab-pane>
     </el-tabs>
     <el-row>
@@ -57,7 +57,7 @@
       </el-table-column>
       <el-table-column label="校验结果">
         <template slot-scope="scope">
-          <el-link :type="scope.row.type">{{ scope.row.message }}</el-link>
+          <el-link :type="scope.row.type" style="white-space: pre-wrap">{{ scope.row.message }}</el-link>
         </template>
       </el-table-column>
     </el-table>
@@ -84,10 +84,10 @@ export default {
       pageKey: 'pageVue', // 多处绑定 命名很容易弄错 统一规划
       interfaceKey: 'interfaceVue',
       ui: { // 影响页面显示的参数 统一放这里
-        testBtnType: 'primary', // 按钮下的 文字 状态
-        testBtnMessage: '???', // 按钮下的 文字 内容
-        trueBtnType: 'success', // 按钮下的 文字 状态
-        trueBtnMessage: '??ddd?', // 按钮下的 文字 内容
+        testBtnType: 'warning', // 按钮下的 文字 状态
+        testBtnMessage: '请导入数据', // 按钮下的 文字 内容
+        trueBtnType: 'warning', // 按钮下的 文字 状态
+        trueBtnMessage: '请导入数据', // 按钮下的 文字 内容
         dialogTestVisible: false, // 测试数据弹窗 显示隐藏
         dialogTrueVisible: false, // 线上数据弹窗 显示隐藏
         summary: '' // 总结
@@ -107,16 +107,37 @@ export default {
   },
   methods: {
     /* 事件函数 名称以 对象+事件 命名 */
+    btn1() {
+      let ui = this.ui
+      ui.dialogTestVisible = false
+      let now = this.getDate()
+      ui.testBtnMessage = `添加时间：${now}`
+      ui.testBtnType = 'info'
+    },
+    btn2() {
+      let ui = this.ui
+      ui.dialogTrueVisible = false
+      let now = this.getDate()
+      ui.trueBtnMessage = `添加时间：${now}`
+      ui.trueBtnType = 'info'
+    },
     btnCheckClick() { // 校验按钮
       let ui = this.ui
       // 1.校验 数据是否都 复制
       if (!this.testValueCopy) {
         ui.testBtnType = 'warning'
         ui.testBtnMessage = '请导入测试数据'
+        return
       }
       if (!this.trueValueCopy) {
         ui.trueBtnType = 'warning'
         ui.trueBtnMessage = '请导入线上数据'
+        return
+      }
+      if (this.testValueCopy.startsWith('[')) {
+        this.tabsChoice = this.pageKey
+      } else {
+        this.tabsChoice = this.interfaceKey
       }
       // 2.复制的数据 是否和 tabs 选择对应
       // 3.数据传给对应 子组件 table 加载 中
@@ -136,41 +157,27 @@ export default {
     },
     btnTestCopyClick() { // 导入测试数据按钮
       this.ui.dialogTestVisible = true
-      this.testValueCopy = null // 清空数据
     },
     btnTrueCopyClick() { // 导入线上数据按钮
       this.ui.dialogTrueVisible = true
-      this.trueValueCopy = null // 清空数据
     },
     /* 逻辑函数 名称以 对象目的 命名 */
     getData(data) { // 子组件函数执行之后的回调函数
-      let demo = [
-        {
-          title: '审批流ID',
-          testValue: [2, 77, 44],
-          trueValue: [32, 687, 77],
-          message: '异常审批流ID 有相同',
-          type: 'warning'
-        },
-        {
-          title: '接口名称',
-          testValue: ['sss', 'ddd'],
-          trueValue: ['sss', 'ddd'],
-          message: '接口名称 有相同',
-          type: 'danger'
-        }
-      ]
-      console.log(data, '返回数据')
-      this.tableData = demo
+      this.tableData = data
       let summary = ''
       this.tableData.forEach(i => {
         if (i.type === 'danger' || i.type === 'warning') {
           summary += `${i.message} \n`
         }
       })
-      console.log(summary)
       this.ui.summary = summary
-      this.loading = false
+      setTimeout(() => {
+        this.loading = false
+      }, 2)
+    },
+    getDate() {
+      let now = new Date()
+      return `${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`
     }
   },
   watch: {
