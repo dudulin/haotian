@@ -69,6 +69,7 @@
     </el-row>
     <p>{{ interfaceKey | changeStr }}</p>
     <p>{{ interfaceKey | dateFormart }}</p>
+    <p>{{ interfaceKey | dateFormart2 }}</p>
   </div>
 </template>
 

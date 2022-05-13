@@ -13,6 +13,9 @@ Vue.filter('dateFormart', i => {
   let date = new Date()
   return `${date.getFullYear()}`
 })
+Vue.filter('dateFormart2', i => {
+  return 6666666
+})
 // Vue.use(Button, Tab)
 
 /* eslint-disable no-new */
