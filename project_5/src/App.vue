@@ -67,6 +67,8 @@
         <p style="white-space: pre-wrap">{{ ui.summary }}</p>
       </el-col>
     </el-row>
+    <p>{{ interfaceKey | changeStr }}</p>
+    <p>{{ interfaceKey | dateFormart }}</p>
   </div>
 </template>
 
@@ -74,6 +76,13 @@
 import Interface from './components/InterFace'
 import Page from './components/Page'
 export default {
+  /* 过滤器 不改变原值 */
+  filters: {
+    changeStr(str) {
+      /* 过滤器把返回值 返回到插值里面 {{}} */
+      return str + 456
+    }
+  },
   name: 'App',
   components: {
     Interface,

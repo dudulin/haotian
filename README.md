@@ -148,3 +148,10 @@ yarn      yarn run serve
 
   图标丢失 
   在 build/webpack.prod.conf.js 中, rules: utils.styleLoaders =》将  extract: true =>  extract: false
+
+  全家过滤器
+  Vue.filter('dateFormart', i => {
+    let date = new Date()
+    return `${date.getFullYear()}`
+  })
+  过滤器使用 {{str | dateFormart}}

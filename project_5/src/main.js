@@ -9,6 +9,10 @@ import 'element-ui/lib/theme-chalk/index.css'
 Vue.config.productionTip = false
 Vue.prototype.$http = axios // 修改原本的异步
 Vue.use(ElementUI)
+Vue.filter('dateFormart', i => {
+  let date = new Date()
+  return `${date.getFullYear()}`
+})
 // Vue.use(Button, Tab)
 
 /* eslint-disable no-new */
