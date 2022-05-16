@@ -67,9 +67,10 @@
         <p style="white-space: pre-wrap">{{ ui.summary }}</p>
       </el-col>
     </el-row>
-    <p>{{ interfaceKey | changeStr }}</p>
-    <p>{{ interfaceKey | dateFormart }}</p>
-    <p>{{ interfaceKey | dateFormart2 }}</p>
+    <a href="http://testvenus.cf.com:8089/admin#/systemDataSource" target="_blank">测试环境--权限位</a>
+    <!-- <p>{{ interfaceKey | changeStr }}</p> -->
+    <!-- <p>{{ interfaceKey | dateFormart }}</p> -->
+    <!-- <p>{{ interfaceKey | dateFormart2 }}</p> -->
   </div>
 </template>
 
@@ -110,7 +111,7 @@ export default {
         title: '接口名称',
         testValue: ['sss', 'ddd'],
         trueValue: ['sss', 'ddd'],
-        message: '这个是提升内容',
+        message: '这个是提示内容',
         type: 'danger'
       }]
     }
@@ -137,11 +138,12 @@ export default {
       if (!this.testValueCopy) {
         ui.testBtnType = 'warning'
         ui.testBtnMessage = '请导入测试数据'
-        return
       }
       if (!this.trueValueCopy) {
         ui.trueBtnType = 'warning'
         ui.trueBtnMessage = '请导入线上数据'
+      }
+      if (!this.trueValueCopy || !this.testValueCopy) {
         return
       }
       if (this.testValueCopy.startsWith('[')) {
