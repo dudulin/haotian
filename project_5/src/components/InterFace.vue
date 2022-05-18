@@ -29,33 +29,32 @@ export default {
         indeterminate: true,
         checkAll: false
       },
-      // checked: ['pb入参不重复', '数据源地址', '命名空间', 'pb出参不重复'], // 已经勾选内容
-      checked: ['基础配置对比'], // 已经勾选内容
-      config: [{ // 所有的配置参数
-        title: '数据源地址', // 标题
-        path: 'fserverAddressId' // 路径
-      }, {
-        title: '命名空间',
-        path: 'protobufConfig.namespace'
-      },
-      {
-        title: 'pb入参不重复',
-        path: 'protobufConfig.protobufRequestConfig.reqParams'
-      }, {
-        title: 'pb出参不重复',
-        path: 'protobufConfig.protobufResponseConfig.bodyParams'
-      },
-      {
-        title: 'pb入参没空在值',
-        path: 'protobufConfig.protobufRequestConfig.reqParams'
-      }, {
-        title: 'pb出参没空值',
-        path: 'protobufConfig.protobufResponseConfig.bodyParams'
-      },
-      {
-        title: '基础配置对比',
-        path: ''
-      }
+      checked: ['pb出参不重复', 'pb出参没空值'], // 已经勾选内容
+      config: [ // 所有的配置参数
+        {
+          title: '基础配置对比',
+          path: ''
+        },
+        {
+          title: '入参配置',
+          path: ''
+        },
+        {
+          title: 'pb入参不重复',
+          path: 'protobufConfig.protobufRequestConfig.reqParams'
+        },
+        {
+          title: 'pb出参不重复',
+          path: 'protobufConfig.protobufResponseConfig.bodyParams'
+        },
+        {
+          title: 'pb入参没空在值',
+          path: 'protobufConfig.protobufRequestConfig.reqParams'
+        },
+        {
+          title: 'pb出参没空值',
+          path: 'protobufConfig.protobufResponseConfig.bodyParams'
+        }
       ]
     }
   },
@@ -92,7 +91,10 @@ export default {
       if (this.checked.some(i => { return i === '基础配置对比' })) {
         config2 = config2.concat(this.getBaseConfig('基础配置对比', trueValue))
       }
-      config2 = config2.filter(i => i.title !== '基础配置对比')
+      if (this.checked.some(i => { return i === '入参配置' })) {
+        config2 = config2.concat(this.getBaseConfig('入参配置', trueValue))
+      }
+      config2 = config2.filter(i => i.path !== '') // 去掉 没用的配置
       config2.forEach(i => {
         let arr = i.path.split('.')
         let testData = null
@@ -268,6 +270,14 @@ export default {
             configArray = configArray.concat(['错误信息编码', '路由格式字符串', '路由参数', '命名空间', 'Requesttype', 'cgiName', '消息体名称'])
           }
           break
+        case '入参配置':
+          // configArray = configArray.concat(createArr(['入参信息', '签名类型', '加密参数', '添加客户端ip', '添加时间戳参数', '添加cookie配置', '特殊参数编码', '随机字符串设定', 'commonStrlimitParam', 'commonFieldsParam', '组合JSON参数', '透传参数']))
+          configArray = configArray.concat(createArr(['入参信息']))
+          break
+        case '出参配置':
+          break
+        case '审计日志配置':
+          break
         default:
           break
       }
@@ -288,7 +298,20 @@ export default {
           'CGI': 'fitConfig.cgiName',
           '命名空间': 'protobufConfig.namespace',
           '服务接口名称': 'protobufConfig.uriName',
-          'cgiName': 'protobufConfig.cgiName'
+          'cgiName': 'protobufConfig.cgiName',
+
+          '入参信息': 'frequestParam.inputParams',
+          '签名类型': 'frequestParam.signParam.signType',
+          '加密参数': 'frequestParam.encryptParams',
+          '添加客户端ip': 'frequestParam.clientIps',
+          '添加时间戳参数': 'frequestParam.timestamp.paramName',
+          '添加cookie配置': 'frequestParam.ticketParams',
+          '特殊参数编码': 'frequestParam.encoderRetParams',
+          '随机字符串设定': 'frequestParam.randomParam',
+          'commonStrlimitParam': 'frequestParam.groupParam.commonStrlimitParam.groupParamName',
+          'commonFieldsParam': 'frequestParam.groupParam.commonFieldsParam.groupParamName',
+          '组合JSON参数': 'frequestParam.commonJsonParam.paramName',
+          '透传参数': 'frequestParam.specialParams'
         }
         let array = arr.map(i => {
           return {
@@ -358,7 +381,9 @@ export default {
         i.type = type
 
         try {
-          i.testValue = i.testValue.join(',')
+          i.testValue = i.testValue.map(item => {
+            return JSON.stringify(item)
+          }).join(',')
           i.trueValue = i.trueValue.join(',')
         } catch (error) { }
         i.testValue = typeof i.testValue === 'boolean' ? i.testValue ? '是' : '否' : i.testValue
@@ -369,8 +394,15 @@ export default {
     changPb(i, trueValue, testValue, key) {
       let message = '正常'
       let type = 'info'
-      let arr = this.checkRepace(i.testValue, [], []) // 测试环境数据
-      let arr2 = this.checkRepace(i.trueValue, [], []) // 线上环境数据
+      let config = {
+        key: 'name', // 判断是否 同层级重复的属性
+        hasItem: (item) => { return item.type === 'message' }, // 判断是否 有子集
+        itemPath: 'value', // 子集所在位置
+        nullArr: ['name', 'type', 'label', 'num', 'encode'], // 判断是否 空值的属性
+        checkArr: ['sameValue', 'nullValue'] // 判断内容 sameValue 相同值 nullValue 空值
+      }
+      let arr = this.checkRepace(i.testValue, [], [], config) // 测试环境数据
+      let arr2 = this.checkRepace(i.trueValue, [], [], config) // 线上环境数据
       let errorValue = []
       let errorValue2 = []
       if (key === 'null') { // 没有空值
@@ -421,39 +453,67 @@ export default {
       }
       if (trueValue.fprotocol !== '2' && trueValue.fprotocol !== '4') {
         i.trueValue = '协议不是 relay-protobuf 或 Fable-PB'
+        message = '正常'
+        type = 'info'
       }
       if (testValue.fprotocol !== '2' && testValue.fprotocol !== '4') {
         i.testValue = '协议不是 relay-protobuf 或 Fable-PB'
+        message = '正常'
+        type = 'info'
       }
       return {
         type,
         message
       }
     },
-    checkRepace(data, box = [], path = []) {
+    checkRepace(data, box = [], path = [], config, data2) {
+      /*
+        1.同层级是否相同值
+        2.同层级是否有空值
+        3.2个值对比 是否相同
+      */
+      let config2 = {
+        key: 'name', // 判断是否 同层级重复的属性
+        hasItem: (item) => { return item.type === 'message' }, // 判断是否 有子集
+        itemPath: 'value', // 子集所在位置
+        nullArr: ['name', 'type', 'label', 'num', 'encode'], // 判断是否 空值的属性
+        checkArr: ['sameValue', 'nullValue'] // 判断内容 sameValue 相同值 nullValue 空值
+      }
+      console.log(config2)
       let arr = []
       let obj = {
         path: [],
         errorValue: [],
-        errorValue2: []
+        errorValue2: [],
+        errorValue3: []
       }
-      data.forEach(i => {
-        if (i.name) {
-          if (arr.includes(i.name)) {
-            if (!obj.errorValue.includes(i.name)) {
-              obj.errorValue.push(i.name)
-            }
-          } else {
-            arr.push(i.name)
+      data.forEach((i, index) => {
+        console.log(index)
+        for (let key in i) {
+          if (i[key] !== data2[index][key]) {
+            obj.push(i[config.key])
           }
         }
-        if (!i.type || !i.label || !i.name || !i.num || !i.encode) {
-          obj.errorValue2.push('有空值')
+        if (i[config.key]) {
+          if (arr.includes(i[config.key])) {
+            if (!obj.errorValue.includes(i[config.key])) {
+              obj.errorValue.push(i[config.key])
+            }
+          } else {
+            arr.push(i[config.key])
+          }
         }
-        if (i.type === 'message') {
+        if (config.checkArr.includes('nullValue')) {
+          config.nullArr.forEach(item => {
+            if (i[item] === '') {
+              obj.errorValue2.push('有空值')
+            }
+          })
+        }
+        if (config.hasItem(i)) {
           let path2 = path.map(i => { return i })
-          path2.push(i.name)
-          let box2 = this.checkRepace(i.value, box, path2)
+          path2.push(i[config.key])
+          let box2 = this.checkRepace(i[config.itemPath], box, path2, config)
           box = Array.concat(box2)
         }
       })
