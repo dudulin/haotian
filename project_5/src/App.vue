@@ -4,18 +4,18 @@
       <el-col :span="24" style="text-align:center;margin: 30px 0;">
         <el-button @click="btnTestCopyClick" type="primary">导入测试环境数据</el-button>
         <el-link class="btnMessage" :type="ui.testBtnType" v-if="!!ui.testBtnMessage">{{
-            ui.testBtnMessage
+            ui.testBtnMessage | dateFormart('hh:mm:ss')
         }}
         </el-link>
         <el-button @click="btnTrueCopyClick" type="primary">导入线上环境数据</el-button>
         <el-link class="btnMessage" :type="ui.trueBtnType" v-if="!!ui.trueBtnMessage">{{
-            ui.trueBtnMessage
+            ui.trueBtnMessage | dateFormart('hh:mm:ss')
         }}
         </el-link>
       </el-col>
     </el-row>
     <el-dialog title="测试数据" :visible.sync="ui.dialogTestVisible" width="30%">
-      <el-input type="textarea" :rows="4" placeholder="请输入内容" v-model.trim="testValueCopy">
+      <el-input type="textarea" :rows="4" placeholder="请输入内容" v-model.trim="dialogTest">
       </el-input>
       <span slot="footer" class="dialog-footer">
         <el-button @click="ui.dialogTestVisible = false">取 消</el-button>
@@ -23,7 +23,7 @@
       </span>
     </el-dialog>
     <el-dialog title="线上数据" :visible.sync="ui.dialogTrueVisible" width="30%">
-      <el-input type="textarea" :rows="4" placeholder="请输入内容" v-model.trim="trueValueCopy">
+      <el-input type="textarea" :rows="4" placeholder="请输入内容" v-model.trim="dialogTrue">
       </el-input>
       <span slot="footer" class="dialog-footer">
         <el-button @click="ui.dialogTrueVisible = false">取 消</el-button>
@@ -48,14 +48,15 @@
 
     <div class="tableTitle"><span>页面数据</span>
     </div>
-    <el-table :data="tableData" border v-loading="loading">
+    <el-table :data="tableData" border v-loading="loading" header-cell-class-name="sssss">
       <el-table-column prop="title" label="参数" width="180">
       </el-table-column>
       <el-table-column prop="testValue" label="测试环境数据">
       </el-table-column>
       <el-table-column prop="trueValue" label="线上环境数据">
       </el-table-column>
-      <el-table-column label="校验结果">
+      <el-table-column label="校验结果" :filters="[{ text: '正常数据', value: 'normal' }, { text: '异常数据', value: 'abnormal' }]"
+        :filter-method="filterTag">
         <template slot-scope="scope">
           <el-link :type="scope.row.type" style="white-space: pre-wrap">{{ scope.row.message }}</el-link>
         </template>
@@ -103,6 +104,8 @@ export default {
         dialogTrueVisible: false, // 线上数据弹窗 显示隐藏
         summary: '' // 总结
       },
+      dialogTest: null, // 弹窗的测试数据
+      dialogTrue: null, // 弹窗的线上数据
       testValueCopy: null, // 复制的测试数据
       trueValueCopy: null, // 复制的线上数据
       tabsChoice: 'pageVue', // tabs 选择内容
@@ -121,6 +124,7 @@ export default {
     btn1() {
       let ui = this.ui
       ui.dialogTestVisible = false
+      this.testValueCopy = this.dialogTest
       let now = this.getDate()
       ui.testBtnMessage = `添加时间：${now}`
       ui.testBtnType = 'info'
@@ -128,6 +132,7 @@ export default {
     btn2() {
       let ui = this.ui
       ui.dialogTrueVisible = false
+      this.trueValueCopy = this.dialogTrue
       let now = this.getDate()
       ui.trueBtnMessage = `添加时间：${now}`
       ui.trueBtnType = 'info'
@@ -168,9 +173,11 @@ export default {
       // 4.数据插入 table  加载完成
     },
     btnTestCopyClick() { // 导入测试数据按钮
+      this.dialogTest = ''
       this.ui.dialogTestVisible = true
     },
     btnTrueCopyClick() { // 导入线上数据按钮
+      this.dialogTrue = ''
       this.ui.dialogTrueVisible = true
     },
     /* 逻辑函数 名称以 对象目的 命名 */
@@ -190,6 +197,13 @@ export default {
     getDate() {
       let now = new Date()
       return `${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`
+    },
+    filterTag(value, row) {
+      if (value === 'abnormal') {
+        return row.type === 'danger' || row.type === 'warning'
+      } else {
+        return row.type === 'info'
+      }
     }
   },
   watch: {
@@ -229,3 +243,11 @@ export default {
   width: 156px;
 }
 </style>>
+<style>
+.sssss>div>span>i.el-icon-arrow-down {
+  font-size: 25px;
+  font-weight: 700;
+  position: relative;
+  top: 4px;
+}
+</style>

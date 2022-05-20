@@ -29,7 +29,7 @@ export default {
         indeterminate: true,
         checkAll: false
       },
-      checked: ['pb出参不重复', 'pb出参没空值'], // 已经勾选内容
+      checked: ['pb入参不重复', 'pb入参对比'], // 已经勾选内容
       config: [ // 所有的配置参数
         {
           title: '基础配置对比',
@@ -41,6 +41,14 @@ export default {
         },
         {
           title: 'pb入参不重复',
+          path: 'protobufConfig.protobufRequestConfig.reqParams'
+        },
+        {
+          title: 'pb入参对比',
+          path: 'protobufConfig.protobufRequestConfig.reqParams'
+        },
+        {
+          title: 'pb入参多的值',
           path: 'protobufConfig.protobufRequestConfig.reqParams'
         },
         {
@@ -96,7 +104,13 @@ export default {
       }
       config2 = config2.filter(i => i.path !== '') // 去掉 没用的配置
       config2.forEach(i => {
-        let arr = i.path.split('.')
+        let arr = []
+        try {
+          arr = i.path.split('.')
+        } catch (error) {
+          debugger
+        }
+        // let arr = i.path.split('.')
         let testData = null
         let trueData = null
         arr.forEach((item, index) => {
@@ -263,11 +277,11 @@ export default {
           } else if (trueValue.fprotocol === '2') { // relay-protobuf
             configArray = configArray.concat(createArr(['Requesttype', '消息体名称']))
           } else if (trueValue.fprotocol === '3' || trueValue.fprotocol === '5') { // FIT网关 | 金融网关-Http
-            configArray = configArray.concat(['错误信息编码', 'CGI', '路由格式字符串', '路由参数', '是否加密'])
+            configArray = configArray.concat(createArr(['错误信息编码', 'CGI', '路由格式字符串', '路由参数', '是否加密']))
           } else if (trueValue.fprotocol === '4' || trueValue.fprotocol === '6') { // Fable-PB | 金融网关-Fable-PB | FIT网关-金融网关-Fable-PB
-            configArray = configArray.concat(['错误信息编码', '路由格式字符串', '路由参数', '命名空间', '服务接口名称', '消息体名称'])
+            configArray = configArray.concat(createArr(['错误信息编码', '路由格式字符串', '路由参数', '命名空间', '服务接口名称', '消息体名称']))
           } else if (trueValue.fprotocol === '7') { // Fable-PB | 金融网关-Fable-PB | FIT网关-金融网关-Fable-PB
-            configArray = configArray.concat(['错误信息编码', '路由格式字符串', '路由参数', '命名空间', 'Requesttype', 'cgiName', '消息体名称'])
+            configArray = configArray.concat(createArr(['错误信息编码', '路由格式字符串', '路由参数', '命名空间', 'Requesttype', 'cgiName', '消息体名称']))
           }
           break
         case '入参配置':
@@ -331,27 +345,50 @@ export default {
         let message = '正常'
         let type = 'info'
         let abnormalStr = `${i.title}: \n测试数据和线上数据对比异常`
-        let config = {}
+        let config = {
+          key: 'name', // 判断是否 同层级重复的属性
+          hasItem: (item) => { return item.type === 'message' }, // 判断是否 有子集
+          itemPath: 'value', // 子集所在位置
+          nullArr: ['name', 'type', 'label', 'num', 'encode'], // 判断是否 空值的属性
+          checkType: 'contrast' // 判断内容 sameValue 相同值 nullValue 空值  contrast 对比值
+        }
+        let obj = {}
         switch (i.title) {
           case 'pb入参不重复':
-            config = this.changPb(i, trueValue, testValue)
-            type = config.type
-            message = config.message
+            config.checkType = 'sameValue'
+            obj = this.changPb(i, config)
+            type = obj.type
+            message = obj.message
             break
           case 'pb出参不重复':
-            config = this.changPb(i, trueValue, testValue)
-            type = config.type
-            message = config.message
+            config.checkType = 'sameValue'
+            obj = this.changPb(i, config)
+            type = obj.type
+            message = obj.message
             break
           case 'pb入参没空在值':
-            config = this.changPb(i, trueValue, testValue, 'null')
-            type = config.type
-            message = config.message
+            config.checkType = 'nullValue'
+            obj = this.changPb(i, config)
+            type = obj.type
+            message = obj.message
             break
           case 'pb出参没空值':
-            config = this.changPb(i, trueValue, testValue, 'null')
-            type = config.type
-            message = config.message
+            config.checkType = 'nullValue'
+            obj = this.changPb(i, config)
+            type = obj.type
+            message = obj.message
+            break
+          case 'pb入参对比':
+            config.checkType = 'contrast'
+            obj = this.changPb(i, config)
+            type = obj.type
+            message = obj.message
+            break
+          case 'pb入参多的值':
+            config.checkType = 'diffValue'
+            obj = this.changPb(i, config)
+            type = obj.type
+            message = obj.message
             break
           default:
             switch (i.judgment) {
@@ -380,86 +417,116 @@ export default {
         i.message = message
         i.type = type
 
-        try {
-          i.testValue = i.testValue.map(item => {
-            return JSON.stringify(item)
-          }).join(',')
-          i.trueValue = i.trueValue.join(',')
-        } catch (error) { }
-        i.testValue = typeof i.testValue === 'boolean' ? i.testValue ? '是' : '否' : i.testValue
-        i.trueValue = typeof i.trueValue === 'boolean' ? i.trueValue ? '是' : '否' : i.trueValue
+        switch (Object.prototype.toString.call(i.trueValue)) {
+          case '[object Array]':
+            i.testValue = i.testValue.map(item => {
+              return JSON.stringify(item)
+            }).join(',')
+            i.trueValue = i.trueValue.map(item => {
+              return JSON.stringify(item)
+            }).join(',')
+            break
+          case '[object Boolean]':
+            i.testValue = i.testValue ? '是' : '否'
+            i.trueValue = i.trueValue ? '是' : '否'
+            break
+          case '[object String]':
+            i.testValue = i.testValue ? i.testValue : '---------'
+            i.trueValue = i.trueValue ? i.trueValue : '---------'
+            break
+          default:
+            break
+        }
       })
       return tableData
     },
-    changPb(i, trueValue, testValue, key) {
+    changPb(i, config) {
+      /*
+        数组函数
+        判断内容：1. sameValue 相同值 2. nullValue 空值  3. contrast 对比值
+      */
       let message = '正常'
       let type = 'info'
-      let config = {
-        key: 'name', // 判断是否 同层级重复的属性
-        hasItem: (item) => { return item.type === 'message' }, // 判断是否 有子集
-        itemPath: 'value', // 子集所在位置
-        nullArr: ['name', 'type', 'label', 'num', 'encode'], // 判断是否 空值的属性
-        checkArr: ['sameValue', 'nullValue'] // 判断内容 sameValue 相同值 nullValue 空值
+
+      let arr = this.checkRepace(i.testValue, [], [], config, i.trueValue) // 测试环境数据
+      let arr2 = this.checkRepace(i.trueValue, [], [], config, i.testValue) // 线上环境数据
+
+      if (config.checkType === 'nullValue') { // 空值
+        arr = arr.filter(item => {
+          return item.errorValue2.length
+        })
+        arr2 = arr2.filter(item => {
+          return item.errorValue2.length
+        })
       }
-      let arr = this.checkRepace(i.testValue, [], [], config) // 测试环境数据
-      let arr2 = this.checkRepace(i.trueValue, [], [], config) // 线上环境数据
-      let errorValue = []
-      let errorValue2 = []
-      if (key === 'null') { // 没有空值
-        errorValue = arr.filter(item => {
-          return item.errorValue2.length
-        })
-        errorValue2 = arr2.filter(item => {
-          return item.errorValue2.length
-        })
-      } else { // 不重复
-        errorValue = arr.filter(item => {
+      if (config.checkType === 'sameValue') { // 相同值
+        arr = arr.filter(item => {
           return item.errorValue.length
         })
-        errorValue2 = arr.filter(item => {
+        arr2 = arr2.filter(item => {
           return item.errorValue.length
         })
       }
-      i.testValue = i.testValue.map(item => { return item.name })
-      i.trueValue = i.trueValue.map(item => { return item.name })
-      if (errorValue.length) {
-        message = '测试环境 \n \n'
-        type = 'danger'
-        errorValue.forEach(item => {
-          let path = item.path.length ? item.path.join('>') + '下的' : '层级一'
-          let str = ''
-          if (key === 'null') {
-            str = item.errorValue2.length ? path + '有空值 \n' : ''
-          } else {
-            str = item.errorValue.length ? path + item.errorValue.join(',') + '值重复 \n' : ''
-          }
-          message += str
+      if (config.checkType === 'contrast') { // 对比值
+        arr = arr.filter(item => {
+          return item.errorValue3.length
+        })
+        arr2 = arr2.filter(item => {
+          return item.errorValue3.length
+        })
+      }
+      if (config.checkType === 'diffValue') { // 多值
+        arr = arr.filter(item => {
+          return item.errorValue4.length
+        })
+        arr2 = arr2.filter(item => {
+          return item.errorValue4.length
         })
       }
 
-      if (errorValue2.length) {
-        message += ' \n \n 线上 \n \n'
+      i.testValue = i.testValue.map(item => { return item[config.key] })
+      i.trueValue = i.trueValue.map(item => { return item[config.key] })
+      if (arr.length) {
+        message = '测试环境 \n \n'
         type = 'danger'
-        errorValue2.forEach(item => {
-          let path = item.path.length ? item.path.join('>') + '下的' : '层级一'
-          let str = ''
-          if (key === 'null') {
-            str = item.errorValue2.length ? path + '有空值 \n' : ''
-          } else {
-            str = item.errorValue.length ? path + item.errorValue.join(',') + '值重复 \n' : ''
-          }
+        arr.forEach(item => {
+          let str = returnStr(item)
           message += str
         })
       }
-      if (trueValue.fprotocol !== '2' && trueValue.fprotocol !== '4') {
-        i.trueValue = '协议不是 relay-protobuf 或 Fable-PB'
-        message = '正常'
-        type = 'info'
+      if (arr2.length) {
+        if (arr.length) {
+          message += ' \n \n 线上 \n \n'
+        } else {
+          message = ' \n \n 线上 \n \n'
+        }
+        type = 'danger'
+        arr2.forEach(item => {
+          let str = returnStr(item)
+          message += str
+        })
       }
-      if (testValue.fprotocol !== '2' && testValue.fprotocol !== '4') {
-        i.testValue = '协议不是 relay-protobuf 或 Fable-PB'
-        message = '正常'
-        type = 'info'
+      function returnStr(item) {
+        let path = item.path.length ? item.path.join('>') + '属性下' : '层级一'
+        let str = ''
+        // 判断内容：1. sameValue 相同值 2. nullValue 空值  3. contrast 对比值
+        switch (config.checkType) {
+          case 'sameValue':
+            str = item.errorValue.length ? path + item.errorValue.join(',') + '值重复 \n' : ''
+            break
+          case 'nullValue':
+            str = item.errorValue2.length ? path + '有空值 \n' : ''
+            break
+          case 'contrast':
+            str = item.errorValue3.length ? path + item.errorValue3.join(',') + '不相同 \n' : ''
+            break
+          case 'diffValue':
+            str = item.errorValue4.length ? path + item.errorValue4.join(',') + '多或少了 \n' : ''
+            break
+          default:
+            break
+        }
+        return str
       }
       return {
         type,
@@ -471,29 +538,58 @@ export default {
         1.同层级是否相同值
         2.同层级是否有空值
         3.2个值对比 是否相同
+        4.数组 排序 之后再对比
       */
-      let config2 = {
-        key: 'name', // 判断是否 同层级重复的属性
-        hasItem: (item) => { return item.type === 'message' }, // 判断是否 有子集
-        itemPath: 'value', // 子集所在位置
-        nullArr: ['name', 'type', 'label', 'num', 'encode'], // 判断是否 空值的属性
-        checkArr: ['sameValue', 'nullValue'] // 判断内容 sameValue 相同值 nullValue 空值
-      }
-      console.log(config2)
+      data = data.sort((x, y) => {
+        if (x < y) {
+          return -1
+        } else if (x > y) {
+          return 1
+        } else {
+          return 0
+        }
+      })
+      data2 = data2.sort((x, y) => {
+        if (x[config.key] < y[config.key]) {
+          return -1
+        } else if (x[config.key] > y[config.key]) {
+          return 1
+        } else {
+          return 0
+        }
+      })
       let arr = []
       let obj = {
         path: [],
-        errorValue: [],
-        errorValue2: [],
-        errorValue3: []
+        errorValue: [], // 同层级 相等
+        errorValue2: [], // 同层级 空值
+        errorValue3: [], // 数据对比 不相等
+        errorValue4: [] // 数据对比 多或者少的
       }
-      data.forEach((i, index) => {
-        console.log(index)
-        for (let key in i) {
-          if (i[key] !== data2[index][key]) {
-            obj.push(i[config.key])
-          }
+      data.forEach(i => {
+        if (data2.every(item => {
+          return i[config.key] !== item[config.key]
+        })) {
+          obj.errorValue4.push(i[config.key])
         }
+      })
+      data.forEach((i) => {
+        let i2 = null
+        data2.forEach(item => {
+          if (i[config.key] === item[config.key]) {
+            i2 = item
+          }
+        })
+        config.nullArr.forEach(key => {
+          try {
+            if (i[key] !== i2[key]) {
+              obj.errorValue3.push(i[config.key])
+            }
+          } catch (error) {
+            // console.log(i[key], i2[key], 'key2', key, index)
+          }
+        })
+
         if (i[config.key]) {
           if (arr.includes(i[config.key])) {
             if (!obj.errorValue.includes(i[config.key])) {
@@ -503,17 +599,16 @@ export default {
             arr.push(i[config.key])
           }
         }
-        if (config.checkArr.includes('nullValue')) {
-          config.nullArr.forEach(item => {
-            if (i[item] === '') {
-              obj.errorValue2.push('有空值')
-            }
-          })
-        }
+        config.nullArr.forEach(item => {
+          if (i[item] === '') {
+            obj.errorValue2.push('有空值')
+          }
+        })
         if (config.hasItem(i)) {
           let path2 = path.map(i => { return i })
           path2.push(i[config.key])
-          let box2 = this.checkRepace(i[config.itemPath], box, path2, config)
+          let data3 = i2[config.itemPath]
+          let box2 = this.checkRepace(i[config.itemPath], box, path2, config, data3)
           box = Array.concat(box2)
         }
       })
