@@ -1,9 +1,11 @@
 <template>
   <div>
     <el-checkbox :indeterminate="ui.indeterminate" v-model="ui.checkAll" @change="btnAll">全选</el-checkbox>
-    <div style="margin: 15px 0;"></div>
+    <div style="margin: 15px 0"></div>
     <el-checkbox-group v-model="checked" @change="btnCheckBox">
-      <el-checkbox v-for="i in config" :label="i.title" :key="i.title">{{ i.title }}</el-checkbox>
+      <el-checkbox v-for="i in config" :label="i.title" :key="i.title">{{
+          i.title
+      }}</el-checkbox>
     </el-checkbox-group>
   </div>
 </template>
@@ -27,6 +29,7 @@ export default {
     return {
       ui: {
         indeterminate: false,
+        arrayConfig: [`不重复`, `没空值`, `多的值`, `对比`],
         checkAll: true
       },
       checked: ['基础配置对比', '入参配置'], // 已经勾选内容
@@ -111,6 +114,7 @@ export default {
       return this.messageReset(tableData, trueValue, testValue)
     },
     getBaseConfig(title, trueValue) {
+      const that = this
       let configArray = []
       let pathStr = ''
       let fprotocol = trueValue.fprotocol
@@ -261,12 +265,12 @@ export default {
             configArray = configArray.concat(createArr(['错误信息编码', '路由格式字符串', '路由参数', '命名空间', 'Requesttype', 'cgiName', '消息体名称']))
           }
           if (fprotocol === '2' || fprotocol === '4' || fprotocol === '6' || fprotocol === '7') {
-            configArray = configArray.concat(createArr(['pb入参不重复', 'pb入参没空值', 'pb入参多的值', 'pb入参对比', 'pb出参不重复', 'pb出参没空值', 'pb出参多的值', 'pb出参对比']))
+            configArray = configArray.concat(createArr(['pb入参_array', 'pb出参_array']))
           }
           break
         case '入参配置':
           // configArray = configArray.concat(createArr(['入参信息', '签名类型', '加密参数', '添加客户端ip', '添加时间戳参数', '添加cookie配置', '特殊参数编码', '随机字符串设定', 'commonStrlimitParam', 'commonFieldsParam', '组合JSON参数', '透传参数']))
-          configArray = configArray.concat(createArr(['入参信息不重复']))
+          configArray = configArray.concat(createArr(['入参信息_array']))
           break
         case '出参配置':
           break
@@ -276,8 +280,6 @@ export default {
           break
       }
       function createArr(arr) {
-        let reqParams = 'protobufConfig.protobufRequestConfig.reqParams'
-        let bodyParams = 'protobufConfig.protobufResponseConfig.bodyParams'
         let dict = {
           '错误信息编码': 'relayConfig.errorMsgEncoding',
           'Requesttype': 'relayConfig.requestType',
@@ -296,7 +298,7 @@ export default {
           '服务接口名称': 'protobufConfig.uriName',
           'cgiName': 'protobufConfig.cgiName',
 
-          '入参信息不重复': 'frequestParam.inputParams',
+          '入参信息': 'frequestParam.inputParams',
           '签名类型': 'frequestParam.signParam.signType',
           '加密参数': 'frequestParam.encryptParams',
           '添加客户端ip': 'frequestParam.clientIps',
@@ -308,23 +310,40 @@ export default {
           'commonFieldsParam': 'frequestParam.groupParam.commonFieldsParam.groupParamName',
           '组合JSON参数': 'frequestParam.commonJsonParam.paramName',
           '透传参数': 'frequestParam.specialParams',
-          'pb入参不重复': reqParams,
-          'pb入参没空值': reqParams,
-          'pb入参多的值': reqParams,
-          'pb入参对比': reqParams,
-          'pb出参不重复': bodyParams,
-          'pb出参没空值': bodyParams,
-          'pb出参多的值': bodyParams,
-          'pb出参对比': bodyParams
+          'pb入参': 'protobufConfig.protobufRequestConfig.reqParams',
+          'pb出参': 'protobufConfig.protobufResponseConfig.bodyParams'
         }
-        let array = arr.map(i => {
-          return {
-            title: i,
-            path: dict[i],
-            alert: '',
-            judgment: '' // ''  | mustDiff
+        let array = []
+
+        arr.forEach(i => {
+          if (i.includes('_array')) {
+            let i2 = i.replace('_array', '')
+            that.ui.arrayConfig.forEach(item => {
+              array.push({
+                title: `${i2}${item}`,
+                path: dict[i2],
+                alert: '',
+                judgment: '' // ''  | mustDiff
+              })
+            })
+          } else {
+            array.push({
+              title: i,
+              path: dict[i],
+              alert: '',
+              judgment: '' // ''  | mustDiff
+            })
           }
         })
+        // array = arr.map(i => {
+        //   if (i.title.includes('_arr'))
+        //     return {
+        //       title: i,
+        //       path: dict[i],
+        //       alert: '',
+        //       judgment: '' // ''  | mustDiff
+        //     }
+        // })
         return array
       }
       return configArray
@@ -343,44 +362,17 @@ export default {
           hasItem: (item) => { return item.type === 'message' }, // 判断是否 有子集
           itemPath: 'value', // 子集所在位置
           nullArr: ['name', 'type', 'label', 'num', 'encode'], // 判断是否 空值的属性
-          contrastArr: ['name', 'type', 'label', 'num', 'encode'], // 对比值
-          checkType: 'contrast' // 判断内容 sameValue 相同值 nullValue 空值  contrast 对比值
+          contrastArr: ['name', 'type', 'label', 'num', 'encode'] // 对比值
+          // checkType: 'contrast' // 判断内容 sameValue 相同值 nullValue 空值  contrast 对比值
         }
-        switch (i.title) {
-          case 'pb入参不重复':
-            config.checkType = 'sameValue'
+        switch (true) {
+          case i.title.includes('pb入参'):
             this.changPb(i, config, messageObj)
             break
-          case 'pb出参不重复':
-            config.checkType = 'sameValue'
+          case i.title.includes('pb出参'):
             this.changPb(i, config, messageObj)
             break
-          case 'pb入参没空值':
-            config.checkType = 'nullValue'
-            this.changPb(i, config, messageObj)
-            break
-          case 'pb出参没空值':
-            config.checkType = 'nullValue'
-            this.changPb(i, config, messageObj)
-            break
-          case 'pb入参对比':
-            config.checkType = 'contrast'
-            this.changPb(i, config, messageObj)
-            break
-          case 'pb出参对比':
-            config.checkType = 'contrast'
-            this.changPb(i, config, messageObj)
-            break
-          case 'pb入参多的值':
-            config.checkType = 'diffValue'
-            this.changPb(i, config, messageObj)
-            break
-          case 'pb出参多的值':
-            config.checkType = 'sameValue'
-            this.changPb(i, config, messageObj)
-            break
-          case '入参信息不重复':
-            config.checkType = 'diffValue'
+          case i.title.includes('入参信息'):
             config.itemPath = 'items'
             config.nullArr = ['name', 'text', 'hasItems']
             config.contrastArr = ['name', 'text', 'hasItems']
@@ -448,7 +440,7 @@ export default {
       let arr = this.checkRepace(i.testValue, [], [], config, i.trueValue) // 测试环境数据
       let arr2 = this.checkRepace(i.trueValue, [], [], config, i.testValue) // 线上环境数据
 
-      if (config.checkType === 'nullValue') { // 空值
+      if (i.title.includes('没空值')) { // 空值
         arr = arr.filter(item => {
           return item.errorValue2.length
         })
@@ -456,7 +448,7 @@ export default {
           return item.errorValue2.length
         })
       }
-      if (config.checkType === 'sameValue') { // 相同值
+      if (i.title.includes('不重复')) { // 相同值
         arr = arr.filter(item => {
           return item.errorValue.length
         })
@@ -464,7 +456,7 @@ export default {
           return item.errorValue.length
         })
       }
-      if (config.checkType === 'contrast') { // 对比值
+      if (i.title.includes('对比')) { // 对比值
         arr = arr.filter(item => {
           return item.errorValue3.length
         })
@@ -472,7 +464,7 @@ export default {
           return item.errorValue3.length
         })
       }
-      if (config.checkType === 'diffValue') { // 多值
+      if (i.title.includes('多的值')) { // 多值
         arr = arr.filter(item => {
           return item.errorValue4.length
         })
@@ -507,17 +499,17 @@ export default {
         let path = item.path.length ? item.path.join('>') + '属性下' : '层级一'
         let str = ''
         // 判断内容：1. sameValue 相同值 2. nullValue 空值  3. contrast 对比值
-        switch (config.checkType) {
-          case 'sameValue':
+        switch (true) {
+          case i.title.includes('不重复'):
             str = item.errorValue.length ? path + item.errorValue.join(',') + '值重复 \n' : ''
             break
-          case 'nullValue':
+          case i.title.includes('没空值'):
             str = item.errorValue2.length ? path + '有空值 \n' : ''
             break
-          case 'contrast':
+          case i.title.includes('对比'):
             str = item.errorValue3.length ? path + item.errorValue3.join(',') + '不相同 \n' : ''
             break
-          case 'diffValue':
+          case i.title.includes('多的值'):
             str = item.errorValue4.length ? path + item.errorValue4.join(',') + '多或少了 \n' : ''
             break
           default:

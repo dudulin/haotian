@@ -69,7 +69,7 @@
     <el-row>
       <el-col :span="24">
         总结：
-        <p style="white-space: pre-wrap">{{ ui.summary }}</p>
+        <p style="white-space: pre-wrap;word-break: break-all;">{{ ui.summary }}</p>
       </el-col>
     </el-row>
     <a href="http://testvenus.cf.com:8089/admin#/systemDataSource" target="_blank">测试环境--权限位</a>
