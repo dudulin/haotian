@@ -26,10 +26,10 @@ export default {
   data() {
     return {
       ui: {
-        indeterminate: true,
-        checkAll: false
+        indeterminate: false,
+        checkAll: true
       },
-      checked: ['pb入参不重复', 'pb入参对比'], // 已经勾选内容
+      checked: ['基础配置对比', '入参配置'], // 已经勾选内容
       config: [ // 所有的配置参数
         {
           title: '基础配置对比',
@@ -38,30 +38,6 @@ export default {
         {
           title: '入参配置',
           path: ''
-        },
-        {
-          title: 'pb入参不重复',
-          path: 'protobufConfig.protobufRequestConfig.reqParams'
-        },
-        {
-          title: 'pb入参对比',
-          path: 'protobufConfig.protobufRequestConfig.reqParams'
-        },
-        {
-          title: 'pb入参多的值',
-          path: 'protobufConfig.protobufRequestConfig.reqParams'
-        },
-        {
-          title: 'pb出参不重复',
-          path: 'protobufConfig.protobufResponseConfig.bodyParams'
-        },
-        {
-          title: 'pb入参没空在值',
-          path: 'protobufConfig.protobufRequestConfig.reqParams'
-        },
-        {
-          title: 'pb出参没空值',
-          path: 'protobufConfig.protobufResponseConfig.bodyParams'
         }
       ]
     }
@@ -137,6 +113,7 @@ export default {
     getBaseConfig(title, trueValue) {
       let configArray = []
       let pathStr = ''
+      let fprotocol = trueValue.fprotocol
       switch (title) {
         case '基础配置对比':
           configArray = configArray.concat([
@@ -172,9 +149,9 @@ export default {
             }
           ])
 
-          if (trueValue.fprotocol === '0') { // Relay
+          if (fprotocol === '0') { // Relay
             configArray = configArray.concat(createArr(['错误信息编码', 'Requesttype', '路由格式字符串', '路由参数', '是否加密']))
-          } else if (trueValue.fprotocol === '1') { // Http
+          } else if (fprotocol === '1') { // Http
             configArray = configArray.concat(createArr(['错误信息编码', '头部参数', '相对路径', '请求方式', '字符编码', '是否加密', '全文加密配置', '全文解密配置']))
             /* 全文加密配置 */
             pathStr = 'frequestParam.requestFullText'
@@ -274,19 +251,22 @@ export default {
                 }
               ])
             }
-          } else if (trueValue.fprotocol === '2') { // relay-protobuf
+          } else if (fprotocol === '2') { // relay-protobuf
             configArray = configArray.concat(createArr(['Requesttype', '消息体名称']))
-          } else if (trueValue.fprotocol === '3' || trueValue.fprotocol === '5') { // FIT网关 | 金融网关-Http
+          } else if (fprotocol === '3' || fprotocol === '5') { // FIT网关 | 金融网关-Http
             configArray = configArray.concat(createArr(['错误信息编码', 'CGI', '路由格式字符串', '路由参数', '是否加密']))
-          } else if (trueValue.fprotocol === '4' || trueValue.fprotocol === '6') { // Fable-PB | 金融网关-Fable-PB | FIT网关-金融网关-Fable-PB
+          } else if (fprotocol === '4' || fprotocol === '6') { // Fable-PB | 金融网关-Fable-PB | FIT网关-金融网关-Fable-PB
             configArray = configArray.concat(createArr(['错误信息编码', '路由格式字符串', '路由参数', '命名空间', '服务接口名称', '消息体名称']))
-          } else if (trueValue.fprotocol === '7') { // Fable-PB | 金融网关-Fable-PB | FIT网关-金融网关-Fable-PB
+          } else if (fprotocol === '7') { // Fable-PB | 金融网关-Fable-PB | FIT网关-金融网关-Fable-PB
             configArray = configArray.concat(createArr(['错误信息编码', '路由格式字符串', '路由参数', '命名空间', 'Requesttype', 'cgiName', '消息体名称']))
+          }
+          if (fprotocol === '2' || fprotocol === '4' || fprotocol === '6' || fprotocol === '7') {
+            configArray = configArray.concat(createArr(['pb入参不重复', 'pb入参没空值', 'pb入参多的值', 'pb入参对比', 'pb出参不重复', 'pb出参没空值', 'pb出参多的值', 'pb出参对比']))
           }
           break
         case '入参配置':
           // configArray = configArray.concat(createArr(['入参信息', '签名类型', '加密参数', '添加客户端ip', '添加时间戳参数', '添加cookie配置', '特殊参数编码', '随机字符串设定', 'commonStrlimitParam', 'commonFieldsParam', '组合JSON参数', '透传参数']))
-          configArray = configArray.concat(createArr(['入参信息']))
+          configArray = configArray.concat(createArr(['入参信息不重复']))
           break
         case '出参配置':
           break
@@ -296,6 +276,8 @@ export default {
           break
       }
       function createArr(arr) {
+        let reqParams = 'protobufConfig.protobufRequestConfig.reqParams'
+        let bodyParams = 'protobufConfig.protobufResponseConfig.bodyParams'
         let dict = {
           '错误信息编码': 'relayConfig.errorMsgEncoding',
           'Requesttype': 'relayConfig.requestType',
@@ -314,7 +296,7 @@ export default {
           '服务接口名称': 'protobufConfig.uriName',
           'cgiName': 'protobufConfig.cgiName',
 
-          '入参信息': 'frequestParam.inputParams',
+          '入参信息不重复': 'frequestParam.inputParams',
           '签名类型': 'frequestParam.signParam.signType',
           '加密参数': 'frequestParam.encryptParams',
           '添加客户端ip': 'frequestParam.clientIps',
@@ -325,7 +307,15 @@ export default {
           'commonStrlimitParam': 'frequestParam.groupParam.commonStrlimitParam.groupParamName',
           'commonFieldsParam': 'frequestParam.groupParam.commonFieldsParam.groupParamName',
           '组合JSON参数': 'frequestParam.commonJsonParam.paramName',
-          '透传参数': 'frequestParam.specialParams'
+          '透传参数': 'frequestParam.specialParams',
+          'pb入参不重复': reqParams,
+          'pb入参没空值': reqParams,
+          'pb入参多的值': reqParams,
+          'pb入参对比': reqParams,
+          'pb出参不重复': bodyParams,
+          'pb出参没空值': bodyParams,
+          'pb出参多的值': bodyParams,
+          'pb出参对比': bodyParams
         }
         let array = arr.map(i => {
           return {
@@ -342,71 +332,78 @@ export default {
     messageReset(tableData, trueValue, testValue) {
       tableData.forEach(i => {
         // judgment: '' // mustSame   | mustDiff | waring
-        let message = '正常'
-        let type = 'info'
+        let messageObj = {
+          message: '正常',
+          type: 'info'
+        }
         let abnormalStr = `${i.title}: \n测试数据和线上数据对比异常`
+        /* 针对 数组 递归 遍历 配置 */
         let config = {
           key: 'name', // 判断是否 同层级重复的属性
           hasItem: (item) => { return item.type === 'message' }, // 判断是否 有子集
           itemPath: 'value', // 子集所在位置
           nullArr: ['name', 'type', 'label', 'num', 'encode'], // 判断是否 空值的属性
+          contrastArr: ['name', 'type', 'label', 'num', 'encode'], // 对比值
           checkType: 'contrast' // 判断内容 sameValue 相同值 nullValue 空值  contrast 对比值
         }
-        let obj = {}
         switch (i.title) {
           case 'pb入参不重复':
             config.checkType = 'sameValue'
-            obj = this.changPb(i, config)
-            type = obj.type
-            message = obj.message
+            this.changPb(i, config, messageObj)
             break
           case 'pb出参不重复':
             config.checkType = 'sameValue'
-            obj = this.changPb(i, config)
-            type = obj.type
-            message = obj.message
+            this.changPb(i, config, messageObj)
             break
-          case 'pb入参没空在值':
+          case 'pb入参没空值':
             config.checkType = 'nullValue'
-            obj = this.changPb(i, config)
-            type = obj.type
-            message = obj.message
+            this.changPb(i, config, messageObj)
             break
           case 'pb出参没空值':
             config.checkType = 'nullValue'
-            obj = this.changPb(i, config)
-            type = obj.type
-            message = obj.message
+            this.changPb(i, config, messageObj)
             break
           case 'pb入参对比':
             config.checkType = 'contrast'
-            obj = this.changPb(i, config)
-            type = obj.type
-            message = obj.message
+            this.changPb(i, config, messageObj)
+            break
+          case 'pb出参对比':
+            config.checkType = 'contrast'
+            this.changPb(i, config, messageObj)
             break
           case 'pb入参多的值':
             config.checkType = 'diffValue'
-            obj = this.changPb(i, config)
-            type = obj.type
-            message = obj.message
+            this.changPb(i, config, messageObj)
+            break
+          case 'pb出参多的值':
+            config.checkType = 'sameValue'
+            this.changPb(i, config, messageObj)
+            break
+          case '入参信息不重复':
+            config.checkType = 'diffValue'
+            config.itemPath = 'items'
+            config.nullArr = ['name', 'text', 'hasItems']
+            config.contrastArr = ['name', 'text', 'hasItems']
+            config.hasItem = (item) => { return item.hasItems }
+            this.changPb(i, config, messageObj)
             break
           default:
             switch (i.judgment) {
               case '': // 相同就正常
                 if (String(i.testValue) !== String(i.trueValue)) {
-                  message = abnormalStr
-                  type = 'danger'
+                  messageObj.message = abnormalStr
+                  messageObj.type = 'danger'
                 }
                 break
               case 'mustDiff': // 必须不同
                 if (String(i.testValue) === String(i.trueValue)) {
-                  message = abnormalStr
-                  type = 'danger'
+                  messageObj.message = abnormalStr
+                  messageObj.type = 'danger'
                 }
                 break
               case 'waring': // 无论结果 都会告警
-                message = i.alert
-                type = 'danger'
+                messageObj.message = i.alert
+                messageObj.type = 'danger'
                 break
               default:
                 debugger
@@ -414,8 +411,8 @@ export default {
             }
             break
         }
-        i.message = message
-        i.type = type
+        i.message = messageObj.message
+        i.type = messageObj.type
 
         switch (Object.prototype.toString.call(i.trueValue)) {
           case '[object Array]':
@@ -440,7 +437,7 @@ export default {
       })
       return tableData
     },
-    changPb(i, config) {
+    changPb(i, config, messageObj) {
       /*
         数组函数
         判断内容：1. sameValue 相同值 2. nullValue 空值  3. contrast 对比值
@@ -528,10 +525,8 @@ export default {
         }
         return str
       }
-      return {
-        type,
-        message
-      }
+      messageObj.type = type
+      messageObj.message = message
     },
     checkRepace(data, box = [], path = [], config, data2) {
       /*
@@ -580,7 +575,7 @@ export default {
             i2 = item
           }
         })
-        config.nullArr.forEach(key => {
+        config.contrastArr.forEach(key => {
           try {
             if (i[key] !== i2[key]) {
               obj.errorValue3.push(i[config.key])

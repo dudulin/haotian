@@ -2,16 +2,20 @@
   <div id="app" style="width:80vw;margin:0 8vw;">
     <el-row>
       <el-col :span="24" style="text-align:center;margin: 30px 0;">
-        <el-button @click="btnTestCopyClick" type="primary">导入测试环境数据</el-button>
-        <el-link class="btnMessage" :type="ui.testBtnType" v-if="!!ui.testBtnMessage">{{
-            ui.testBtnMessage | dateFormart('hh:mm:ss')
-        }}
-        </el-link>
-        <el-button @click="btnTrueCopyClick" type="primary">导入线上环境数据</el-button>
-        <el-link class="btnMessage" :type="ui.trueBtnType" v-if="!!ui.trueBtnMessage">{{
-            ui.trueBtnMessage | dateFormart('hh:mm:ss')
-        }}
-        </el-link>
+        <span @click="btnTestCopyClick">
+          <el-button type="primary">导入测试环境数据</el-button>
+          <el-link class="btnMessage" :type="ui.testBtnType" v-if="!!ui.testBtnMessage">{{
+              ui.testBtnMessage | dateFormart('hh:mm:ss')
+          }}
+          </el-link>
+        </span>
+        <span @click="btnTrueCopyClick">
+          <el-button type="primary">导入线上环境数据</el-button>
+          <el-link class="btnMessage" :type="ui.trueBtnType" v-if="!!ui.trueBtnMessage">{{
+              ui.trueBtnMessage | dateFormart('hh:mm:ss')
+          }}
+          </el-link>
+        </span>
       </el-col>
     </el-row>
     <el-dialog title="测试数据" :visible.sync="ui.dialogTestVisible" width="30%">
