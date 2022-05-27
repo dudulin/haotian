@@ -34,6 +34,24 @@
         <el-button type="primary" @click="btn2">确 定</el-button>
       </span>
     </el-dialog>
+    <el-dialog title="详情" :visible.sync="ui.dialogDetailVisible" width="80%">
+      <el-table :data="tableData2" border style="width: 100%">
+        <el-table-column prop="key" label="参数名"> </el-table-column>
+        <el-table-column prop="path" label="层级"> </el-table-column>
+        <el-table-column prop="testValue" label="测试环境"> </el-table-column>
+        <el-table-column prop="trueValue" label="线上环境"> </el-table-column>
+        <el-table-column prop="type" label="是否异常"> </el-table-column>
+        <el-table-column prop="cc" label="确认异常"> </el-table-column>
+        <!-- <el-table-column prop="message" label="备注">
+          <template slot-scope="scope">
+            <el-link :type="scope.row.type" style="white-space: pre-wrap">{{ scope.row.message }}</el-link>
+          </template>
+        </el-table-column> -->
+      </el-table>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="ui.dialogDetailVisible = false">取 消</el-button>
+      </span>
+    </el-dialog>
     <el-tabs type="border-card" v-model="tabsChoice">
       <el-tab-pane :name="pageKey" label="页面">
         <Page :ref="pageKey" @callback="getData" :testValue="testValueCopy" :trueValue="trueValueCopy">
@@ -52,8 +70,11 @@
 
     <div class="tableTitle"><span>页面数据</span>
     </div>
-    <el-table :data="tableData" border v-loading="loading" header-cell-class-name="sssss">
-      <el-table-column prop="title" label="参数" width="180">
+    <el-table :data="tableData" border v-loading="loading" header-cell-class-name="sssss"
+      :tree-props="{ children: 'children' }" row-key="id">
+      <el-table-column prop="title" label="参数">
+      </el-table-column>
+      <el-table-column prop="path" label="属性" width="180">
       </el-table-column>
       <el-table-column prop="testValue" label="测试环境数据">
       </el-table-column>
@@ -62,7 +83,9 @@
       <el-table-column label="校验结果" :filters="[{ text: '正常数据', value: 'normal' }, { text: '异常数据', value: 'abnormal' }]"
         :filter-method="filterTag">
         <template slot-scope="scope">
-          <el-link :type="scope.row.type" style="white-space: pre-wrap">{{ scope.row.message }}</el-link>
+          <el-button v-if="scope.row.tableData" size="mini" :type="scope.row.type" @click="showDetails(scope.row)">详情
+          </el-button>
+          <el-link v-else :type="scope.row.type" style="white-space: pre-wrap">{{ scope.row.message }}</el-link>
         </template>
       </el-table-column>
     </el-table>
@@ -106,6 +129,7 @@ export default {
         trueBtnMessage: '请导入数据', // 按钮下的 文字 内容
         dialogTestVisible: false, // 测试数据弹窗 显示隐藏
         dialogTrueVisible: false, // 线上数据弹窗 显示隐藏
+        dialogDetailVisible: false, // 详情弹窗 显示隐藏
         summary: '' // 总结
       },
       dialogTest: null, // 弹窗的测试数据
@@ -116,11 +140,31 @@ export default {
       loading: false,
       tableData: [{
         title: '接口名称',
-        testValue: ['sss', 'ddd'],
-        trueValue: ['sss', 'ddd'],
+        testValue: ['数据'],
+        trueValue: ['数据'],
         message: '这个是提示内容',
         type: 'danger'
-      }]
+      }],
+      tableData2: [
+        {
+          key: 'name',
+          path: '层级一',
+          title: '接口名称',
+          testValue: ['数据类型错误:1;  tag错误:空值'],
+          trueValue: ['数据类型错误:3'],
+          message: '',
+          type: 'danger'
+        },
+        {
+          key: 'name>age',
+          path: '层级二',
+          title: '接口名称',
+          testValue: ['cc'],
+          trueValue: ['cc'],
+          message: '',
+          type: 'danger'
+        }
+      ]
     }
   },
   methods: {
@@ -208,7 +252,27 @@ export default {
       } else {
         return row.type === 'info'
       }
+    },
+    showDetails(row) {
+      this.tableData2 = row.tableData
+      this.ui.dialogDetailVisible = true
+      console.log(row)
     }
+    // arraySpanMethod({ row, column, rowIndex, columnIndex }) {
+    //   if (columnIndex === 1 || columnIndex === 0) {
+    //     if (rowIndex === 0) {
+    //       return {
+    //         rowspan: 4,
+    //         colspan: 1
+    //       }
+    //     } else {
+    //       return {
+    //         rowspan: 0,
+    //         colspan: 0
+    //       }
+    //     }
+    //   }
+    // }
   },
   watch: {
     testValueCopy: {
@@ -255,3 +319,5 @@ export default {
   top: 4px;
 }
 </style>
+
+`{"title":"修改","btn":"修改","fname":"test1","fid":540,"fremark":"test1","fserverAddressId":114,"fformatId":10,"fisValid":0,"fprotocol":"4","fcharset":"gb2312","fprotocolValue":"","relayConfig":{"requestType":"","errorMsgEncoding":"gb2312","routeFormat":"","routeParams":""},"httpConfig":{"headParams":"","method":"1","relativeUrl":"","contentType":"1","encode":"","xmlRequestNodes":[{"nodeName":"","paramNameMapping":"","attributesMapping":[],"hasNodes":false,"emptyNoSendFlag":true,"nodes":[{"nodeName":"","paramNameMapping":"","attributesMapping":[],"hasNodes":false,"emptyNoSendFlag":true,"nodes":[]}]}]},"protobufConfig":{"namespace":"test","uriName":"test","dynamicPbName":"test","protobufRequestConfig":{"reqParams":[{"type":"bool","label":"optional","name":"a","num":1,"encode":"gb2312","value":[{"type":"bool","label":"optional","name":"","num":1,"encode":"gb2312","value":"","key":"2022-05-27T03:53:23.178Z"}],"key":"2022-05-27T03:53:23.178Z"},{"type":"bool","label":"optional","name":"b","encode":"gb2312","num":3,"value":[{"type":"bool","label":"optional","name":"","num":1,"encode":"gb2312","value":"","key":"2022-05-27T03:53:23.178Z"}],"key":"2022-05-27T03:53:23.178Z"},{"type":"bool","label":"optional","name":"ww","encode":"gb2312","num":1,"value":[{"type":"bool","label":"optional","name":"","encode":"gb2312","num":1,"value":""}]},{"type":"message","label":"optional","name":"c","encode":"gb2312","num":4,"value":[{"type":"bool","label":"optional","name":"d","encode":"gb2312","num":1,"value":"","key":"2022-05-27T03:53:23.178Z"},{"type":"bool","label":"optional","name":"d","encode":"gb2312","num":3,"value":[{"type":"bool","label":"optional","name":"","encode":"gb2312","num":1,"value":""}],"key":"2022-05-27T03:53:23.178Z"},{"type":"bool","label":"optional","name":"a","encode":"gb2312","num":5,"value":[{"type":"bool","label":"optional","name":"","encode":"gb2312","num":1,"value":""}],"key":"2022-05-27T03:53:23.178Z"},{"type":"bool","label":"optional","name":"xx","encode":"gb2312","num":1,"value":[{"type":"bool","label":"optional","name":"","encode":"gb2312","num":1,"value":""}]}],"key":"2022-05-27T03:53:23.178Z"}]},"protobufResponseConfig":{"bodyParams":[{"type":"string","label":"optional","name":"a","num":1,"encode":"gb2312","value":[{"type":"bool","label":"optional","name":"","num":1,"encode":"gb2312","value":"","key":"2022-05-27T03:53:23.178Z"}],"key":"2022-05-27T03:53:23.178Z"},{"type":"bool","label":"optional","name":"b","encode":"gb2312","num":3,"value":[{"type":"bool","label":"optional","name":"","num":1,"encode":"gb2312","value":"","key":"2022-05-27T03:53:23.178Z"}],"key":"2022-05-27T03:53:23.178Z"},{"type":"bool","label":"optional","name":"c","encode":"gb2312","num":4,"value":[{"type":"bool","label":"optional","name":"","num":1,"encode":"gb2312","value":"","key":"2022-05-27T03:53:23.178Z"}],"key":"2022-05-27T03:53:23.178Z"}]},"routeParams":"","routeFormat":""},"fitConfig":{"cgiName":"","routeFormat":"","routeParams":""},"fencryption":false,"frequestParam":{"requestFullText":{"enableEncrypt":false,"paramName":"","keySysEncryptEntity":{"isKeySysEncrypt":false,"keyId":"","encAlgo":"","charset":"gb2312","keySeq":"","isUseStd":false}},"batchSign":false,"signParam":{"keySysSignSetting":{"isKeySysSign":false,"signParamName":"","keyId":"","encAlgo":"","signRule":"","isUseStd":false,"keySeq":"","charset":"gb2312","trimSpace":false,"addTimestamp":false,"timestampName":"","timestampSize":""},"signType":"2","upperCase":false,"name":"","key":"","signRule":"","trimSpace":false,"charsetEncoding":"","encryptType":"","keyInSort":false},"ticketParams":[{"paramName":"","cookieParam":""}],"signParams":[{"keySysSignSetting":{"isKeySysSign":true,"signParamName":"23","keyId":"23","encAlgo":"23"},"upperCase":false,"name":"23","key":"3","signRule":"3","trimSpace":false,"charsetEncoding":"","encryptType":"","keyInSort":false}],"encryptParams":[{"type":"3","key":"3","paramName":"3","encryptRule":"3"}],"specialParams":"","clientIps":[""],"randomParam":"","timestamp":{"paramName":"","size":""},"commonJsonParam":{"paramName":"","comboxParams":"","trim":true},"groupParam":{"commonStrlimitParam":{"groupParamName":"","offsetParamName":"","limitParamName":""},"commonFieldsParam":{"groupParamName":"","keepingSpace":false,"inGroupParams":""}},"inputParams":[{"name":"","text":""}],"encoderRetParams":[{"paramName":"","charsetEncoding":"utf-8","decode":false}]},"fresponseParam":{"responseFullText":{"enableDecrypt":false,"resultCodeParamName":"retcode","resultMsgParamName":"retmsg","resultDataParamName":"data","keySysDecryptEntity":{"isKeySysDecrypt":false,"keyId":"","oldEncAlgo":"","charset":"gb2312","keySeq":"","isUseStd":false}},"charsetEncoding":"gb2312","outPutParams":[{"name":"","text":"","defacementParam":{"defacement":false,"reqParamNameMapping":""},"items":[{"name":"","text":"","defacementParam":{"defacement":false,"reqParamNameMapping":""},"key":"2022-05-27T03:53:23.178Z"}],"hasItems":false,"key":"2022-05-27T03:53:23.178Z"}],"validSignSetting":{"trimSpace":false,"addTimestamp":false,"timestampName":"","timestampSize":"","isKeySysValidSign":false,"signParamName":"","keyId":"","encAlgo":"","signRule":""},"decryptParams":[{"type":"2","key":"2","paramName":"2","decryptRule":"2"}],"specialReturnField":"","encoderRetParams":[{"paramName":"","charsetEncoding":"utf-8","decode":false}],"secondSegmentParam":[{"seqName":"","secondFormatType":"","charset":"gb2312"}],"arrayExpansion":{"type":0,"params":""},"transferToBinary":[{"paramName":"","index":""}]},"auditlog":{"open":false,"auditlogArr":[{"auditlogKey":"","auditlogVal":""}],"newAuditlogArr":[{"auditlogKey":"","auditlogVal":""}]}}`
