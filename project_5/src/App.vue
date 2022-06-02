@@ -36,6 +36,7 @@
     </el-dialog>
     <el-dialog title="详情" :visible.sync="ui.dialogDetailVisible" width="80%">
       <el-table :data="tableData2" border style="width: 100%">
+        <el-table-column type="index" width="50" label="序号"> </el-table-column>
         <el-table-column prop="key" label="参数名"> </el-table-column>
         <el-table-column prop="path" label="层级"> </el-table-column>
         <el-table-column prop="testValue" label="测试环境"> </el-table-column>
@@ -45,10 +46,10 @@
             <el-link :type="scope.row.type" style="white-space: pre-wrap">{{ scope.row.type | changeType }}</el-link>
           </template>
         </el-table-column>
-        <el-table-column prop="cc" label="确认异常">
+        <el-table-column label="确认异常">
           <template slot-scope="scope">
-            <el-switch v-model="scope.row.normal" active-text="正常" inactive-text="异常"> </el-switch>
-            {{scope.row.normal}}
+            <el-switch v-model="scope.row.normal" inactive-color="#ff4949" active-color="#13ce66" active-text="正常"
+              inactive-text="异常"> </el-switch>
           </template>
         </el-table-column>
 
@@ -77,20 +78,24 @@
     </div>
     <el-table :data="tableData" border v-loading="loading" header-cell-class-name="sssss"
       :tree-props="{ children: 'children' }" row-key="id">
-      <el-table-column prop="title" label="参数">
-      </el-table-column>
-      <el-table-column prop="path" label="属性" width="180">
-      </el-table-column>
-      <el-table-column prop="testValue" label="测试环境数据">
-      </el-table-column>
-      <el-table-column prop="trueValue" label="线上环境数据">
-      </el-table-column>
+      <el-table-column type="index" width="50" label="序号"> </el-table-column>
+      <el-table-column prop="title" label="参数"> </el-table-column>
+      <el-table-column prop="path" label="属性" width="180"> </el-table-column>
+      <el-table-column prop="testValue" label="测试环境数据"> </el-table-column>
+      <el-table-column prop="trueValue" label="线上环境数据"> </el-table-column>
       <el-table-column label="校验结果" :filters="[{ text: '正常数据', value: 'normal' }, { text: '异常数据', value: 'abnormal' }]"
         :filter-method="filterTag">
         <template slot-scope="scope">
           <el-button v-if="scope.row.tableData" size="mini" :type="scope.row.type" @click="showDetails(scope.row)">详情
           </el-button>
           <el-link v-else :type="scope.row.type" style="white-space: pre-wrap">{{ scope.row.message }}</el-link>
+        </template>
+      </el-table-column>
+      <el-table-column label="确认异常" :key="ui.randomId">
+        <template slot-scope="scope">
+          <el-switch v-model="scope.row.normal" inactive-color="#ff4949" active-color="#13ce66" active-text="正常"
+            inactive-text="异常" @change="random"> </el-switch>
+          {{ scope.row.normal }}
         </template>
       </el-table-column>
     </el-table>
@@ -135,7 +140,8 @@ export default {
         dialogTestVisible: false, // 测试数据弹窗 显示隐藏
         dialogTrueVisible: false, // 线上数据弹窗 显示隐藏
         dialogDetailVisible: false, // 详情弹窗 显示隐藏
-        summary: '' // 总结
+        summary: '', // 总结
+        randomId: '' // 总结
       },
       dialogTest: null, // 弹窗的测试数据
       dialogTrue: null, // 弹窗的线上数据
@@ -258,26 +264,14 @@ export default {
         return row.type === 'info'
       }
     },
+    random() {
+      this.ui.randomId = String(Math.random())
+    },
     showDetails(row) {
       this.tableData2 = row.tableData
       this.ui.dialogDetailVisible = true
       console.log(row)
     }
-    // arraySpanMethod({ row, column, rowIndex, columnIndex }) {
-    //   if (columnIndex === 1 || columnIndex === 0) {
-    //     if (rowIndex === 0) {
-    //       return {
-    //         rowspan: 4,
-    //         colspan: 1
-    //       }
-    //     } else {
-    //       return {
-    //         rowspan: 0,
-    //         colspan: 0
-    //       }
-    //     }
-    //   }
-    // }
   },
   watch: {
     testValueCopy: {
@@ -324,3 +318,4 @@ export default {
   top: 4px;
 }
 </style>
+`{"title":"修改","btn":"修改","fname":"test1","fid":540,"fremark":"test1","fserverAddressId":114,"fformatId":10,"fisValid":0,"fprotocol":"4","fcharset":"gb2312","fprotocolValue":"","relayConfig":{"requestType":"","errorMsgEncoding":"gb2312","routeFormat":"","routeParams":""},"httpConfig":{"headParams":"","method":"1","relativeUrl":"","contentType":"1","encode":"","xmlRequestNodes":[{"nodeName":"","paramNameMapping":"","attributesMapping":[],"hasNodes":false,"emptyNoSendFlag":true,"nodes":[{"nodeName":"","paramNameMapping":"","attributesMapping":[],"hasNodes":false,"emptyNoSendFlag":true,"nodes":[]}]}]},"protobufConfig":{"namespace":"test","uriName":"test","dynamicPbName":"test","protobufRequestConfig":{"reqParams":[{"type":"string","label":"optional","name":"a","encode":"gb2312","num":4,"value":[{"type":"bool","label":"optional","name":"","num":1,"encode":"gb2312","value":"","key":"2022-06-01T07:40:56.658Z"}],"key":"2022-06-01T07:40:56.658Z"},{"type":"bool","label":"optional","name":"b","encode":"gb2312","num":"","value":[{"type":"bool","label":"optional","name":"","encode":"gb2312","num":1,"value":""}]},{"type":"bool","label":"optional","name":"c","encode":"gb2312","num":1,"value":[{"type":"bool","label":"optional","name":"","encode":"gb2312","num":1,"value":""}]}]},"protobufResponseConfig":{"bodyParams":[{"type":"bool","label":"optional","name":"c","encode":"gb2312","num":4,"value":[{"type":"bool","label":"optional","name":"","num":1,"encode":"gb2312","value":"","key":"2022-06-01T07:40:56.658Z"}],"key":"2022-06-01T07:40:56.658Z"}]},"routeParams":"","routeFormat":""},"fitConfig":{"cgiName":"","routeFormat":"","routeParams":""},"fencryption":false,"frequestParam":{"requestFullText":{"enableEncrypt":false,"paramName":"","keySysEncryptEntity":{"isKeySysEncrypt":false,"keyId":"","encAlgo":"","charset":"gb2312","keySeq":"","isUseStd":false}},"batchSign":false,"signParam":{"keySysSignSetting":{"isKeySysSign":false,"signParamName":"","keyId":"","encAlgo":"","signRule":"","isUseStd":false,"keySeq":"","charset":"gb2312","trimSpace":false,"addTimestamp":false,"timestampName":"","timestampSize":""},"signType":"2","upperCase":false,"name":"","key":"","signRule":"","trimSpace":false,"charsetEncoding":"","encryptType":"","keyInSort":false},"ticketParams":[{"paramName":"","cookieParam":""}],"signParams":[{"keySysSignSetting":{"isKeySysSign":true,"signParamName":"23","keyId":"23","encAlgo":"23"},"upperCase":false,"name":"23","key":"3","signRule":"3","trimSpace":false,"charsetEncoding":"","encryptType":"","keyInSort":false}],"encryptParams":[{"type":"3","key":"3","paramName":"3","encryptRule":"3","encoding":"utf-8"}],"specialParams":"","clientIps":[""],"randomParam":"","timestamp":{"paramName":"","size":""},"commonJsonParam":{"paramName":"","comboxParams":"","trim":true},"groupParam":{"commonStrlimitParam":{"groupParamName":"","offsetParamName":"","limitParamName":""},"commonFieldsParam":{"groupParamName":"","keepingSpace":false,"inGroupParams":""}},"inputParams":[{"name":"","text":""}],"encoderRetParams":[{"paramName":"","charsetEncoding":"utf-8","decode":false}]},"fresponseParam":{"responseFullText":{"enableDecrypt":false,"resultCodeParamName":"retcode","resultMsgParamName":"retmsg","resultDataParamName":"data","keySysDecryptEntity":{"isKeySysDecrypt":false,"keyId":"","oldEncAlgo":"","charset":"gb2312","keySeq":"","isUseStd":false}},"charsetEncoding":"gb2312","outPutParams":[{"name":"","text":"","defacementParam":{"defacement":false,"reqParamNameMapping":""},"items":[{"name":"","text":"","defacementParam":{"defacement":false,"reqParamNameMapping":""},"key":"2022-06-01T07:40:56.658Z"}],"hasItems":false,"key":"2022-06-01T07:40:56.658Z"}],"validSignSetting":{"trimSpace":false,"addTimestamp":false,"timestampName":"","timestampSize":"","isKeySysValidSign":false,"signParamName":"","keyId":"","encAlgo":"","signRule":""},"decryptParams":[{"type":"2","key":"2","paramName":"2","decryptRule":"2","encoding":"utf-8"}],"specialReturnField":"","encoderRetParams":[{"paramName":"","charsetEncoding":"utf-8","decode":false}],"secondSegmentParam":[{"seqName":"","secondFormatType":"","charset":"gb2312"}],"arrayExpansion":{"type":0,"params":""},"transferToBinary":[{"paramName":"","index":""}]},"auditlog":{"open":false,"auditlogArr":[{"auditlogKey":"","auditlogVal":""}],"newAuditlogArr":[{"auditlogKey":"","auditlogVal":""}]}}`
