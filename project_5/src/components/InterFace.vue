@@ -556,6 +556,7 @@ export default {
           message: '正常',
           type: 'info'
         }
+        i.normal = true
         let abnormalStr = `${i.title}: \n测试数据和线上数据对比异常`
         /* 针对 数组 递归 遍历 配置 */
         let config = {
@@ -577,7 +578,7 @@ export default {
         try {
           arr = i.path.split('.')
         } catch (error) {
-          // debugger
+
         }
         let testData = null
         let trueData = null
@@ -710,7 +711,6 @@ export default {
                 messageObj.type = 'danger'
                 break
               default:
-                // debugger
                 break
             }
             break
@@ -750,6 +750,9 @@ export default {
             i.type = 'danger'
           }
         }
+        if (i.type !== 'info') {
+          i.normal = false
+        }
       })
       return tableData
     },
@@ -773,12 +776,11 @@ export default {
       let message = '正常'
 
       let arr = this.checkRepace(i.testValue, [], [], config, i.trueValue) // 测试环境数据
-      let arr2 = this.checkRepace(i.trueValue, [], [], config, i.testValue) // 线上环境数据
+      // let arr2 = this.checkRepace(i.trueValue, [], [], config, i.testValue) // 线上环境数据
       console.log(arr, 'arr')
-      console.log(arr2, 'arr2')
       if (!config.key) { // 字符串类型
         arr = this.checkRepace2(i.testValue, i.trueValue) // 测试环境数据
-        arr2 = this.checkRepace2(i.trueValue, i.testValue) // 线上环境数据
+        // arr2 = this.checkRepace2(i.trueValue, i.testValue) // 线上环境数据
       }
 
       if (config.key) {
@@ -786,84 +788,71 @@ export default {
         // i.trueValue = i.trueValue.map(item => { return item[config.key] })
       }
       let array = []
-      let array2 = []
-      if (arr.length > arr2.length) {
-        arr.forEach((item, index) => {
-          arr2.forEach(item2 => {
-            if (item.key === item2.key) {
-              array.push(returnObj(item, item2))
-            }
-          })
-          if (arr2.every(item2 => { return item.key !== item2.key })) {
-            array.push(returnObj(item, null))
-          }
-        })
-      } else {
-        arr2.forEach((item, index) => {
-          arr.forEach(item2 => {
-            if (item.key === item2.key && item.pathStr === item2.pathStr) {
-              if (!array2.includes(JSON.stringify(item2))) {
-                array.push(returnObj(item2, item))
-                array2.push(JSON.stringify(item2))
-                console.log(index, 'kkk', item.key)
-              }
-            }
-          })
-          if (arr.every(item2 => { return item.key !== item2.key })) {
-            array.push(returnObj(null, item))
-          }
-        })
-      }
-
+      arr.forEach(i => {
+        array.push(returnObj(i))
+      })
       console.log(array, 'array')
-      function returnObj(data1, data2) {
-        let key = ''
-        let path = ''
+
+      function returnObj(item) {
+        let normal = item.normal
+        let path = `层级${item.path.length + 1}`
+        let key = item.path.length ? item.path.join('>') + '>' + item.key : item.key
+        let type = normal ? 'info' : 'danger'
+
         let testValue = ''
         let trueValue = ''
-        let type = 'danger'
-        if (data1) {
-          path = `层级${data1.path.length + 1}`
-          testValue = returnStr(data1)
-          key = data1.path.length ? data1.path.join('>') + '>' + data1.key : data1.key
+        // 判断内容：1. sameValue 相同值 2. nullValue 空值  3. contrast 对比值
+        if (item.repeatArr.length) {
+          item.repeatArr.forEach(i => {
+            trueValue += `${i.title}错误:数据重复; `
+          })
         }
-        if (data2) {
-          path = `层级${data2.path.length + 1}`
-          trueValue = returnStr(data2)
-          key = data2.path.length ? data2.path.join('>') + '>' + data2.key : data2.key
+        if (item.repeatArr2.length) {
+          item.repeatArr2.forEach(i => {
+            testValue += `${i.title}错误:数据重复; `
+          })
         }
-        try {
-          type = data1.normal && data2.normal ? 'info' : 'danger'
-        } catch (error) { }
+
+        if (item.nulltArr.length) {
+          item.nulltArr.forEach(i => {
+            trueValue += `${i}错误:空值; `
+          })
+        }
+        if (item.nulltArr2.length) {
+          item.nulltArr2.forEach(i => {
+            testValue += `${i}错误:空值; `
+          })
+        }
+        if (item.diffArr.length) {
+          item.diffArr.forEach(i => {
+            trueValue += `${i.title}错误:${i.value2}; `
+            testValue += `${i.title}错误:${i.value}; `
+          })
+        }
+        if (item.moreArr.length) {
+          item.moreArr.forEach(i => {
+            trueValue += `错误:线上多的数据; `
+          })
+        }
+        if (item.moreArr2.length) {
+          item.moreArr2.forEach(i => {
+            testValue += `错误:测试多的数据; `
+          })
+        }
+        if (item.normal) {
+          testValue = '一致'
+          trueValue = '一致'
+        }
         let obj = {
           key,
           path,
           testValue,
+          normal,
           trueValue,
           message,
           type
         }
         return obj
-      }
-      function returnStr(item) {
-        let str = ''
-        // 判断内容：1. sameValue 相同值 2. nullValue 空值  3. contrast 对比值
-        if (item.errorValue.length) {
-          str += item.errorValue.length ? item.errorValue.join(',') : ''
-        }
-        if (item.errorValue2.length) {
-          str += item.errorValue2.length ? item.errorValue2.join(',') : ''
-        }
-        if (item.errorValue3.length) {
-          str += item.errorValue3.length ? item.errorValue3.join(',') : ''
-        }
-        if (item.errorValue4.length) {
-          str += item.errorValue4.length ? item.errorValue4.join(',') : ''
-        }
-        if (item.normal) {
-          str = '一致'
-        }
-        return str
       }
       messageObj.type = array.every(i => { return i.type === 'info' }) ? 'info' : 'danger'
       messageObj.message = message
@@ -894,12 +883,13 @@ export default {
       return [obj]
     },
     checkRepace(data, box = [], path = [], config, data2) {
-      /*
-        1.同层级是否相同值
-        2.同层级是否有空值
-        3.2个值对比 是否相同
-        4.数组 排序 之后再对比
-      */
+      let key = config.key
+      const that = this
+      config.nullArr.forEach(i => {
+        if (i.prop === key) {
+          config.title = i.title
+        }
+      })
       if (!config.contrastArr || !config.contrastArr.length) {
         config.contrastArr = config.nullArr.map(i => { return i })
       }
@@ -908,36 +898,134 @@ export default {
         data = this.sort(data, config.key)
         data2 = this.sort(data2, config.key)
       } catch (error) {
-        debugger
+
       }
-      let arr = []
-
       /* ==================================================================  */
-      let repeatArr = []
-      let nulltArr = []
       let moreArr = []
-      let diffArr = []
 
-      let repeatArr2 = []
-      let nulltArr2 = []
       let moreArr2 = []
-      let diffArr2 = []
-
 
       // 1.同层级 重复
-      repeatArr = findRepeat(data) // 测试
-      repeatArr2 = findRepeat(data2) // 线上
+      let repeatArr2 = findRepeat(data) // 测试
+      let repeatArr = findRepeat(data2) // 线上
 
+      // 3.对比多的值
+      data.forEach(i => {
+        if (data2.every(item => { return item[key] !== i[key] }) && repeatArr2.every(item => { return item[key] !== i[key] })) {
+          moreArr2.push(i)
+        }
+      })
+      data2.forEach(i => {
+        if (data.every(item => { return item[key] !== i[key] }) && repeatArr.every(item => { return item[key] !== i[key] })) {
+          moreArr.push(i)
+        }
+      })
 
-      // 1.同层级 空值
-      nulltArr = findNull(data) // 测试
-      nulltArr2 = findNull(data2) // 线上
+      /* 线上数据为标准 */
+      data2.forEach(i => {
+        resetData(i)
+      })
+      moreArr2.forEach(i => {
+        resetData(i, 'test')
+      })
+      function resetData(i, flag) {
+        let obj = {
+          path: [], // (i[key])
+          key: i[config.key],
+          normal: false, // 正常
+          repeatArr: [], // 同层级 相等  repeatArr.push(i)
+          nulltArr: [], // 同层级 空值 push(item.title)
+          diffArr: [], // 数据对比 不相等 ({ title: ii.title, value: value1, value2: value2 })
+          moreArr: [], // 数据对比 多或者少的  moreArr.push(i)
+          moreArr2: [], // 数据对比 多或者少的  moreArr.push(i)
+          repeatArr2: [], // 同层级 相等  repeatArr.push(i)
+          nulltArr2: [] // 同层级 空值 push(item.title)
+        }
+        // let iStr = JSON.stringify(i)
+        let i2 = null
+        i.title = config.title
+        if (flag === 'test') {
+          if (repeatArr2.some(item => { return item[key] === i[key] })) {
+            obj.repeatArr2.push(i)
+          }
+          if (moreArr2.some(item => { return item[key] === i[key] })) {
+            obj.moreArr2.push(i)
+          }
+          obj.nulltArr2 = findNull(i)
+        } else {
+          if (moreArr.some(item => { return item[key] === i[key] })) {
+            obj.moreArr.push(i)
+          }
+          if (repeatArr.some(item => { return item[key] === i[key] })) {
+            obj.repeatArr.push(i)
+          }
+          data.forEach(item => {
+            if (item[key] === i[key]) {
+              i2 = item
+              if (repeatArr2.every(item => { return item[key] !== i[key] })) {
+                obj.diffArr = findContrastArr(item, i)
+              }
+            }
+          })
+          obj.nulltArr = findNull(i)
+        }
+        if (i2) {
+          obj.nulltArr2 = findNull(i2)
+        }
+        // 4. 不相同的
+        if (config.hasItem(i)) {
+          let path2 = path.map(i => { return i })
+          path2.push(i[key])
+          let data3 = i2 ? i2[config.itemPath] : []
+          let box2 = []
+          if (flag === 'test') {
+            box2 = that.checkRepace(i[config.itemPath], box, path2, config, data3)
+          } else {
+            box2 = that.checkRepace(data3, box, path2, config, i[config.itemPath])
+          }
 
-      console.log(repeatArr, 'xxxxxxxxxxxxx')
-
-
-
+          box = Array.concat(box2)
+        }
+        if (!obj.repeatArr.length && !obj.nulltArr.length && !obj.diffArr.length && !obj.moreArr.length) {
+          if (!obj.nulltArr2.length && !obj.moreArr2.length) {
+            obj.normal = true
+          }
+        }
+        obj.path = path
+        box.push(obj)
+      }
       /* ==================================================================  */
+      function findContrastArr(item, item2) {
+        let box = []
+        config.contrastArr.forEach(ii => {
+          let arr = ii.prop.split('.')
+          let value1 = null
+          let value2 = null
+
+          arr.forEach((i, index) => {
+            if (!index) {
+              try {
+                value1 = item[i]
+                value2 = item2[i]
+              } catch (e) {
+                console.log(e, 'error')
+              }
+            } else {
+              try {
+                value1 = value1[i]
+                value2 = value2[i]
+              } catch (e) {
+                console.log(e, 'error')
+              }
+            }
+          })
+          if (String(value1) !== String(value2)) {
+            box.push({ title: ii.title, value: value1, value2: value2 })
+          }
+        })
+        return box
+      }
+
       function findRepeat(array) {
         let arr = []
         array.forEach((i, index) => {
@@ -950,124 +1038,26 @@ export default {
         return arr
       }
 
-      function findNull(array) {
+      function findNull(i) {
         let arr = []
-        array.forEach(i => {
-          config.nullArr.forEach(item => {
-            let porpArr = item.prop.split('.')
-            let c = null
-            porpArr.forEach((ii, index) => {
-              if (index) {
-                c = c[ii]
-              } else {
-                c = i[ii]
-              }
-            })
-            if (c === '') {
-              arr.push(item.title)
+        config.nullArr.forEach(item => {
+          let porpArr = item.prop.split('.')
+          let c = null
+          porpArr.forEach((ii, index) => {
+            if (index) {
+              c = c[ii]
+            } else {
+              c = i[ii]
             }
           })
+          if (c === '') {
+            arr.push(item.title)
+          }
         })
         return arr
       }
 
-
-
       /* ==================================================================  */
-
-
-      data.forEach((i) => {
-        let obj = {
-          path: [],
-          key: i[config.key],
-          normal: false, // 正常
-          errorValue: [], // 同层级 相等
-          errorValue2: [], // 同层级 空值
-          errorValue3: [], // 数据对比 不相等
-          errorValue4: [] // 数据对比 多或者少的
-        }
-        config.nullArr.forEach(item => {
-          let arr = item.prop.split('.')
-          debugger
-          let ccc = null
-          if (item.prop === config.key) {
-            config.title = item.title
-          }
-          arr.forEach((ii, index) => {
-            if (!index) {
-              ccc = i[ii]
-            } else {
-              ccc = ccc[ii]
-            }
-          })
-          if (ccc === '') {
-            obj.errorValue2.push(`${item.title}错误：空值`)
-          }
-        })
-        if (i[config.key]) {
-          if (arr.includes(i[config.key])) {
-            if (!obj.errorValue.includes(i[config.key])) {
-              obj.errorValue.push(`${config.title}错误：${i[config.key]}重复`)
-            }
-          } else {
-            arr.push(i[config.key])
-          }
-        }
-        if (data2.every(item => {
-          return i[config.key] !== item[config.key]
-        })) {
-          obj.errorValue4.push(`${config.title}错误：${i[config.key]}多了`)
-        }
-        let i2 = null
-        data2.forEach(item => {
-          if (i[config.key] === item[config.key]) {
-            i2 = item
-          }
-        })
-        config.contrastArr.forEach(key => {
-          let arr = key.prop.split('.')
-          let ccc = null
-          let ccc2 = null
-          arr.forEach((ii, index) => {
-            if (!index) {
-              try {
-                ccc = i[ii]
-                ccc2 = i2[ii]
-              } catch (error) {
-                debugger
-              }
-            } else {
-              try {
-                ccc = ccc[ii]
-                ccc2 = ccc2[ii]
-              } catch (error) { }
-            }
-          })
-          try {
-            if (String(ccc) !== String(ccc2)) {
-              let flag = obj.errorValue4.some(item => { return item.includes(`${i[config.key]}多了`) }) // 含有一个多的对象
-              let flag2 = obj.errorValue.some(item => { return item.includes(`${i[config.key]}重复`) }) // 重复的
-              if (!flag && !flag2) {
-                obj.errorValue3.push(`${key.title}错误：${ccc}不一样`)
-              }
-            }
-          } catch (error) {
-          }
-        })
-        if (config.hasItem(i)) {
-          let path2 = path.map(i => { return i })
-          path2.push(i[config.key])
-          let data3 = i2 ? i2[config.itemPath] : []
-          let box2 = this.checkRepace(i[config.itemPath], box, path2, config, data3)
-          box = Array.concat(box2)
-        }
-        if (!obj.errorValue.length && !obj.errorValue2.length && !obj.errorValue3.length && !obj.errorValue4.length) {
-          obj.normal = true
-        }
-        obj.path = path
-        obj.pathStr = path.join('>') + i[config.key]
-        box.push(obj)
-      })
       return box
     },
     test(a, b, c, d) {
