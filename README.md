@@ -155,3 +155,12 @@ yarn      yarn run serve
     return `${date.getFullYear()}`
   })
   过滤器使用 {{str | dateFormart}}
+
+
+
+    npm install -S file-saver xlsx
+  
+    npm install -D script-loader
+
+    vue  excel
+
