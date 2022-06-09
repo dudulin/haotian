@@ -29,12 +29,19 @@ export default {
         indeterminate: true,
         checkAll: false
       },
-      checked: ['审批流ID', '文件上传路径', '接口名称'], // 已经勾选内容
-      config: [{ // 所有的配置参数
-        reg: /"templateId":"(.*?)"/gm, // 获取值的正则表达式
-        title: '审批流ID', // 标题
-        demo: `"templateId":"518"` // 模板 参考使用
-      }]
+      checked: ['审批流ID', '含有test'], // 已经勾选内容
+      config: [
+        { // 所有的配置参数
+          reg: /"templateId":"(.*?)"/gm, // 获取值的正则表达式
+          title: '审批流ID', // 标题
+          demo: `"templateId":"518"` // 模板 参考使用
+        },
+        { // 所有的配置参数
+          reg: /testbop|testvenus/gm, // 获取值的正则表达式
+          title: '含有test', // 标题
+          demo: `"testvenus":"testbop"` // 模板 参考使用
+        }
+      ]
     }
   },
   methods: {
@@ -69,21 +76,24 @@ export default {
           console.log(i.title)
           let testArr = testValue.match(i.reg)
           let trueArr = trueValue.match(i.reg)
-          testArr = testArr.map(str => {
-            i.reg.lastIndex = 0
-            let c = i.reg.exec(str)
-            return c[1]
-          })
-          trueArr = trueArr.map(str => {
-            i.reg.lastIndex = 0
-            let c = i.reg.exec(str)
-            return c[1]
-          })
+          try {
+            testArr = testArr.map(str => {
+              i.reg.lastIndex = 0
+              let c = i.reg.exec(str)
+              return c[1]
+            })
+            trueArr = trueArr.map(str => {
+              i.reg.lastIndex = 0
+              let c = i.reg.exec(str)
+              return c[1]
+            })
+          } catch (e) { }
           console.log(testArr, trueArr)
           tableData.push({
             title: i.title,
-            testValue: testArr,
-            trueValue: trueArr,
+            key: i.title,
+            testValue: !testArr ? [] : testArr,
+            trueValue: !trueArr ? [] : trueArr,
             message: '',
             type: ''
           })
@@ -106,11 +116,20 @@ export default {
               type = 'danger'
             }
             break
+          case '含有test':
+            normal = !i.trueValue.length
+
+            if (!normal) {
+              message = '线上数据含有test数据'
+              type = 'danger'
+            }
+            break
           default:
             break
         }
         i.message = message
         i.type = type
+        i.normal = normal
         i.testValue = i.testValue.join(',')
         i.trueValue = i.trueValue.join(',')
       })

@@ -71,6 +71,7 @@
     <el-row>
       <el-col :span="24" style="text-align:center;margin: 50px 0 20px;">
         <el-button type="primary" @click="btnCheckClick">校验数据</el-button>
+        <el-button :disabled="!tableData.length" type="primary" @click="excelBtn">导出数据</el-button>
       </el-col>
     </el-row>
 
@@ -95,7 +96,6 @@
         <template slot-scope="scope">
           <el-switch v-model="scope.row.normal" inactive-color="#ff4949" active-color="#13ce66" active-text="正常"
             inactive-text="异常" @change="random"> </el-switch>
-          {{ scope.row.normal }}
         </template>
       </el-table-column>
     </el-table>
@@ -112,6 +112,9 @@
 <script>
 import Interface from './components/InterFace'
 import Page from './components/Page'
+// import { exportJsonToExcel } from "export2excel"
+/* eslint-disable */
+import { export_json_to_excel } from '@/vendor/Export2Excel'
 export default {
   /* 过滤器 不改变原值 */
   filters: {
@@ -149,13 +152,8 @@ export default {
       trueValueCopy: null, // 复制的线上数据
       tabsChoice: 'pageVue', // tabs 选择内容
       loading: false,
-      tableData: [{
-        title: '接口名称',
-        testValue: ['数据'],
-        trueValue: ['数据'],
-        message: '这个是提示内容',
-        type: 'danger'
-      }],
+      tableData: [],
+      tableDataBase: [],
       tableData2: [
         {
           key: 'name',
@@ -180,6 +178,55 @@ export default {
   },
   methods: {
     /* 事件函数 名称以 对象+事件 命名 */
+    excelBtn() {
+      const that = this
+      let tableData = changeData(that.tableData)
+      let tableDataBase = changeData(that.tableDataBase)
+      let header = ['参数', '属性', '测试环境数据', '线上环境数据', '校验结果', '确认异常']
+
+      let data = resetTable(tableData)
+      data = data.concat(resetTable(['', '']))
+
+      let diffData = tableData.filter((i, index) => {
+        return JSON.stringify(i) !== JSON.stringify(tableDataBase[index])
+      })
+      diffData = resetTable(diffData)
+
+      data = data.concat(diffData)
+
+      export_json_to_excel({
+        header, // 表头 必填  []
+        data: data, // 具体数据 必填  [[], [], ...]
+        filename: `${this.dateFormart()}_全部数据`, // 导出文件名 非必填
+        autoWidth: false, // 单元格是否要自适应宽度 非必填  true / false
+        bookType: 'xlsx' // 导出文件类型 非必填  'xlsx'/'csv'/'txt'等
+      })
+
+      function changeData(data) {
+        let arr = []
+        data.forEach(i => {
+          if (i.children && i.children.length) {
+            let arr2 = changeData(i.children)
+            arr = arr.concat(arr2)
+          } else {
+            arr.push(i)
+          }
+        })
+        return arr
+      }
+      function resetTable(data) {
+        let fileProp = ['title', 'path', 'testValue', 'trueValue', 'message', 'normal']
+        return data.map(i => {
+          return fileProp.map(prop => {
+            if (typeof i === 'string') {
+              return '========'
+            } else {
+              return i[prop]
+            }
+          })
+        })
+      }
+    },
     btn1() {
       let ui = this.ui
       ui.dialogTestVisible = false
@@ -230,6 +277,7 @@ export default {
           break
       }
       // 4.数据插入 table  加载完成
+      this.tableDataBase = this.tableData.map(i => { return JSON.parse(JSON.stringify(i)) })
     },
     btnTestCopyClick() { // 导入测试数据按钮
       this.dialogTest = ''
@@ -271,6 +319,13 @@ export default {
       this.tableData2 = row.tableData
       this.ui.dialogDetailVisible = true
       console.log(row)
+    },
+    dateFormart() {
+      let now = new Date()
+      let h = now.getHours()
+      let m = now.getMinutes()
+      let s = now.getSeconds()
+      return `${h}时${m}分${s}秒`
     }
   },
   watch: {
@@ -318,4 +373,3 @@ export default {
   top: 4px;
 }
 </style>
-`{"title":"修改","btn":"修改","fname":"test1","fid":540,"fremark":"test1","fserverAddressId":114,"fformatId":10,"fisValid":0,"fprotocol":"4","fcharset":"gb2312","fprotocolValue":"","relayConfig":{"requestType":"","errorMsgEncoding":"gb2312","routeFormat":"","routeParams":""},"httpConfig":{"headParams":"","method":"1","relativeUrl":"","contentType":"1","encode":"","xmlRequestNodes":[{"nodeName":"","paramNameMapping":"","attributesMapping":[],"hasNodes":false,"emptyNoSendFlag":true,"nodes":[{"nodeName":"","paramNameMapping":"","attributesMapping":[],"hasNodes":false,"emptyNoSendFlag":true,"nodes":[]}]}]},"protobufConfig":{"namespace":"test","uriName":"test","dynamicPbName":"test","protobufRequestConfig":{"reqParams":[{"type":"string","label":"optional","name":"a","encode":"gb2312","num":4,"value":[{"type":"bool","label":"optional","name":"","num":1,"encode":"gb2312","value":"","key":"2022-06-01T07:40:56.658Z"}],"key":"2022-06-01T07:40:56.658Z"},{"type":"bool","label":"optional","name":"b","encode":"gb2312","num":"","value":[{"type":"bool","label":"optional","name":"","encode":"gb2312","num":1,"value":""}]},{"type":"bool","label":"optional","name":"c","encode":"gb2312","num":1,"value":[{"type":"bool","label":"optional","name":"","encode":"gb2312","num":1,"value":""}]}]},"protobufResponseConfig":{"bodyParams":[{"type":"bool","label":"optional","name":"c","encode":"gb2312","num":4,"value":[{"type":"bool","label":"optional","name":"","num":1,"encode":"gb2312","value":"","key":"2022-06-01T07:40:56.658Z"}],"key":"2022-06-01T07:40:56.658Z"}]},"routeParams":"","routeFormat":""},"fitConfig":{"cgiName":"","routeFormat":"","routeParams":""},"fencryption":false,"frequestParam":{"requestFullText":{"enableEncrypt":false,"paramName":"","keySysEncryptEntity":{"isKeySysEncrypt":false,"keyId":"","encAlgo":"","charset":"gb2312","keySeq":"","isUseStd":false}},"batchSign":false,"signParam":{"keySysSignSetting":{"isKeySysSign":false,"signParamName":"","keyId":"","encAlgo":"","signRule":"","isUseStd":false,"keySeq":"","charset":"gb2312","trimSpace":false,"addTimestamp":false,"timestampName":"","timestampSize":""},"signType":"2","upperCase":false,"name":"","key":"","signRule":"","trimSpace":false,"charsetEncoding":"","encryptType":"","keyInSort":false},"ticketParams":[{"paramName":"","cookieParam":""}],"signParams":[{"keySysSignSetting":{"isKeySysSign":true,"signParamName":"23","keyId":"23","encAlgo":"23"},"upperCase":false,"name":"23","key":"3","signRule":"3","trimSpace":false,"charsetEncoding":"","encryptType":"","keyInSort":false}],"encryptParams":[{"type":"3","key":"3","paramName":"3","encryptRule":"3","encoding":"utf-8"}],"specialParams":"","clientIps":[""],"randomParam":"","timestamp":{"paramName":"","size":""},"commonJsonParam":{"paramName":"","comboxParams":"","trim":true},"groupParam":{"commonStrlimitParam":{"groupParamName":"","offsetParamName":"","limitParamName":""},"commonFieldsParam":{"groupParamName":"","keepingSpace":false,"inGroupParams":""}},"inputParams":[{"name":"","text":""}],"encoderRetParams":[{"paramName":"","charsetEncoding":"utf-8","decode":false}]},"fresponseParam":{"responseFullText":{"enableDecrypt":false,"resultCodeParamName":"retcode","resultMsgParamName":"retmsg","resultDataParamName":"data","keySysDecryptEntity":{"isKeySysDecrypt":false,"keyId":"","oldEncAlgo":"","charset":"gb2312","keySeq":"","isUseStd":false}},"charsetEncoding":"gb2312","outPutParams":[{"name":"","text":"","defacementParam":{"defacement":false,"reqParamNameMapping":""},"items":[{"name":"","text":"","defacementParam":{"defacement":false,"reqParamNameMapping":""},"key":"2022-06-01T07:40:56.658Z"}],"hasItems":false,"key":"2022-06-01T07:40:56.658Z"}],"validSignSetting":{"trimSpace":false,"addTimestamp":false,"timestampName":"","timestampSize":"","isKeySysValidSign":false,"signParamName":"","keyId":"","encAlgo":"","signRule":""},"decryptParams":[{"type":"2","key":"2","paramName":"2","decryptRule":"2","encoding":"utf-8"}],"specialReturnField":"","encoderRetParams":[{"paramName":"","charsetEncoding":"utf-8","decode":false}],"secondSegmentParam":[{"seqName":"","secondFormatType":"","charset":"gb2312"}],"arrayExpansion":{"type":0,"params":""},"transferToBinary":[{"paramName":"","index":""}]},"auditlog":{"open":false,"auditlogArr":[{"auditlogKey":"","auditlogVal":""}],"newAuditlogArr":[{"auditlogKey":"","auditlogVal":""}]}}`

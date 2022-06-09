@@ -164,3 +164,4 @@ yarn      yarn run serve
 
     vue  excel
 
+npm i -S export2excel
