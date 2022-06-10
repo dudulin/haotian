@@ -557,7 +557,7 @@ export default {
           type: 'info'
         }
         i.normal = true
-        let abnormalStr = `${i.title}: \n测试数据和线上数据对比异常`
+        let abnormalStr = `异常`
         /* 针对 数组 递归 遍历 配置 */
         let config = {
           key: 'name', // 判断是否 同层级重复的属性
@@ -621,24 +621,24 @@ export default {
           case i.title.includes('xml请求参数配置'):
             config.key = 'nodeName'
             config.itemPath = 'nodes'
-            config.nullArr = resetNullarr(['nodeName', 'paramNameMapping', 'emptyNoSendFlag'], ['节点名称', '参数名称映射', '为空不传'])
+            config.contrastArr = resetNullarr(['nodeName', 'paramNameMapping', 'emptyNoSendFlag'], ['节点名称', '参数名称映射', '为空不传'])
             config.hasItem = (item) => { return item.hasNodes }
             this.changPb(i, config, messageObj)
             break
           case i.title.includes('添加cookie配置'):
             config.key = 'paramName'
-            config.nullArr = resetNullarr(['paramName', 'cookieParam'], ['请求参数名', 'cookie参数名'])
+            config.contrastArr = resetNullarr(['paramName', 'cookieParam'], ['请求参数名', 'cookie参数名'])
             config.hasItem = () => { return false }
             this.changPb(i, config, messageObj)
             break
           case i.title.includes('特殊参数编码'):
             config.key = 'paramName'
-            config.nullArr = resetNullarr(['paramName', 'charsetEncoding', 'decode'], ['参数名', '编码方式', 'Decode'])
+            config.contrastArr = resetNullarr(['paramName', 'charsetEncoding', 'decode'], ['参数名', '编码方式', 'Decode'])
             config.hasItem = () => { return false }
             this.changPb(i, config, messageObj)
             break
           case i.title.includes('加密参数'):
-            config.nullArr = resetNullarr(['paramName', 'type', 'key', 'encryptRule'], ['参数名', '加密类型', 'key', '加密规则'])
+            config.contrastArr = resetNullarr(['paramName', 'type', 'key', 'encryptRule'], ['参数名', '加密类型', 'key', '加密规则'])
             config.key = 'paramName'
             config.hasItem = () => { return false }
             this.changPb(i, config, messageObj)
@@ -651,42 +651,42 @@ export default {
             this.changPb(i, config, messageObj)
             break
           case i.title.includes('定制多条'):
-            config.nullArr = resetNullarr(['name', 'key', 'signRule', 'encryptType', 'upperCase', 'trimSpace', 'keyInSort', 'charsetEncoding', 'keySysSignSetting.isKeySysSign', 'keySysSignSetting.keyId', 'keySysSignSetting.encAlgo'], ['参数名称', 'key', '签名规则', '加密算法', '大写转换', '是否去空', 'key是否参与ascii排序', 'charsetEncoding', '是否密钥系统签名', '密钥系统KeyId', '算法版本'])
+            config.contrastArr = resetNullarr(['name', 'key', 'signRule', 'encryptType', 'upperCase', 'trimSpace', 'keyInSort', 'charsetEncoding', 'keySysSignSetting.isKeySysSign', 'keySysSignSetting.keyId', 'keySysSignSetting.encAlgo'], ['参数名称', 'key', '签名规则', '加密算法', '大写转换', '是否去空', 'key是否参与ascii排序', 'charsetEncoding', '是否密钥系统签名', '密钥系统KeyId', '算法版本'])
             config.hasItem = () => { return false }
             this.changPb(i, config, messageObj)
             break
           // 出参配置
           case i.title.includes('出参信息配置'):
             config.itemPath = 'items'
-            config.nullArr = resetNullarr(['name', 'text', 'defacementParam.defacement', 'defacementParam.reqParamNameMapping'], ['参数名称', '参数文本描述', '是否防串包', '请求属性名称映射'])
+            config.contrastArr = resetNullarr(['name', 'text', 'defacementParam.defacement', 'defacementParam.reqParamNameMapping'], ['参数名称', '参数文本描述', '是否防串包', '请求属性名称映射'])
             config.hasItem = (i) => { return i.hasItems }
             this.changPb(i, config, messageObj)
             break
 
           case i.title.includes('需解密字段'):
             config.key = 'paramName'
-            config.nullArr = resetNullarr(['paramName', 'type', 'decryptRule', 'key'], ['字段名', '解密类型', '解密规则', 'key'])
+            config.contrastArr = resetNullarr(['paramName', 'type', 'decryptRule', 'key'], ['字段名', '解密类型', '解密规则', 'key'])
             config.hasItem = () => { return false }
             this.changPb(i, config, messageObj)
             break
 
           case i.title.includes('二进制转换'):
             config.key = 'paramName'
-            config.nullArr = resetNullarr(['paramName', 'index'], ['参数名', '二进制位'])
+            config.contrastArr = resetNullarr(['paramName', 'index'], ['参数名', '二进制位'])
             config.hasItem = () => { return false }
             this.changPb(i, config, messageObj)
             break
 
           case i.title.includes('二次分割参数'):
             config.key = 'seqName'
-            config.nullArr = resetNullarr(['seqName', 'secondFormatType', 'charset'], ['参数名称', '解析格式', '解码方式'])
+            config.contrastArr = resetNullarr(['seqName', 'secondFormatType', 'charset'], ['参数名称', '解析格式', '解码方式'])
             config.hasItem = () => { return false }
             this.changPb(i, config, messageObj)
             break
           // 审计日志配置
           case i.title.includes('日志入参配置xxx') || i.title.includes('日志出参配置xxx'):
             config.key = 'auditlogKey'
-            config.nullArr = resetNullarr(['auditlogKey', 'auditlogVal'], ['接口参数名称', '审计参数名称'])
+            config.contrastArr = resetNullarr(['auditlogKey', 'auditlogVal'], ['接口参数名称', '审计参数名称'])
             config.hasItem = () => { return false }
             this.changPb(i, config, messageObj)
             break
