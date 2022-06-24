@@ -638,6 +638,7 @@ export default {
             this.changPb(i, config, messageObj)
             break
           case i.title.includes('加密参数'):
+            config.nullArr = []
             config.contrastArr = resetNullarr(['paramName', 'type', 'key', 'encryptRule'], ['参数名', '加密类型', 'key', '加密规则'])
             config.key = 'paramName'
             config.hasItem = () => { return false }
@@ -706,7 +707,12 @@ export default {
                 }
                 break
               case 'waring': // 无论结果 都会告警
-                messageObj.message = i.alert
+                if (String(i.testValue) === String(i.trueValue)) {
+                  abnormalStr = '警告'
+                } else {
+                  abnormalStr = '待确认'
+                }
+                messageObj.message = abnormalStr
                 messageObj.type = 'danger'
                 break
               default:
@@ -776,7 +782,6 @@ export default {
 
       let arr = this.checkRepace(i.testValue, [], [], config, i.trueValue) // 测试环境数据
       // let arr2 = this.checkRepace(i.trueValue, [], [], config, i.testValue) // 线上环境数据
-      console.log(arr, 'arr')
       if (!config.key) { // 字符串类型
         arr = this.checkRepace2(i.testValue, i.trueValue) // 测试环境数据
         // arr2 = this.checkRepace2(i.trueValue, i.testValue) // 线上环境数据
@@ -790,8 +795,6 @@ export default {
       arr.forEach(i => {
         array.push(returnObj(i))
       })
-      console.log(array, 'array')
-
       function returnObj(item) {
         let normal = item.normal
         let path = `层级${item.path.length + 1}`
@@ -1007,14 +1010,14 @@ export default {
                 value1 = item[i]
                 value2 = item2[i]
               } catch (e) {
-                console.log(e, 'error')
+                // console.log(e, 'error')
               }
             } else {
               try {
                 value1 = value1[i]
                 value2 = value2[i]
               } catch (e) {
-                console.log(e, 'error')
+                // console.log(e, 'error')
               }
             }
           })

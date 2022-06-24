@@ -5,15 +5,15 @@
         <span @click="btnTestCopyClick">
           <el-button type="primary">导入测试环境数据</el-button>
           <el-link class="btnMessage" :type="ui.testBtnType" v-if="!!ui.testBtnMessage">{{
-              ui.testBtnMessage | dateFormart('hh:mm:ss')
-          }}
+            ui.testBtnMessage | dateFormart('hh:mm:ss')
+            }}
           </el-link>
         </span>
         <span @click="btnTrueCopyClick">
           <el-button type="primary">导入线上环境数据</el-button>
           <el-link class="btnMessage" :type="ui.trueBtnType" v-if="!!ui.trueBtnMessage">{{
-              ui.trueBtnMessage | dateFormart('hh:mm:ss')
-          }}
+            ui.trueBtnMessage | dateFormart('hh:mm:ss')
+            }}
           </el-link>
         </span>
       </el-col>
@@ -34,6 +34,11 @@
         <el-button type="primary" @click="btn2">确 定</el-button>
       </span>
     </el-dialog>
+    <el-dialog title="确认" :visible.sync="ui.dialogMemoVisible" width="30%">
+      <el-input type="textarea" placeholder="请输入确认" v-model="ui.memo" :rows="4" style="margin: 20px 0;"> </el-input>
+      <el-button @click="ui.dialogMemoVisible = false">取 消</el-button>
+      <el-button type="primary" @click="btn3">确 定</el-button>
+    </el-dialog>
     <el-dialog title="详情" :visible.sync="ui.dialogDetailVisible" width="80%">
       <el-table :data="tableData2" border style="width: 100%">
         <el-table-column type="index" width="50" label="序号"> </el-table-column>
@@ -46,13 +51,14 @@
             <el-link :type="scope.row.type" style="white-space: pre-wrap">{{ scope.row.type | changeType }}</el-link>
           </template>
         </el-table-column>
-        <el-table-column label="确认异常">
+        <el-table-column label="状态" :key="ui.randomId2">
           <template slot-scope="scope">
-            <el-switch v-model="scope.row.normal" inactive-color="#ff4949" active-color="#13ce66" active-text="正常"
-              inactive-text="异常"> </el-switch>
+            <span v-if="scope.row.normal">正常</span>
+            <el-button v-else size="mini" :type="scope.row.memo ? 'info' : 'danger'" @click="showDetails2(scope.row)">
+              确认异常</el-button>
           </template>
         </el-table-column>
-
+        <el-table-column prop="memo" label="备注"> </el-table-column>
       </el-table>
       <span slot="footer" class="dialog-footer">
         <el-button @click="ui.dialogDetailVisible = false">取 消</el-button>
@@ -92,20 +98,51 @@
           <el-link v-else :type="scope.row.type" style="white-space: pre-wrap">{{ scope.row.message }}</el-link>
         </template>
       </el-table-column>
-      <el-table-column label="确认异常" :key="ui.randomId">
+      <el-table-column label="状态" :key="ui.randomId">
         <template slot-scope="scope">
-          <el-switch v-model="scope.row.normal" inactive-color="#ff4949" active-color="#13ce66" active-text="正常"
-            inactive-text="异常" @change="random"> </el-switch>
+          <span v-if="scope.row.normal">正常</span>
+          <el-button v-else size="mini" :type="scope.row.memo ? 'info' : 'danger'" @click="showDetails2(scope.row)">确认异常
+          </el-button>
         </template>
       </el-table-column>
+      <el-table-column prop="memo" label="备注"> </el-table-column>
     </el-table>
     <el-row>
       <el-col :span="24">
-        总结：
-        <p style="white-space: pre-wrap;word-break: break-all;">{{ ui.summary }}</p>
+
       </el-col>
     </el-row>
-    <a href="http://testvenus.cf.com:8089/admin#/systemDataSource" target="_blank">测试环境--权限位</a>
+    <el-tooltip class="item" effect="dark" content="回到顶部" placement="top">
+      <div @click="dialogUpAndDown(0)" class="iconHover el-backtop"
+        style="border-radius:0;right: 100px; bottom: 150px;    box-shadow: 0px 0px 0px 1px #bfb0b0;"><i
+          class="el-icon-caret-top"></i></div>
+    </el-tooltip>
+    <el-tooltip class="item" effect="dark" content="回到底部" placement="bottom">
+      <div @click="dialogUpAndDown(40000)" class="iconHover el-backtop"
+        style="border-radius:0;right: 100px; bottom: 110px;    box-shadow: 0px 0px 0px 1px #bfb0b0;"><i
+          class="el-icon-caret-bottom"></i></div>
+    </el-tooltip>
+    <el-table :data="ui.urlArray" border style="width: 80%;margin:60px auto;">
+      <el-table-column prop="title" label="测试环境" width="180">
+        <template slot-scope="scope">
+          <el-link type="primary" :href="`${ui.testUrl}${scope.row.path}`" target="_blank">{{ scope.row.title }}
+          </el-link>
+        </template>
+      </el-table-column>
+      <el-table-column prop="title" label="线上环境" width="180">
+        <template slot-scope="scope">
+          <el-link type="primary" :href="`${ui.trueUrl}${scope.row.path}`" target="_blank">{{ scope.row.title }}
+          </el-link>
+        </template>
+      </el-table-column>
+      <el-table-column prop="path" label="校验" width="180">
+        <template slot-scope="scope">
+          <el-button size="mini" :type="scope.row.memo ? 'info' : 'danger'" @click="showDetails2(scope.row)">确认异常
+          </el-button>
+        </template>
+      </el-table-column>
+      <el-table-column prop="memo" label="备注"> </el-table-column>
+    </el-table>
   </div>
 </template>
 
@@ -131,6 +168,11 @@ export default {
     Interface,
     Page
   },
+  computed: {
+    cccc() {
+      return false
+    }
+  },
   data() {
     return {
       pageKey: 'pageVue', // 多处绑定 命名很容易弄错 统一规划
@@ -143,8 +185,35 @@ export default {
         dialogTestVisible: false, // 测试数据弹窗 显示隐藏
         dialogTrueVisible: false, // 线上数据弹窗 显示隐藏
         dialogDetailVisible: false, // 详情弹窗 显示隐藏
+        dialogMemoVisible: false,
+        memo: '',
+        testUrl: 'http://testvenus.cf.com:8089/admin#/',
+        trueUrl: 'https://venus.cf.com/admin#/',
+        urlArray: [
+          {
+            title: '权限位',
+            path: 'systemDataSource',
+            memo: ''
+          },
+          {
+            title: '审批流管理',
+            path: 'approval',
+            memo: ''
+          },
+          {
+            title: '字典管理',
+            path: 'dictionaries',
+            memo: ''
+          },
+          {
+            title: '数据源管理',
+            path: 'dataSourceController',
+            memo: ''
+          }
+        ],
         summary: '', // 总结
-        randomId: '' // 总结
+        randomId: '', // 总结
+        randomId2: '' // 总结
       },
       dialogTest: null, // 弹窗的测试数据
       dialogTrue: null, // 弹窗的线上数据
@@ -178,14 +247,51 @@ export default {
   },
   methods: {
     /* 事件函数 名称以 对象+事件 命名 */
+    dialogUpAndDown(y) {
+      window.scrollTo(0, y)
+    },
+    changeData(data) {
+      let arr = []
+      data.forEach(i => {
+        let i2 = JSON.parse(JSON.stringify(i))
+        delete i2.children
+        delete i2.tableData
+        arr.push(i2)
+        if (i.children && i.children.length) {
+          let arr2 = this.changeData(i.children)
+          arr = arr.concat(arr2)
+        }
+        if (i.tableData && i.tableData.length) {
+          let arr2 = this.changeData(i.tableData)
+          arr = arr.concat(arr2)
+        }
+      })
+      return arr
+    },
     excelBtn() {
+      let data2 = this.changeData(this.tableData)
+      let flag2 = data2.some(i => {
+        return !i.normal && !i.memo
+      })
+      let flag = this.ui.urlArray.some(i => {
+        return !i.memo
+      })
+
+      if (flag2 || flag) {
+        this.$notify.error({
+          title: '错误',
+          message: '请确认全部异常'
+        })
+        return
+      }
       const that = this
-      let tableData = changeData(that.tableData)
-      let tableDataBase = changeData(that.tableDataBase)
-      let header = ['参数', '属性', '测试环境数据', '线上环境数据', '校验结果', '确认异常']
+      let tableData = this.changeData(that.tableData)
+      let tableDataBase = this.changeData(that.tableDataBase)
+      let header = ['参数', '属性', '测试环境数据', '线上环境数据', '校验结果', '备注']
 
       let data = resetTable(tableData)
       data = data.concat(resetTable(['', '']))
+
 
       let diffData = tableData.filter((i, index) => {
         return JSON.stringify(i) !== JSON.stringify(tableDataBase[index])
@@ -193,6 +299,10 @@ export default {
       diffData = resetTable(diffData)
 
       data = data.concat(diffData)
+
+      data = data.concat(resetTable(['', '']))
+
+      data = data.concat(resetTable(this.ui.urlArray))
 
       export_json_to_excel({
         header, // 表头 必填  []
@@ -202,26 +312,19 @@ export default {
         bookType: 'xlsx' // 导出文件类型 非必填  'xlsx'/'csv'/'txt'等
       })
 
-      function changeData(data) {
-        let arr = []
-        data.forEach(i => {
-          if (i.children && i.children.length) {
-            let arr2 = changeData(i.children)
-            arr = arr.concat(arr2)
-          } else {
-            arr.push(i)
-          }
-        })
-        return arr
-      }
+
       function resetTable(data) {
-        let fileProp = ['title', 'path', 'testValue', 'trueValue', 'message', 'normal']
+        let fileProp = ['title', 'path', 'testValue', 'trueValue', 'message', 'memo']
         return data.map(i => {
           return fileProp.map(prop => {
             if (typeof i === 'string') {
               return '========'
             } else {
-              return i[prop]
+              if (prop === 'title') {
+                return i[prop] ? i[prop] : i.key
+              } else {
+                return i[prop]
+              }
             }
           })
         })
@@ -242,6 +345,11 @@ export default {
       let now = this.getDate()
       ui.trueBtnMessage = `添加时间：${now}`
       ui.trueBtnType = 'info'
+    },
+    btn3() {
+      this.random2()
+      this.ui.dialogMemoVisible = false
+      this.ui.row.memo = this.ui.memo
     },
     btnCheckClick() { // 校验按钮
       let ui = this.ui
@@ -315,10 +423,17 @@ export default {
     random() {
       this.ui.randomId = String(Math.random())
     },
+    random2() {
+      this.ui.randomId2 = String(Math.random())
+    },
     showDetails(row) {
       this.tableData2 = row.tableData
       this.ui.dialogDetailVisible = true
-      console.log(row)
+    },
+    showDetails2(row) {
+      this.ui.memo = row.memo ? row.memo : ''
+      this.ui.row = row
+      this.ui.dialogMemoVisible = true
     },
     dateFormart() {
       let now = new Date()
