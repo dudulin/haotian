@@ -5,15 +5,15 @@
         <span @click="btnTestCopyClick">
           <el-button type="primary">导入测试环境数据</el-button>
           <el-link class="btnMessage" :type="ui.testBtnType" v-if="!!ui.testBtnMessage">{{
-            ui.testBtnMessage | dateFormart('hh:mm:ss')
-            }}
+              ui.testBtnMessage | dateFormart('hh:mm:ss')
+          }}
           </el-link>
         </span>
         <span @click="btnTrueCopyClick">
           <el-button type="primary">导入线上环境数据</el-button>
           <el-link class="btnMessage" :type="ui.trueBtnType" v-if="!!ui.trueBtnMessage">{{
-            ui.trueBtnMessage | dateFormart('hh:mm:ss')
-            }}
+              ui.trueBtnMessage | dateFormart('hh:mm:ss')
+          }}
           </el-link>
         </span>
       </el-col>
@@ -44,21 +44,33 @@
         <el-table-column type="index" width="50" label="序号"> </el-table-column>
         <el-table-column prop="key" label="参数名"> </el-table-column>
         <el-table-column prop="path" label="层级"> </el-table-column>
-        <el-table-column prop="testValue" label="测试环境"> </el-table-column>
-        <el-table-column prop="trueValue" label="线上环境"> </el-table-column>
-        <el-table-column prop="type" label="是否异常">
+        <el-table-column prop="testValue" label="测试环境">
+          <template slot-scope="scope">
+            <el-tooltip v-if="scope.row.testValueStr.length >= 117" effect="light"
+              :content="String(scope.row.testValue)" placement="right">
+              <p :style="pStyle">
+                {{ scope.row.testValueStr }}
+              </p>
+            </el-tooltip>
+            <span v-else>{{ scope.row.testValue }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="trueValue" label="线上环境">
+          <template slot-scope="scope">
+            <el-tooltip v-if="scope.row.trueValueStr.length >= 117" effect="light"
+              :content="String(scope.row.trueValue)" placement="right">
+              <p :style="pStyle">
+                {{ scope.row.trueValueStr }}
+              </p>
+            </el-tooltip>
+            <span v-else>{{ scope.row.trueValue }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="type" label="是否有问题">
           <template slot-scope="scope">
             <el-link :type="scope.row.type" style="white-space: pre-wrap">{{ scope.row.type | changeType }}</el-link>
           </template>
         </el-table-column>
-        <el-table-column label="状态" :key="ui.randomId2">
-          <template slot-scope="scope">
-            <span v-if="scope.row.normal">正常</span>
-            <el-button v-else size="mini" :type="scope.row.memo ? 'info' : 'danger'" @click="showDetails2(scope.row)">
-              确认异常</el-button>
-          </template>
-        </el-table-column>
-        <el-table-column prop="memo" label="备注"> </el-table-column>
       </el-table>
       <span slot="footer" class="dialog-footer">
         <el-button @click="ui.dialogDetailVisible = false">取 消</el-button>
@@ -72,6 +84,10 @@
       <el-tab-pane :name="interfaceKey" label="数据源接口">
         <interface :ref="interfaceKey" @callback="getData" :testValue="testValueCopy" :trueValue="trueValueCopy">
         </interface>
+      </el-tab-pane>
+      <el-tab-pane :name="otherKey" label="其他校验内容">
+        <other :ref="otherKey" @callback="getData" :testValue="testValueCopy" :trueValue="trueValueCopy">
+        </other>
       </el-tab-pane>
     </el-tabs>
     <el-row>
@@ -88,8 +104,28 @@
       <el-table-column type="index" width="50" label="序号"> </el-table-column>
       <el-table-column prop="title" label="参数"> </el-table-column>
       <el-table-column prop="path" label="属性" width="180"> </el-table-column>
-      <el-table-column prop="testValue" label="测试环境数据"> </el-table-column>
-      <el-table-column prop="trueValue" label="线上环境数据"> </el-table-column>
+      <el-table-column prop="testValue" label="测试环境数据">
+        <template slot-scope="scope">
+          <el-tooltip v-if="scope.row.testValueStr.length >= 117" effect="light" :content="String(scope.row.testValue)"
+            placement="right">
+            <p :style="pStyle">
+              {{ scope.row.testValueStr }}
+            </p>
+          </el-tooltip>
+          <span v-else>{{ scope.row.testValue }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column prop="trueValue" label="线上环境数据">
+        <template slot-scope="scope">
+          <el-tooltip v-if="scope.row.trueValueStr.length >= 117" effect="light" :content="String(scope.row.trueValue)"
+            placement="right">
+            <p :style="pStyle">
+              {{ scope.row.trueValueStr }}
+            </p>
+          </el-tooltip>
+          <span v-else>{{ scope.row.trueValue }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="校验结果" :filters="[{ text: '正常数据', value: 'normal' }, { text: '异常数据', value: 'abnormal' }]"
         :filter-method="filterTag">
         <template slot-scope="scope">
@@ -101,7 +137,7 @@
       <el-table-column label="状态" :key="ui.randomId">
         <template slot-scope="scope">
           <span v-if="scope.row.normal">正常</span>
-          <el-button v-else size="mini" :type="scope.row.memo ? 'info' : 'danger'" @click="showDetails2(scope.row)">确认异常
+          <el-button v-else size="mini" :type="scope.row.memo ? 'info' : 'danger'" @click="showDetails2(scope.row)">确认正确
           </el-button>
         </template>
       </el-table-column>
@@ -122,33 +158,13 @@
         style="border-radius:0;right: 100px; bottom: 110px;    box-shadow: 0px 0px 0px 1px #bfb0b0;"><i
           class="el-icon-caret-bottom"></i></div>
     </el-tooltip>
-    <el-table :data="ui.urlArray" border style="width: 80%;margin:60px auto;">
-      <el-table-column prop="title" label="测试环境" width="180">
-        <template slot-scope="scope">
-          <el-link type="primary" :href="`${ui.testUrl}${scope.row.path}`" target="_blank">{{ scope.row.title }}
-          </el-link>
-        </template>
-      </el-table-column>
-      <el-table-column prop="title" label="线上环境" width="180">
-        <template slot-scope="scope">
-          <el-link type="primary" :href="`${ui.trueUrl}${scope.row.path}`" target="_blank">{{ scope.row.title }}
-          </el-link>
-        </template>
-      </el-table-column>
-      <el-table-column prop="path" label="校验" width="180">
-        <template slot-scope="scope">
-          <el-button size="mini" :type="scope.row.memo ? 'info' : 'danger'" @click="showDetails2(scope.row)">确认异常
-          </el-button>
-        </template>
-      </el-table-column>
-      <el-table-column prop="memo" label="备注"> </el-table-column>
-    </el-table>
   </div>
 </template>
 
 <script>
 import Interface from './components/InterFace'
 import Page from './components/Page'
+import Other from './components/Other'
 // import { exportJsonToExcel } from "export2excel"
 /* eslint-disable */
 import { export_json_to_excel } from '@/vendor/Export2Excel'
@@ -160,23 +176,26 @@ export default {
       return str + 456
     },
     changeType(str) {
-      return str === 'info' ? '正常' : '异常'
+      return str === 'info' ? '正常' : '错误'
     }
   },
   name: 'App',
   components: {
     Interface,
+    Other,
     Page
   },
   computed: {
-    cccc() {
-      return false
+    pStyle() {
+      return `max-height:7em`
     }
   },
   data() {
     return {
       pageKey: 'pageVue', // 多处绑定 命名很容易弄错 统一规划
       interfaceKey: 'interfaceVue',
+      otherKey: 'otherVue',
+      otherArr: [],
       ui: { // 影响页面显示的参数 统一放这里
         testBtnType: 'warning', // 按钮下的 文字 状态
         testBtnMessage: '请导入数据', // 按钮下的 文字 内容
@@ -211,7 +230,6 @@ export default {
             memo: ''
           }
         ],
-        summary: '', // 总结
         randomId: '', // 总结
         randomId2: '' // 总结
       },
@@ -273,14 +291,19 @@ export default {
       let flag2 = data2.some(i => {
         return !i.normal && !i.memo
       })
-      let flag = this.ui.urlArray.some(i => {
-        return !i.memo
-      })
-
-      if (flag2 || flag) {
+      if (flag2) {
         this.$notify.error({
           title: '错误',
-          message: '请确认全部异常'
+          message: '请确认全部'
+        })
+      }
+      let flag = this.otherArr.some(i => {
+        return i.option === 'unsure'
+      })
+      if (flag || !this.otherArr.length) {
+        this.$notify.error({
+          title: '错误',
+          message: '请确认 其他校验内容'
         })
         return
       }
@@ -375,12 +398,11 @@ export default {
       this.loading = true
       switch (this.tabsChoice) {
         case this.pageKey:
-          this.$refs[this.pageKey].checkData(this.tabsChoice) // 执行子组件函数
+          this.$refs[this.pageKey].checkData() // 执行子组件函数
           break
         case this.interfaceKey:
-          this.$refs[this.interfaceKey].checkData(this.tabsChoice) // 执行子组件函数
+          this.$refs[this.interfaceKey].checkData() // 执行子组件函数
           break
-
         default:
           break
       }
@@ -396,18 +418,38 @@ export default {
       this.ui.dialogTrueVisible = true
     },
     /* 逻辑函数 名称以 对象目的 命名 */
-    getData(data) { // 子组件函数执行之后的回调函数
-      this.tableData = data
-      let summary = ''
-      this.tableData.forEach(i => {
-        if (i.type === 'danger' || i.type === 'warning') {
-          summary += `${i.message} \n`
+    getData(data, is_other) { // 子组件函数执行之后的回调函数
+      if (is_other) {
+        this.otherArr = data
+      } else {
+
+        this.tableData = this.addValueTitle(data)
+        setTimeout(() => {
+          this.loading = false
+        }, 2)
+      }
+    },
+    addValueTitle(data) {
+      data.forEach(i => {
+        i.trueValueStr = JSON.stringify(i.trueValue)
+        i.trueValueStr = i.trueValueStr !== undefined ? i.trueValueStr : ''
+
+        if (i.trueValueStr.length > 117) {
+          i.trueValueStr = i.trueValueStr.substring(0, 111) + '......'
+        }
+        i.testValueStr = JSON.stringify(i.testValue)
+        i.testValueStr = i.testValueStr !== undefined ? i.testValueStr : ''
+        if (i.testValueStr.length > 117) {
+          i.testValueStr = i.testValueStr.substring(0, 111) + '......'
+        }
+        if (i.children && i.children.length) {
+          i.children = this.addValueTitle(i.children)
+        }
+        if (i.tableData && i.tableData.length) {
+          i.tableData = this.addValueTitle(i.tableData)
         }
       })
-      this.ui.summary = summary
-      setTimeout(() => {
-        this.loading = false
-      }, 2)
+      return data
     },
     getDate() {
       let now = new Date()
@@ -486,5 +528,10 @@ export default {
   font-weight: 700;
   position: relative;
   top: 4px;
+}
+</style>
+<style>
+.el-tooltip__popper.is-light {
+  width: 30%;
 }
 </style>

@@ -111,32 +111,32 @@ export default {
             {
               title: '数据源接口名称',
               path: 'fname',
-              judgment: '' // mustSame   | mustDiff
+              judgment: 'unsure'
             },
             {
               title: '数据源接口说明',
               path: 'fremark',
-              judgment: '' // mustSame   | mustDiff
+              judgment: 'unsure'
             },
             {
               title: '数据源地址',
               path: 'fserverAddressId',
-              judgment: 'mustDiff' // mustSame   | mustDiff
+              judgment: 'unsure'
             },
             {
               title: '解析方式',
               path: 'fformatId',
-              judgment: '' // mustSame   | mustDiff
+              judgment: ''
             },
             {
               title: '协议',
               path: 'fprotocol',
-              judgment: '' // mustSame   | mustDiff
+              judgment: ''
             },
             {
               title: '编码',
               path: 'fcharset',
-              judgment: '' // mustSame   | mustDiff
+              judgment: ''
             }
           ])
 
@@ -149,7 +149,7 @@ export default {
                 {
                   title: 'xml请求参数配置',
                   path: 'httpConfig.xmlRequestNodes',
-                  judgment: '' // mustSame   | mustDiff
+                  judgment: ''
                 }
               ])
             }
@@ -160,12 +160,12 @@ export default {
                 {
                   title: '全文加密属性名称',
                   path: `${pathStr}.paramName`,
-                  judgment: '' // mustSame   | mustDiff
+                  judgment: ''
                 },
                 {
                   title: '密钥系统加密配置',
                   path: `${pathStr}.keySysEncryptEntity.isKeySysEncrypt`,
-                  judgment: '' // mustSame   | mustDiff
+                  judgment: ''
                 }
               ])
               /* 密钥系统加密配置 */
@@ -177,27 +177,27 @@ export default {
                       {
                         title: '密钥系统KeyId',
                         path: `${pathStr}.keyId`,
-                        judgment: '' // mustSame   | mustDiff
+                        judgment: ''
                       },
                       {
                         title: '算法版本',
                         path: `${pathStr}.encAlgo`,
-                        judgment: '' // mustSame   | mustDiff
+                        judgment: ''
                       },
                       {
                         title: '编码',
                         path: `${pathStr}.charset`,
-                        judgment: '' // mustSame   | mustDiff
+                        judgment: ''
                       },
                       {
                         title: '是否使用标准国密',
                         path: `${pathStr}.isUseStd`,
-                        judgment: '' // mustSame   | mustDiff
+                        judgment: ''
                       },
                       {
                         title: '序号',
                         path: `${pathStr}.keySeq`,
-                        judgment: '' // mustSame   | mustDiff
+                        judgment: ''
                       }
                     ]
                   }
@@ -211,47 +211,47 @@ export default {
                 {
                   title: '返回码属性名称',
                   path: `${pathStr}.resultCodeParamName`,
-                  judgment: '' // mustSame   | mustDiff
+                  judgment: ''
                 },
                 {
                   title: '返回提示属性名称',
                   path: `${pathStr}.resultMsgParamName`,
-                  judgment: '' // mustSame   | mustDiff
+                  judgment: ''
                 },
                 {
                   title: '返回数据属性名称',
                   path: `${pathStr}.resultDataParamName`,
-                  judgment: '' // mustSame   | mustDiff
+                  judgment: ''
                 },
                 {
                   title: '密钥系统加密配置',
                   path: `${pathStr}.keySysDecryptEntity.isKeySysDecrypt`,
-                  judgment: '' // mustSame   | mustDiff
+                  judgment: ''
                 },
                 {
                   title: '密钥系统KeyId',
                   path: `${pathStr}.keySysDecryptEntity.keyId`,
-                  judgment: '' // mustSame   | mustDiff
+                  judgment: ''
                 },
                 {
                   title: '算法版本',
                   path: `${pathStr}.keySysDecryptEntity.oldEncAlgo`,
-                  judgment: '' // mustSame   | mustDiff
+                  judgment: ''
                 },
                 {
                   title: '编码',
                   path: `${pathStr}.keySysDecryptEntity.charset`,
-                  judgment: '' // mustSame   | mustDiff
+                  judgment: ''
                 },
                 {
                   title: '是否使用标准国密',
                   path: `${pathStr}.keySysDecryptEntity.isUseStd`,
-                  judgment: '' // mustSame   | mustDiff
+                  judgment: ''
                 },
                 {
                   title: '序号',
                   path: `${pathStr}.keySysDecryptEntity.keySeq`,
-                  judgment: '' // mustSame   | mustDiff
+                  judgment: ''
                 }
               ])
             }
@@ -536,12 +536,18 @@ export default {
         let array = []
 
         arr.forEach(i => {
-          array.push({
+          let obj = {
             title: i,
             path: dict[i] ? dict[i] : '',
             alert: '',
-            judgment: '' // ''  | mustDiff
-          })
+            judgment: ''
+          }
+          let unsureArr = ['命名空间', '服务接口名称', '消息体名称', '密钥系统KeyId', '算法版本']
+          if (unsureArr.includes(i)) {
+            obj.judgment = 'unsure'
+          }
+
+          array.push(obj)
         })
         return array
       }
@@ -551,13 +557,12 @@ export default {
       let trueValue = JSON.parse(this.trueValue)
       let testValue = JSON.parse(this.testValue)
       tableData.forEach((i, index) => {
-        // judgment: '' // mustSame   | mustDiff | waring
         let messageObj = {
           message: '正常',
           type: 'info'
         }
         i.normal = true
-        let abnormalStr = `异常`
+        let abnormalStr = `待确认`
         /* 针对 数组 递归 遍历 配置 */
         let config = {
           key: 'name', // 判断是否 同层级重复的属性
@@ -659,6 +664,7 @@ export default {
           // 出参配置
           case i.title.includes('出参信息配置'):
             config.itemPath = 'items'
+            config.nullArr = []
             config.contrastArr = resetNullarr(['name', 'text', 'defacementParam.defacement', 'defacementParam.reqParamNameMapping'], ['参数名称', '参数文本描述', '是否防串包', '请求属性名称映射'])
             config.hasItem = (i) => { return i.hasItems }
             this.changPb(i, config, messageObj)
@@ -666,6 +672,7 @@ export default {
 
           case i.title.includes('需解密字段'):
             config.key = 'paramName'
+            config.nullArr = []
             config.contrastArr = resetNullarr(['paramName', 'type', 'decryptRule', 'key'], ['字段名', '解密类型', '解密规则', 'key'])
             config.hasItem = () => { return false }
             this.changPb(i, config, messageObj)
@@ -706,7 +713,7 @@ export default {
                   messageObj.type = 'danger'
                 }
                 break
-              case 'waring': // 无论结果 都会告警
+              case 'unsure': // 无论结果 都会告警
                 if (String(i.testValue) === String(i.trueValue)) {
                   abnormalStr = '警告'
                 } else {
@@ -751,7 +758,7 @@ export default {
         if (i.children && i.children.length) {
           i.children = this.messageReset(i.children)
           if (!i.children.every(item => { return item.type === 'info' })) {
-            i.message = '异常'
+            i.message = '待确认'
             i.type = 'danger'
           }
         }

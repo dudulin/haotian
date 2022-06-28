@@ -29,17 +29,10 @@ export default {
         indeterminate: true,
         checkAll: false
       },
-      checked: ['审批流ID', '含有test'], // 已经勾选内容
+      checked: ['页面组件校验', '含有test'], // 已经勾选内容
       config: [
         { // 所有的配置参数
-          reg: /"templateId":"(.*?)"/gm, // 获取值的正则表达式
-          title: '审批流ID', // 标题
-          demo: `"templateId":"518"` // 模板 参考使用
-        },
-        { // 所有的配置参数
-          reg: /testbop|testvenus/gm, // 获取值的正则表达式
-          title: '含有test', // 标题
-          demo: `"testvenus":"testbop"` // 模板 参考使用
+          title: '页面组件校验'
         }
       ]
     }
@@ -61,79 +54,306 @@ export default {
       // 2.把加工之后的table数据 返回给父级
       this.$emit('callback', tableData)
     },
-    resetData() {
-      let checked = this.checked
-      let trueValue = this.trueValue
-      let testValue = this.testValue
-
-      /*  1.遍历需要获取的参数
-          2.根据正则表达式 分别获取 测试 和 线上
-          3.生成对应数据 返回
-      */
-      let tableData = []
-      this.config.forEach(i => {
-        if (checked.includes(i.title)) {
-          console.log(i.title)
-          let testArr = testValue.match(i.reg)
-          let trueArr = trueValue.match(i.reg)
-          try {
-            testArr = testArr.map(str => {
-              i.reg.lastIndex = 0
-              let c = i.reg.exec(str)
-              return c[1]
-            })
-            trueArr = trueArr.map(str => {
-              i.reg.lastIndex = 0
-              let c = i.reg.exec(str)
-              return c[1]
-            })
-          } catch (e) { }
-          console.log(testArr, trueArr)
-          tableData.push({
-            title: i.title,
-            key: i.title,
-            testValue: !testArr ? [] : testArr,
-            trueValue: !trueArr ? [] : trueArr,
+    checkRepace(trueValue, testValue, pathBox) {
+      let box = []
+      trueValue.forEach((i, index) => {
+        let random = Math.floor(Math.random() * 1000)
+        let testValueObj = testValue[index]
+        let config = []
+        if (i.type) { // 是组件
+          config = this.findConfig(i.type)
+          if (!config) {
+            return
+          }
+          let path = pathBox.length ? pathBox.join('>') + '>' + config.title : config.title
+          let demo = {
+            id: `${config.title}${index}${random}`,
             message: '',
+            path: path,
+            children: [],
+            testValue: '',
+            title: config.title,
+            trueValue: '',
+            normal: false,
             type: ''
-          })
-        }
-      })
-      return this.messageReset(tableData)
-    },
-    messageReset(tableData) {
-      tableData.forEach(i => {
-        let normal = true
-        let message = '正常'
-        let type = 'info'
-        switch (i.title) {
-          case '审批流ID':
-            normal = i.testValue.every(item => {
-              return !i.trueValue.includes(item)
-            })
-            if (!normal) {
-              message = '测试一下效果'
-              type = 'danger'
-            }
-            break
-          case '含有test':
-            normal = !i.trueValue.length
+          }
 
-            if (!normal) {
-              message = '线上数据含有test数据'
-              type = 'danger'
+          config.configArr.forEach(item => {
+            let trueValue = this.getProp(i, item.propArr)
+            let testValue = this.getProp(testValueObj, item.propArr)
+            let demo2 = {
+              id: `${item.title}${index}${random}${index}`,
+              message: '',
+              path: item.propArr,
+              children: [],
+              testValue: testValue,
+              title: item.title,
+              trueValue: trueValue,
+              normal: false,
+              type: ''
             }
-            break
-          default:
-            break
+            let message = '正常'
+            let type = 'info'
+            switch (item.judgment) {
+              case '': // 相同就正常
+                if (String(trueValue) !== String(testValue)) {
+                  message = '错误'
+                  type = 'danger'
+                }
+                break
+              case 'mustDiff': // 必须不同
+                if (String(trueValue) === String(testValue)) {
+                  message = '错误'
+                  type = 'danger'
+                }
+                break
+              case 'unsure': // 无论结果 都会告警
+                if (String(trueValue) === String(testValue)) {
+                  message = '警告'
+                } else {
+                  message = '待确认'
+                }
+                type = 'danger'
+                break
+              default:
+                break
+            }
+            demo2.normal = type === 'info'
+            demo2.type = type
+            demo2.message = message
+            demo.children.push(demo2)
+            if (Object.prototype.toString.call(trueValue) === '[object Array]') {
+              demo2.tableData = []
+              trueValue.forEach((cc, index2) => {
+                let key = item.key
+                let cc2 = testValue[index2]
+
+                let demo3 = {
+                  id: `${item.title}${index}${random}${index2}`,
+                  message: '',
+                  key: cc[key],
+                  path: item.propArr,
+                  children: [],
+                  testValue: '',
+                  title: item.title,
+                  trueValue: '',
+                  normal: false,
+                  type: 'danger'
+                }
+                item.configArr.forEach(config => {
+                  if (cc[config.propArr] !== cc2[config.propArr]) {
+                    demo3.trueValue += `${config.title}错误：${cc[config.propArr]}`
+                    demo3.testValue += `${config.title}错误：${cc2[config.propArr]}`
+                  }
+                })
+                if (!demo3.trueValue && !demo3.testValue) {
+                  demo3.trueValue = '一致'
+                  demo3.testValue = '一致'
+                  demo3.type = 'info'
+                  demo3.normal = true
+                }
+                demo2.tableData.push(demo3)
+              })
+              let flag = demo2.tableData.some(cc => {
+                return cc.type !== 'info'
+              })
+              demo2.type = flag ? 'danger' : 'info'
+              demo2.normal = !flag
+            }
+          })
+          let flag = demo.children.some(cc => {
+            return cc.type !== 'info'
+          })
+          demo.type = flag ? 'danger' : 'info'
+          demo.normal = !flag
+          box.push(demo)
+          // 判断是否 有 子集 组件
+          if (i[config.itemStr] && i[config.itemStr].length) {
+            pathBox.push(config.title)
+            let box2 = this.checkRepace(i[config.itemStr], testValueObj[config.itemStr], pathBox)
+            box = box.concat(box2)
+          }
         }
-        i.message = message
-        i.type = type
-        i.normal = normal
-        i.testValue = i.testValue.join(',')
-        i.trueValue = i.trueValue.join(',')
       })
+      return box
+    },
+    resetData() {
+      let trueValue = []
+      let testValue = []
+      try {
+        trueValue = JSON.parse(this.trueValue)
+      } catch (error) {
+        this.$notify.error({
+          title: '错误',
+          message: '线上环境导入数据有误'
+        })
+        return
+      }
+      try {
+        testValue = JSON.parse(this.testValue)
+      } catch (error) {
+        this.$notify.error({
+          title: '错误',
+          message: '测试环境导入数据有误'
+        })
+        return
+      }
+      let tableData = this.checkRepace(trueValue, testValue, [])
       return tableData
+    },
+    getProp(data, propArr) {
+      let value = null
+      let arr = propArr.split('.')
+      arr.forEach((i, index) => {
+        if (!index) {
+          value = data[i]
+        } else {
+          value = value[i]
+        }
+      })
+      return value
+    },
+    findConfig(key) { // 获取组件对应配置
+      let config = {}
+      switch (key) {
+        case 'rowBlock':
+          config = {
+            title: '横向排列',
+            path: 'rowBlock',
+            itemStr: 'items',
+            configArr: [
+              {
+                propArr: 'useReduce',
+                title: '紧缩模式'
+              }
+            ]
+          }
+          break
+        case 'isInput':
+          config = {
+            title: '输入框',
+            path: 'isInput',
+            itemStr: '',
+            configArr: [
+              {
+                propArr: 'changeUid',
+                title: '使用帐号转换工具'
+              },
+              {
+                propArr: 'convertToOrder',
+                title: '单号转换工具'
+              },
+              {
+                propArr: 'workOrder',
+                title: '选择工单类型'
+              },
+              {
+                propArr: 'linkeFlag',
+                title: '关联工单标识'
+              },
+              {
+                propArr: 'useReg',
+                title: '使用正则校验'
+              },
+              {
+                propArr: 'moneyChange',
+                title: '元转分'
+              },
+              {
+                propArr: 'supportThousands',
+                title: '支持千分位'
+              },
+              {
+                propArr: 'label',
+                title: '标题'
+              },
+              {
+                propArr: 'defaultValue',
+                title: '默认值'
+              },
+              {
+                propArr: 'width',
+                title: '输入框宽度'
+              },
+              {
+                propArr: 'maxlength',
+                title: '输入长度限制'
+              },
+              {
+                propArr: 'labelWidth',
+                title: '标题宽度'
+              },
+              {
+                propArr: 'placeholder',
+                title: '提示文字'
+              },
+              {
+                propArr: 'isTextarea',
+                title: '使用文本输入框(大)'
+              }
+            ]
+          }
+          break
+        case 'isRadio':
+          config = {
+            title: '单选框',
+            path: 'isRadio',
+            itemStr: '',
+            configArr: [
+              {
+                propArr: 'items',
+                key: 'value',
+                configArr: [
+                  {
+                    propArr: 'value',
+                    title: '选项'
+                  },
+                  {
+                    propArr: 'label',
+                    title: '对应值'
+                  }
+                ],
+                title: '对应选项'
+              },
+              {
+                propArr: 'value',
+                title: '默认选中值'
+              },
+              {
+                propArr: 'style',
+                title: '标题'
+              }
+            ]
+          }
+          break
+        case 'demo1111':
+          config = {
+            title: 'demo1111',
+            path: 'rowBlock',
+            itemStr: 'items',
+            configArr: [
+              {
+                propArr: 'useReduce',
+                title: '紧缩模式'
+              }
+            ]
+          }
+          break
+        default:
+          config = null
+          break
+      }
+      if (config) {
+        config.configArr.forEach(i => {
+          if (!i.judgment) {
+            i.judgment = ''
+          }
+        })
+      }
+      return config
+    },
+    findChildren() { // 判断子集 和 返回子集
+
     }
   }
 }
