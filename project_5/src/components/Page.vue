@@ -326,15 +326,68 @@ export default {
             ]
           }
           break
-        case 'demo1111':
+        case 'tabs':
+          config = {
+            title: 'Tabs标签页',
+            path: 'tabs',
+            itemStr: 'items',
+            getProp(trueValue, testValue) { // 返回数组 {prop:'label',title:'tab名称',value:'123'}
+              // 参数 属性  状态 备注
+              // children Array ：参数  属性 测试数据 线上 数据 校验结果  状态  备注
+              let arr = []
+              let children = []
+              data.data.forEach(i => {
+                arr.push({
+                  prop: 'label',
+                  title: 'tab名称',
+                  value: i.label,
+                  judgment: ''
+                })
+                if (i.items && i.items.length) {
+
+                }
+              })
+            },
+            getChildren(data) { // 返回数组 传给 demo2
+
+            },
+            configArr: [
+              {
+                propArr: 'data',
+                title: 'tab ',
+                key: 'label',
+                configArr: [
+                  {
+                    propArr: 'label',
+                    title: 'tab名称 '
+                  }
+                ]
+              }
+            ]
+          }
+          break
+        case 'ccc':
           config = {
             title: 'demo1111',
             path: 'rowBlock',
-            itemStr: 'items',
+            itemStr: '',
             configArr: [
               {
-                propArr: 'useReduce',
-                title: '紧缩模式'
+                propArr: 'xxx',
+                title: 'xxxx'
+              }
+            ]
+          }
+          break
+        case '222':
+          config = {
+            title: 'demo1111',
+            path: 'rowBlock',
+            itemStr: '',
+            configArr: [
+              {
+                propArr: 'xxx',
+                title: 'xxxx'
               }
             ]
           }
@@ -351,9 +404,6 @@ export default {
         })
       }
       return config
-    },
-    findChildren() { // 判断子集 和 返回子集
-
     }
   }
 }

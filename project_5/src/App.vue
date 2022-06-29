@@ -134,10 +134,11 @@
           <el-link v-else :type="scope.row.type" style="white-space: pre-wrap">{{ scope.row.message }}</el-link>
         </template>
       </el-table-column>
-      <el-table-column label="状态" :key="ui.randomId">
+      <el-table-column label="操作" :key="ui.randomId">
         <template slot-scope="scope">
-          <span v-if="scope.row.normal">正常</span>
-          <el-button v-else size="mini" :type="scope.row.memo ? 'info' : 'danger'" @click="showDetails2(scope.row)">确认正确
+          <!-- <span v-if="scope.row.normal">正常</span> -->
+          <el-button v-if="!scope.row.tableData && !scope.row.normal" size="mini"
+            :type="scope.row.memo ? 'info' : 'danger'" @click="showDetails2(scope.row)">确认正确
           </el-button>
         </template>
       </el-table-column>
@@ -296,6 +297,7 @@ export default {
           title: '错误',
           message: '请确认全部'
         })
+        return
       }
       let flag = this.otherArr.some(i => {
         return i.option === 'unsure'
@@ -325,7 +327,7 @@ export default {
 
       data = data.concat(resetTable(['', '']))
 
-      data = data.concat(resetTable(this.ui.urlArray))
+      // data = data.concat(resetTable(this.ui.urlArray))
 
       export_json_to_excel({
         header, // 表头 必填  []
