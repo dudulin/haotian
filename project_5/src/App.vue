@@ -424,7 +424,6 @@ export default {
       if (is_other) {
         this.otherArr = data
       } else {
-
         this.tableData = this.addValueTitle(data)
         setTimeout(() => {
           this.loading = false
