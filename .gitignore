@@ -4,3 +4,4 @@
 /project_3/package-lock.json
 project_5/dist.zip
 *.zip
+.vscode/bookmarks.json

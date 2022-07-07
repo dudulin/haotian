@@ -8,6 +8,7 @@
   </div>
 </template>
 <script>
+import config from './pageConfig.js'
 export default {
   props: {
     testValue: {
@@ -243,6 +244,13 @@ export default {
       }
       return demo
     },
+    getDemoBase(title, pathBox) {
+      let demo = this.getDemo()
+      demo.title = title
+      let path = pathBox.length ? pathBox.join('>') + '>' + title : title
+      demo.path = path
+      return demo
+    },
     getChildren(i, i2, arr) {
       let box = []
       arr.forEach(item => {
@@ -251,9 +259,35 @@ export default {
         demo2.path = item.prop
         demo2.trueValue = this.getProp(i, item.prop)
         demo2.testValue = this.getProp(i2, item.prop)
+        if (item.arrayConfig) { // 数组类型
+          demo2.tableData = this.getArray(i[item.prop], i2[item.prop], item)
+        }
         box.push(demo2)
       })
       return box
+    },
+    getArray(trueValue, testValue, item) {
+      let array = []
+      trueValue.forEach((cc, index2) => {
+        let cc2 = testValue[index2]
+        let demo3 = this.getDemo()
+        demo3.key = cc[item.key]
+        demo3.path = item.prop
+        for (let [key, value] of Object.entries(item.arrayConfig)) {
+          if (cc[key] !== cc2[key]) {
+            demo3.trueValue += `${value}错误：${cc[key]}`
+            demo3.testValue += `${value}错误：${cc2[key]}`
+          }
+        }
+        if (!demo3.trueValue && !demo3.testValue) {
+          demo3.trueValue = '一致'
+          demo3.testValue = '一致'
+          demo3.type = 'info'
+          demo3.normal = true
+        }
+        array.push(demo3)
+      })
+      return array
     },
     checkHasChildren(trueValue, testValue, pathBox, key) {
       let box = []
@@ -265,164 +299,8 @@ export default {
     },
     findConfig(key) { // 获取组件对应配置
       const that = this
-      let config = {}
-      switch (key) {
-        case 'rowBlock':
-          config = {
-            getBox(trueValue, testValue, pathBox) {
-              let table = []
-              let demo = that.getDemo()
-              demo.title = '横向排列'
-              let path = pathBox.length ? pathBox.join('>') + '>' + '横向排列' : '横向排列'
-              demo.path = path
-
-              let arr = [{ title: '紧缩模式', prop: 'useReduce' }]
-              demo.children = that.getChildren(trueValue, testValue, arr)
-              table.push(demo)
-              let box = that.checkHasChildren(trueValue.items, testValue.items, pathBox, '横向排列')
-              table = table.concat(box)
-              return table
-            }
-          }
-          break
-        case 'columnBlock':
-          config = {
-            getBox(trueValue, testValue, pathBox) {
-              let table = []
-              let demo = that.getDemo()
-              demo.title = '纵向排列'
-              let path = pathBox.length ? pathBox.join('>') + '>' + '纵向排列' : '纵向排列'
-              demo.path = path
-
-              let arr = [{ title: '紧缩模式', prop: 'useReduce' }]
-              demo.children = that.getChildren(trueValue, testValue, arr)
-              table.push(demo)
-              let box = that.checkHasChildren(trueValue.items, testValue.items, pathBox, '纵向排列')
-              table = table.concat(box)
-              return table
-            }
-          }
-          break
-        case 'isInput':
-          config = {
-            getBox(trueValue, testValue, pathBox) {
-              let table = []
-              let demo = that.getDemo()
-              demo.title = '输入框'
-              let path = pathBox.length ? pathBox.join('>') + '>' + '输入框' : '输入框'
-              demo.path = path
-
-              let arr = [{ prop: 'changeUid', title: '使用帐号转换工具' }, { prop: 'convertToOrder', title: '单号转换工具' }, { prop: 'workOrder', title: '选择工单类型' }, { prop: 'linkeFlag', title: '关联工单标识' }, { prop: 'useReg', title: '使用正则校验' }, { prop: 'moneyChange', title: '元转分' }, { prop: 'supportThousands', title: '支持千分位' }, { prop: 'label', title: '标题' }, { prop: 'defaultValue', title: '默认值' }, { prop: 'width', title: '输入框宽度' }, { prop: 'maxlength', title: '输入长度限制' }, { prop: 'labelWidth', title: '标题宽度' }, { prop: 'placeholder', title: '提示文字' }, { prop: 'isTextarea', title: '使用文本输入框(大)' }]
-              demo.children = that.getChildren(trueValue, testValue, arr)
-              table.push(demo)
-              return table
-            }
-          }
-          break
-        case 'isRadio':
-          config = {
-            title: '单选框',
-            path: 'isRadio',
-            itemStr: '',
-            configArr: [
-              {
-                propArr: 'items',
-                key: 'value',
-                configArr: [
-                  {
-                    propArr: 'value',
-                    title: '选项'
-                  },
-                  {
-                    propArr: 'label',
-                    title: '对应值'
-                  }
-                ],
-                title: '对应选项'
-              },
-              {
-                propArr: 'value',
-                title: '默认选中值'
-              },
-              {
-                propArr: 'style',
-                title: '标题'
-              }
-            ]
-          }
-          break
-        case 'tabs':
-          config = {
-            title: 'Tabs标签页',
-            path: 'tabs',
-            itemStr: 'items',
-            getBox(trueValue, testValue, pathBox) { // 返回数组 {prop:'label',title:'tab名称',value:'123'}
-              // 参数 属性  状态 备注
-              // children Array ：参数  属性 测试数据 线上 数据 校验结果  状态  备注
-              let table = []
-              trueValue.data.forEach((i, index) => {
-                let i2 = testValue.data[index]
-                let path = pathBox.length ? pathBox.join('>') + '>' + i.label : i.label
-                let demo = that.getDemo()
-                demo.title = i.label
-                demo.path = path
-
-                let arr = [{ title: '开启权限判断显示功能', prop: 'powerPromise' }, { title: '权限位', prop: 'powerPromiseBit' }, { title: '获取待办条数', prop: 'ajaxConfig.has' }, { title: 'url', prop: 'ajaxConfig.url' }]
-
-                demo.children = that.getChildren(i, i2, arr)
-                table.push(demo)
-
-                let box = that.checkHasChildren(i.items, i2.items, pathBox, i.label)
-                table = table.concat(box)
-              })
-              return table
-            },
-            configArr: [
-              {
-                propArr: 'data',
-                title: 'tab ',
-                key: 'label',
-                configArr: [
-                  {
-                    propArr: 'label',
-                    title: 'tab名称 '
-                  }
-                ]
-              }
-            ]
-          }
-          break
-        case 'ccc':
-          config = {
-            title: 'demo1111',
-            path: 'rowBlock',
-            itemStr: '',
-            configArr: [
-              {
-                propArr: 'xxx',
-                title: 'xxxx'
-              }
-            ]
-          }
-          break
-        case '222':
-          config = {
-            title: 'demo1111',
-            path: 'rowBlock',
-            itemStr: '',
-            configArr: [
-              {
-                propArr: 'xxx',
-                title: 'xxxx'
-              }
-            ]
-          }
-          break
-        default:
-          config = null
-          break
-      }
-      return config
+      let box = config.getConfig(key, that)
+      return box
     }
   }
 }
