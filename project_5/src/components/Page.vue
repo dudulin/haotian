@@ -49,7 +49,6 @@ export default {
       this.ui.indeterminate = checkedCount > 0 && checkedCount < this.config.length
     },
     checkData(title) {
-      console.log(`执行${title} 数据统计`)
       // 1.把测试数据  和 线上数据 传给 校验函数
       let tableData = this.resetData()
       // 2.把加工之后的table数据 返回给父级
@@ -58,7 +57,6 @@ export default {
     checkRepace(trueValue, testValue, pathBox) {
       let box = []
       trueValue.forEach((i, index) => {
-        let random = Math.floor(Math.random() * 1000)
         let i2 = testValue[index]
         let config = []
         if (i.type) { // 是组件
@@ -67,93 +65,7 @@ export default {
             return
           }
           if (config.getBox) {
-            box = config.getBox(i, i2, pathBox)
-          } else {
-            let path = pathBox.length ? pathBox.join('>') + '>' + config.title : config.title
-            let demo = {
-              id: `${config.title}${index}${random}`,
-              message: '',
-              path: path,
-              children: [],
-              testValue: '',
-              title: config.title,
-              trueValue: '',
-              normal: false,
-              type: ''
-            }
-
-            config.configArr.forEach(item => {
-              let trueValue = this.getProp(i, item.propArr)
-              let testValue = this.getProp(i2, item.propArr)
-              let demo2 = {
-                id: `${item.title}${index}${random}${index}`,
-                message: '',
-                path: item.propArr,
-                children: [],
-                testValue: testValue,
-                title: item.title,
-                trueValue: trueValue,
-                normal: false,
-                type: ''
-              }
-
-              let obj = this.checkJudgment(item.judgment, trueValue, testValue)
-
-              demo2.normal = obj.type === 'info'
-              demo2.type = obj.type
-              demo2.message = obj.message
-              demo.children.push(demo2)
-              if (Object.prototype.toString.call(trueValue) === '[object Array]') {
-                demo2.tableData = []
-                trueValue.forEach((cc, index2) => {
-                  let key = item.key
-                  let cc2 = testValue[index2]
-
-                  let demo3 = {
-                    id: `${item.title}${index}${random}${index2}`,
-                    message: '',
-                    key: cc[key],
-                    path: item.propArr,
-                    children: [],
-                    testValue: '',
-                    title: item.title,
-                    trueValue: '',
-                    normal: false,
-                    type: 'danger'
-                  }
-                  item.configArr.forEach(config => {
-                    if (cc[config.propArr] !== cc2[config.propArr]) {
-                      demo3.trueValue += `${config.title}错误：${cc[config.propArr]}`
-                      demo3.testValue += `${config.title}错误：${cc2[config.propArr]}`
-                    }
-                  })
-                  if (!demo3.trueValue && !demo3.testValue) {
-                    demo3.trueValue = '一致'
-                    demo3.testValue = '一致'
-                    demo3.type = 'info'
-                    demo3.normal = true
-                  }
-                  demo2.tableData.push(demo3)
-                })
-                let flag = demo2.tableData.some(cc => {
-                  return cc.type !== 'info'
-                })
-                demo2.type = flag ? 'danger' : 'info'
-                demo2.normal = !flag
-              }
-            })
-            let flag = demo.children.some(cc => {
-              return cc.type !== 'info'
-            })
-            demo.type = flag ? 'danger' : 'info'
-            demo.normal = !flag
-            box.push(demo)
-            // 判断是否 有 子集 组件
-            if (i[config.itemStr] && i[config.itemStr].length) {
-              pathBox.push(config.title)
-              let box2 = this.checkRepace(i[config.itemStr], i2[config.itemStr], pathBox)
-              box = box.concat(box2)
-            }
+            box = box.concat(config.getBox(i, i2, pathBox))
           }
         }
       })
@@ -181,39 +93,105 @@ export default {
         return
       }
       let tableData = this.checkRepace(trueValue, testValue, [])
+      tableData = this.checkType(tableData)
       return tableData
     },
-    checkJudgment(judgment, trueValue, testValue) {
-      let message = '正常'
-      let type = 'info'
-      switch (judgment) {
-        case '': // 相同就正常
-          if (String(trueValue) !== String(testValue)) {
-            message = '错误'
+    checkType(data) {
+      data.forEach(i => {
+        let message = '正常'
+        let type = 'info'
+        switch (i.judgment) {
+          case 'mustDiff': // 必须不同
+            if (String(i.testValue) === String(i.trueValue)) {
+              message = '错误'
+              type = 'danger'
+            }
+            break
+          case 'unsure': // 无论结果 都会告警
+            if (String(i.testValue) === String(i.trueValue)) {
+              message = '警告'
+            } else {
+              message = '待确认'
+            }
             type = 'danger'
-          }
-          break
-        case 'mustDiff': // 必须不同
-          if (String(trueValue) === String(testValue)) {
-            message = '错误'
-            type = 'danger'
-          }
-          break
-        case 'unsure': // 无论结果 都会告警
-          if (String(trueValue) === String(testValue)) {
-            message = '警告'
-          } else {
+            break
+          default: // 相同就正常
+            if (String(i.testValue) !== String(i.trueValue)) {
+              message = '错误'
+              type = 'danger'
+            }
+            break
+        }
+        i.trueValue = this.changeValue(i.trueValue)
+        i.testValue = this.changeValue(i.testValue)
+
+        console.log(i, 222222)
+        if (i.option) { // 转义功能
+          i.trueValue = i.option[i.trueValue]
+          i.testValue = i.option[i.testValue]
+        }
+        if (i.children && i.children.length) {
+          i.children = this.checkType(i.children)
+          if (!i.children.every(item => { return item.type === 'info' })) {
             message = '待确认'
+            type = 'danger'
           }
-          type = 'danger'
+        }
+        i.type = type
+        i.normal = i.type === 'info'
+        i.message = message
+      })
+      return data
+    },
+    changeValue(data) {
+      let data2 = ''
+      data2 = data === 'true' ? true : data
+      data2 = data === 'false' ? false : data
+
+      switch (Object.prototype.toString.call(data)) {
+        case '[object Array]':
+          data2 = data.map(item => {
+            return JSON.stringify(item)
+          }).join(',')
+          break
+        case '[object Boolean]':
+          data2 = data ? '是' : '否'
+          break
+        case '[object String]':
+          data2 = !data ? '---------' : data
+          break
+        case '[object Undefined]':
+          data2 = '======='
           break
         default:
           break
       }
-      return {
-        type,
-        message
+      return data2
+    },
+    getworkOrder() {
+      let demo = {
+        title: '是否选择工单',
+        prop: 'workOrder',
+        option: {
+          1: '系统签入工单',
+          2: '自选工单',
+          3: '关联工单'
+        }
       }
+      return demo
+    },
+    getCondition() {
+      let demo = {
+        key: 'name',
+        prop: 'condition',
+        title: '数据库',
+        arrayConfig: {
+          name: '数据库名',
+          property: '属性',
+          require: '是否必须'
+        }
+      }
+      return demo
     },
     getProp(data, propArr) {
       let value = null
@@ -256,7 +234,9 @@ export default {
       arr.forEach(item => {
         let demo2 = this.getDemo()
         demo2.title = item.title
+        demo2.judgment = item.judgment
         demo2.path = item.prop
+        demo2.option = item.option
         demo2.trueValue = this.getProp(i, item.prop)
         demo2.testValue = this.getProp(i2, item.prop)
         if (item.arrayConfig) { // 数组类型
@@ -274,9 +254,19 @@ export default {
         demo3.key = cc[item.key]
         demo3.path = item.prop
         for (let [key, value] of Object.entries(item.arrayConfig)) {
-          if (cc[key] !== cc2[key]) {
-            demo3.trueValue += `${value}错误：${cc[key]}`
-            demo3.testValue += `${value}错误：${cc2[key]}`
+          try {
+            // eslint-disable-next-line
+            cc[key]
+          } catch (error) {
+            demo3.testValue = `${cc2[item.key]}错误：测试多的数据`
+          }
+          try {
+            if (cc[key] !== cc2[key]) {
+              demo3.trueValue += `${value}错误：${cc[key]}`
+              demo3.testValue += `${value}错误：${cc2[key]}`
+            }
+          } catch (error) {
+            demo3.trueValue = `${cc[item.key]}线上多的数据`
           }
         }
         if (!demo3.trueValue && !demo3.testValue) {
@@ -284,6 +274,9 @@ export default {
           demo3.testValue = '一致'
           demo3.type = 'info'
           demo3.normal = true
+        } else {
+          demo3.type = 'danger'
+          demo3.normal = false
         }
         array.push(demo3)
       })

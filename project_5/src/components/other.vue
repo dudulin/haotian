@@ -87,6 +87,11 @@ export default {
       // 2.把加工之后的table数据 返回给父级
       this.$emit('callback', tableData, true)
     },
+    resetArray() {
+      this.configs.forEach(i => {
+        i.option = 'unsure'
+      })
+    },
     resetData() {
       let tableData = []
       this.configs.forEach(i => {

@@ -362,6 +362,11 @@ export default {
       let now = this.getDate()
       ui.testBtnMessage = `添加时间：${now}`
       ui.testBtnType = 'info'
+
+      // ==================  测试使用
+      // this.trueValueCopy = this.dialogTest
+      // ui.trueBtnMessage = `添加时间：${now}`
+      // ui.trueBtnType = 'info'
     },
     btn2() {
       let ui = this.ui
@@ -378,6 +383,7 @@ export default {
     },
     btnCheckClick() { // 校验按钮
       let ui = this.ui
+
       // 1.校验 数据是否都 复制
       if (!this.testValueCopy) {
         ui.testBtnType = 'warning'
@@ -408,6 +414,8 @@ export default {
         default:
           break
       }
+      this.$refs[this.otherKey].resetArray() // 执行子组件函数
+
       // 4.数据插入 table  加载完成
       this.tableDataBase = this.tableData.map(i => { return JSON.parse(JSON.stringify(i)) })
     },

@@ -165,3 +165,10 @@ yarn      yarn run serve
     vue  excel
 
 npm i -S export2excel
+
+
+project_6 开发流程
+
+    vue init webpack project_6   // 很多选项都选默认就可以了
+    cd project_6
+    npm start

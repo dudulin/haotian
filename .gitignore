@@ -5,3 +5,8 @@
 project_5/dist.zip
 *.zip
 .vscode/bookmarks.json
+project_6/build/build.js
+.*
+*/build
+*/config
+*/test
