@@ -163,9 +163,9 @@
 </template>
 
 <script>
-import Interface from './components/InterFace'
-import Page from './components/Page'
-import Other from './components/Other'
+import Interface from './components/interface/index'
+import Page from './components/page/index'
+import Other from './components/other/index'
 // import { exportJsonToExcel } from "export2excel"
 /* eslint-disable */
 import { export_json_to_excel } from '@/vendor/Export2Excel'
