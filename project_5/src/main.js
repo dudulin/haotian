@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import App from './App'
-import router from './router'
+// import router from './router'
 import axios from 'axios'
 import ElementUI from 'element-ui'
 // import { Button, Tab } from 'element-ui'
@@ -49,6 +49,6 @@ Vue.filter('dateFormart2', i => {
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
-  router,
+  // router,
   render: h => h(App)
 })

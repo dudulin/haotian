@@ -4,12 +4,14 @@
     <div style="margin: 15px 0"></div>
     <el-checkbox-group v-model="checked" @change="btnCheckBox">
       <el-checkbox v-for="i in config" :label="i.title" :key="i.title">{{
-          i.title
+    i.title
       }}</el-checkbox>
     </el-checkbox-group>
   </div>
 </template>
 <script>
+import getTableConfig from './config'
+import Tools from '../../common/js/tools'
 export default {
   props: {
     testValue: {
@@ -27,6 +29,7 @@ export default {
   },
   data() {
     return {
+      tableConfig: [],
       ui: {
         indeterminate: false,
         checkAll: true
@@ -52,6 +55,10 @@ export default {
       ]
     }
   },
+  created() {
+    this.tableConfig = getTableConfig(123)
+    console.log(this.tableConfig, 'this.tableConfig ', Tools)
+  },
   methods: {
     btnAll(val) {
       this.checked = val ? this.config.map(i => { return i.title }) : []
@@ -66,7 +73,7 @@ export default {
       // 1.把测试数据  和 线上数据 传给 校验函数
       let tableData = this.resetData()
       // 2.把加工之后的table数据 返回给父级
-      this.$emit('callback', tableData)
+      this.$emit('callback', [{ tableData, property: 'tableData' }])
     },
     resetData() {
       let checked = this.checked
@@ -84,16 +91,16 @@ export default {
       config2.forEach(i => {
         switch (i.title) {
           case '基础配置对比':
-            i.children = this.getBaseConfig('基础配置对比', trueValue, testValue)
+            i.row = this.getBaseConfig('基础配置对比', trueValue, testValue)
             break
           case '入参配置':
-            i.children = this.getBaseConfig('入参配置', trueValue, testValue)
+            i.row = this.getBaseConfig('入参配置', trueValue, testValue)
             break
           case '出参配置':
-            i.children = this.getBaseConfig('出参配置', trueValue, testValue)
+            i.row = this.getBaseConfig('出参配置', trueValue, testValue)
             break
           case '审计日志配置':
-            i.children = this.getBaseConfig('审计日志配置', trueValue, testValue)
+            i.row = this.getBaseConfig('审计日志配置', trueValue, testValue)
             break
           default:
             break
@@ -173,7 +180,7 @@ export default {
                 pathStr = 'frequestParam.requestFullText.keySysEncryptEntity'
                 configArray.forEach(i => {
                   if (i.title === '密钥系统加密配置') {
-                    i.children = [
+                    i.row = [
                       {
                         title: '密钥系统KeyId',
                         path: `${pathStr}.keyId`,
@@ -274,7 +281,7 @@ export default {
           pathStr = 'frequestParam.groupParam.commonStrlimitParam'
           configArray.forEach(i => {
             if (i.title === '添加时间戳参数') {
-              i.children = [
+              i.row = [
                 {
                   title: '参数名',
                   path: `frequestParam.timestamp.paramName`,
@@ -288,7 +295,7 @@ export default {
               ]
             }
             if (i.title === 'commonStrlimitParam') {
-              i.children = [
+              i.row = [
                 {
                   title: '组合参数名称',
                   path: `${pathStr}.groupParamName`,
@@ -308,7 +315,7 @@ export default {
             }
             if (i.title === 'commonFieldsParam') {
               pathStr = 'frequestParam.groupParam.commonFieldsParam'
-              i.children = [
+              i.row = [
                 {
                   title: '组合参数名称',
                   path: `${pathStr}.groupParamName`,
@@ -328,7 +335,7 @@ export default {
             }
             if (i.title === '组合JSON参数') {
               pathStr = 'frequestParam.commonJsonParam'
-              i.children = [
+              i.row = [
                 {
                   title: '组合参数名称',
                   path: `${pathStr}.paramName`,
@@ -351,7 +358,7 @@ export default {
             // configArray = configArray.concat()
             configArray.forEach(i => {
               if (i.title === '签名类型') {
-                i.children = createArr(['密钥系统KeyId', '算法版本', '签名参数名称', '序号', '签名规则', '是否使用标准国密', '编码', '是否去空', '是否添加时间戳', '时间戳名称', '时间戳长度'])
+                i.row = createArr(['密钥系统KeyId', '算法版本', '签名参数名称', '序号', '签名规则', '是否使用标准国密', '编码', '是否去空', '是否添加时间戳', '时间戳名称', '时间戳长度'])
               }
             })
           } else if (trueValue.frequestParam.signParam.signType === '1') { // 定制
@@ -359,7 +366,7 @@ export default {
             configArray.forEach(i => {
               if (i.title === '签名类型') {
                 if (!trueValue.frequestParam.batchSign) { // 单条
-                  i.children = [
+                  i.row = [
                     {
                       title: '开启多条',
                       path: `frequestParam.batchSign`,
@@ -422,11 +429,11 @@ export default {
                     }
                   ]
                 } else { // 多条
-                  i.children = [
+                  i.row = [
                     {
                       title: '开启多条',
                       path: `frequestParam.batchSign`,
-                      children: [
+                      row: [
                         {
                           title: '定制多条',
                           path: 'frequestParam.signParams',
@@ -445,7 +452,7 @@ export default {
           configArray = configArray.concat(createArr(['出参信息配置', '密钥验证签名', '返回串解析配置', '需解密字段', '二进制转换', '数组扩容', '出参特殊参数编码', '二次分割参数', '出参字符编码']))
           configArray.forEach(i => {
             if (i.title === '数组扩容') {
-              i.children = [
+              i.row = [
                 {
                   title: '参数',
                   path: `fresponseParam.arrayExpansion.params`,
@@ -755,9 +762,9 @@ export default {
           default:
             break
         }
-        if (i.children && i.children.length) {
-          i.children = this.messageReset(i.children)
-          if (!i.children.every(item => { return item.type === 'info' })) {
+        if (i.row && i.row.length) {
+          i.row = this.messageReset(i.row)
+          if (!i.row.every(item => { return item.type === 'info' })) {
             i.message = '待确认'
             i.type = 'danger'
           }

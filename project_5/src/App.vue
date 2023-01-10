@@ -1,33 +1,55 @@
 <template>
-  <div id="app" style="width:80vw;margin:0 8vw;">
+  <div id="app" style="width: 80vw; margin: 0 8vw">
     <el-row>
-      <el-col :span="24" style="text-align:center;margin: 30px 0;">
+      <el-col :span="24" style="text-align: center; margin: 30px 0">
         <span @click="btnTestCopyClick">
           <el-button type="primary">导入测试环境数据</el-button>
-          <el-link class="btnMessage" :type="ui.testBtnType" v-if="!!ui.testBtnMessage">{{
-              ui.testBtnMessage | dateFormart('hh:mm:ss')
-          }}
+          <el-link
+            class="btnMessage"
+            :type="ui.testBtnType"
+            v-if="!!ui.testBtnMessage"
+            >{{ ui.testBtnMessage | dateFormart("hh:mm:ss") }}
           </el-link>
         </span>
         <span @click="btnTrueCopyClick">
           <el-button type="primary">导入线上环境数据</el-button>
-          <el-link class="btnMessage" :type="ui.trueBtnType" v-if="!!ui.trueBtnMessage">{{
-              ui.trueBtnMessage | dateFormart('hh:mm:ss')
-          }}
+          <el-link
+            class="btnMessage"
+            :type="ui.trueBtnType"
+            v-if="!!ui.trueBtnMessage"
+            >{{ ui.trueBtnMessage | dateFormart("hh:mm:ss") }}
           </el-link>
         </span>
       </el-col>
     </el-row>
-    <el-dialog title="测试数据" :visible.sync="ui.dialogTestVisible" width="30%">
-      <el-input type="textarea" :rows="4" placeholder="请输入内容" v-model.trim="dialogTest">
+    <el-dialog
+      title="测试数据"
+      :visible.sync="ui.dialogTestVisible"
+      width="30%"
+    >
+      <el-input
+        type="textarea"
+        :rows="4"
+        placeholder="请输入内容"
+        v-model.trim="dialogTest"
+      >
       </el-input>
       <span slot="footer" class="dialog-footer">
         <el-button @click="ui.dialogTestVisible = false">取 消</el-button>
         <el-button type="primary" @click="btn1">确 定</el-button>
       </span>
     </el-dialog>
-    <el-dialog title="线上数据" :visible.sync="ui.dialogTrueVisible" width="30%">
-      <el-input type="textarea" :rows="4" placeholder="请输入内容" v-model.trim="dialogTrue">
+    <el-dialog
+      title="线上数据"
+      :visible.sync="ui.dialogTrueVisible"
+      width="30%"
+    >
+      <el-input
+        type="textarea"
+        :rows="4"
+        placeholder="请输入内容"
+        v-model.trim="dialogTrue"
+      >
       </el-input>
       <span slot="footer" class="dialog-footer">
         <el-button @click="ui.dialogTrueVisible = false">取 消</el-button>
@@ -35,19 +57,31 @@
       </span>
     </el-dialog>
     <el-dialog title="确认" :visible.sync="ui.dialogMemoVisible" width="30%">
-      <el-input type="textarea" placeholder="请输入确认" v-model="ui.memo" :rows="4" style="margin: 20px 0;"> </el-input>
+      <el-input
+        type="textarea"
+        placeholder="请输入确认"
+        v-model="ui.memo"
+        :rows="4"
+        style="margin: 20px 0"
+      >
+      </el-input>
       <el-button @click="ui.dialogMemoVisible = false">取 消</el-button>
       <el-button type="primary" @click="btn3">确 定</el-button>
     </el-dialog>
     <el-dialog title="详情" :visible.sync="ui.dialogDetailVisible" width="80%">
       <el-table :data="tableData2" border style="width: 100%">
-        <el-table-column type="index" width="50" label="序号"> </el-table-column>
+        <el-table-column type="index" width="50" label="序号">
+        </el-table-column>
         <el-table-column prop="key" label="参数名"> </el-table-column>
         <el-table-column prop="path" label="层级"> </el-table-column>
         <el-table-column prop="testValue" label="测试环境">
           <template slot-scope="scope">
-            <el-tooltip v-if="scope.row.testValueStr.length >= 117" effect="light"
-              :content="String(scope.row.testValue)" placement="right">
+            <el-tooltip
+              v-if="scope.row.testValueStr.length >= 117"
+              effect="light"
+              :content="String(scope.row.testValue)"
+              placement="right"
+            >
               <p :style="pStyle">
                 {{ scope.row.testValueStr }}
               </p>
@@ -57,8 +91,12 @@
         </el-table-column>
         <el-table-column prop="trueValue" label="线上环境">
           <template slot-scope="scope">
-            <el-tooltip v-if="scope.row.trueValueStr.length >= 117" effect="light"
-              :content="String(scope.row.trueValue)" placement="right">
+            <el-tooltip
+              v-if="scope.row.trueValueStr.length >= 117"
+              effect="light"
+              :content="String(scope.row.trueValue)"
+              placement="right"
+            >
               <p :style="pStyle">
                 {{ scope.row.trueValueStr }}
               </p>
@@ -68,7 +106,9 @@
         </el-table-column>
         <el-table-column prop="type" label="是否有问题">
           <template slot-scope="scope">
-            <el-link :type="scope.row.type" style="white-space: pre-wrap">{{ scope.row.type | changeType }}</el-link>
+            <el-link :type="scope.row.type" style="white-space: pre-wrap">{{
+    scope.row.type | changeType
+}}</el-link>
           </template>
         </el-table-column>
       </el-table>
@@ -78,36 +118,156 @@
     </el-dialog>
     <el-tabs type="border-card" v-model="tabsChoice">
       <el-tab-pane :name="pageKey" label="页面">
-        <Page :ref="pageKey" @callback="getData" :testValue="testValueCopy" :trueValue="trueValueCopy">
+        <Page
+          :ref="pageKey"
+          @callback="getData"
+          :testValue="testValueCopy"
+          :trueValue="trueValueCopy"
+        >
         </Page>
       </el-tab-pane>
       <el-tab-pane :name="interfaceKey" label="数据源接口">
-        <interface :ref="interfaceKey" @callback="getData" :testValue="testValueCopy" :trueValue="trueValueCopy">
+        <interface
+          :ref="interfaceKey"
+          @callback="getData"
+          :testValue="testValueCopy"
+          :trueValue="trueValueCopy"
+        >
         </interface>
       </el-tab-pane>
+      <el-tab-pane :name="dataSourceControllerKey" label="数据源配置">
+        <dataSourceController
+          :ref="dataSourceControllerKey"
+          @callback="getData"
+          :testValue="testValueCopy"
+          :trueValue="trueValueCopy"
+        >
+        </dataSourceController>
+      </el-tab-pane>
       <el-tab-pane :name="otherKey" label="其他校验内容">
-        <other :ref="otherKey" @callback="getData" :testValue="testValueCopy" :trueValue="trueValueCopy">
+        <other
+          :ref="otherKey"
+          @callback="getData"
+          :testValue="testValueCopy"
+          :trueValue="trueValueCopy"
+        >
         </other>
       </el-tab-pane>
     </el-tabs>
     <el-row>
-      <el-col :span="24" style="text-align:center;margin: 50px 0 20px;">
+      <el-col :span="24" style="text-align: center; margin: 50px 0 20px">
         <el-button type="primary" @click="btnCheckClick">校验数据</el-button>
-        <el-button :disabled="!tableData.length" type="primary" @click="excelBtn">导出数据</el-button>
+        <el-button
+          :disabled="!tableData.length"
+          type="primary"
+          @click="excelBtn"
+          >导出数据</el-button
+        >
       </el-col>
     </el-row>
 
-    <div class="tableTitle"><span>页面数据</span>
+    <div class="tableTitle">
+      <span>{{ ui.tableTitle }}</span>
     </div>
-    <el-table :data="tableData" border v-loading="loading" header-cell-class-name="sssss"
-      :tree-props="{ children: 'children' }" row-key="id">
+    <el-tabs type="border-card" v-if="tabsChoice !== 'xxxx'">
+      <el-tab-pane v-for="i in tableData" :key="i.property" :label="i.property">
+        <el-table :data="i.tableData" :tree-props="{ children: 'row' }" row-key="id">
+          <el-table-column type="index" width="50" label="序号">
+          </el-table-column>
+          <el-table-column prop="title" label="参数"> </el-table-column>
+          <el-table-column prop="path" label="属性" width="180">
+          </el-table-column>
+          <el-table-column prop="testValue" label="测试环境数据">
+            <template slot-scope="scope">
+              <el-tooltip
+                v-if="scope.row.testValueStr.length >= 117"
+                effect="light"
+                :content="String(scope.row.testValue)"
+                placement="right"
+              >
+                <p :style="pStyle">
+                  {{ scope.row.testValueStr }}
+                </p>
+              </el-tooltip>
+              <span v-else>{{ scope.row.testValue }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column prop="trueValue" label="线上环境数据">
+            <template slot-scope="scope">
+              <el-tooltip
+                v-if="scope.row.trueValueStr.length >= 117"
+                effect="light"
+                :content="String(scope.row.trueValue)"
+                placement="right"
+              >
+                <p :style="pStyle">
+                  {{ scope.row.trueValueStr }}
+                </p>
+              </el-tooltip>
+              <span v-else>{{ scope.row.trueValue }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column
+            label="校验结果"
+            :filters="[
+  { text: '正常数据', value: 'normal' },
+  { text: '异常数据', value: 'abnormal' },
+]"
+            :filter-method="filterTag"
+          >
+            <template slot-scope="scope">
+              <el-button
+                v-if="scope.row.tableData"
+                size="mini"
+                :type="scope.row.type"
+                @click="showDetails(scope.row)"
+                >详情
+              </el-button>
+              <el-link
+                v-else
+                :type="scope.row.type"
+                style="white-space: pre-wrap"
+                >{{ scope.row.message }}</el-link
+              >
+            </template>
+          </el-table-column>
+          <el-table-column label="操作" :key="ui.randomId">
+            <template slot-scope="scope">
+              <!-- <span v-if="scope.row.normal">正常</span> -->
+              <el-button
+                v-if="!scope.row.tableData && !scope.row.normal"
+                size="mini"
+                :type="scope.row.memo ? 'info' : 'danger'"
+                @click="showDetails2(scope.row)"
+                >确认正确
+              </el-button>
+            </template>
+          </el-table-column>
+          <el-table-column prop="memo" label="备注"> </el-table-column>
+        </el-table>
+      </el-tab-pane>
+    </el-tabs>
+
+    <el-table
+      v-else
+      :data="tableData"
+      border
+      v-loading="loading"
+      header-cell-class-name="sssss"
+      :tree-props="{ children: 'children' }"
+      row-key="id"
+    >
       <el-table-column type="index" width="50" label="序号"> </el-table-column>
       <el-table-column prop="title" label="参数"> </el-table-column>
       <el-table-column prop="path" label="属性" width="180"> </el-table-column>
       <el-table-column prop="testValue" label="测试环境数据">
         <template slot-scope="scope">
-          <el-tooltip v-if="scope.row.testValueStr.length >= 117" effect="light" :content="String(scope.row.testValue)"
-            placement="right">
+          <el-tooltip
+            v-if="scope.row.testValueStr.length >= 117"
+            effect="light"
+            :content="String(scope.row.testValue)"
+            placement="right"
+          >
             <p :style="pStyle">
               {{ scope.row.testValueStr }}
             </p>
@@ -117,8 +277,12 @@
       </el-table-column>
       <el-table-column prop="trueValue" label="线上环境数据">
         <template slot-scope="scope">
-          <el-tooltip v-if="scope.row.trueValueStr.length >= 117" effect="light" :content="String(scope.row.trueValue)"
-            placement="right">
+          <el-tooltip
+            v-if="scope.row.trueValueStr.length >= 117"
+            effect="light"
+            :content="String(scope.row.trueValue)"
+            placement="right"
+          >
             <p :style="pStyle">
               {{ scope.row.trueValueStr }}
             </p>
@@ -126,44 +290,87 @@
           <span v-else>{{ scope.row.trueValue }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="校验结果" :filters="[{ text: '正常数据', value: 'normal' }, { text: '异常数据', value: 'abnormal' }]"
-        :filter-method="filterTag">
+      <el-table-column
+        label="校验结果"
+        :filters="[
+  { text: '正常数据', value: 'normal' },
+  { text: '异常数据', value: 'abnormal' },
+]"
+        :filter-method="filterTag"
+      >
         <template slot-scope="scope">
-          <el-button v-if="scope.row.tableData" size="mini" :type="scope.row.type" @click="showDetails(scope.row)">详情
+          <el-button
+            v-if="scope.row.tableData"
+            size="mini"
+            :type="scope.row.type"
+            @click="showDetails(scope.row)"
+            >详情
           </el-button>
-          <el-link v-else :type="scope.row.type" style="white-space: pre-wrap">{{ scope.row.message }}</el-link>
+          <el-link
+            v-else
+            :type="scope.row.type"
+            style="white-space: pre-wrap"
+            >{{ scope.row.message }}</el-link
+          >
         </template>
       </el-table-column>
       <el-table-column label="操作" :key="ui.randomId">
         <template slot-scope="scope">
           <!-- <span v-if="scope.row.normal">正常</span> -->
-          <el-button v-if="!scope.row.tableData && !scope.row.normal" size="mini"
-            :type="scope.row.memo ? 'info' : 'danger'" @click="showDetails2(scope.row)">确认正确
+          <el-button
+            v-if="!scope.row.tableData && !scope.row.normal"
+            size="mini"
+            :type="scope.row.memo ? 'info' : 'danger'"
+            @click="showDetails2(scope.row)"
+            >确认正确
           </el-button>
         </template>
       </el-table-column>
       <el-table-column prop="memo" label="备注"> </el-table-column>
     </el-table>
-    <el-row>
-      <el-col :span="24">
 
-      </el-col>
+    <el-row>
+      <el-col :span="24"> </el-col>
     </el-row>
     <el-tooltip class="item" effect="dark" content="回到顶部" placement="top">
-      <div @click="dialogUpAndDown(0)" class="iconHover el-backtop"
-        style="border-radius:0;right: 100px; bottom: 150px;    box-shadow: 0px 0px 0px 1px #bfb0b0;"><i
-          class="el-icon-caret-top"></i></div>
+      <div
+        @click="dialogUpAndDown(0)"
+        class="iconHover el-backtop"
+        style="
+          border-radius: 0;
+          right: 100px;
+          bottom: 150px;
+          box-shadow: 0px 0px 0px 1px #bfb0b0;
+        "
+      >
+        <i class="el-icon-caret-top"></i>
+      </div>
     </el-tooltip>
-    <el-tooltip class="item" effect="dark" content="回到底部" placement="bottom">
-      <div @click="dialogUpAndDown(40000)" class="iconHover el-backtop"
-        style="border-radius:0;right: 100px; bottom: 110px;    box-shadow: 0px 0px 0px 1px #bfb0b0;"><i
-          class="el-icon-caret-bottom"></i></div>
+    <el-tooltip
+      class="item"
+      effect="dark"
+      content="回到底部"
+      placement="bottom"
+    >
+      <div
+        @click="dialogUpAndDown(40000)"
+        class="iconHover el-backtop"
+        style="
+          border-radius: 0;
+          right: 100px;
+          bottom: 110px;
+          box-shadow: 0px 0px 0px 1px #bfb0b0;
+        "
+      >
+        <i class="el-icon-caret-bottom"></i>
+      </div>
     </el-tooltip>
   </div>
 </template>
 
 <script>
 import Interface from './components/interface/index'
+import DataSourceController from './components/dataSourceController/index'
 import Page from './components/page/index'
 import Other from './components/other/index'
 // import { exportJsonToExcel } from "export2excel"
@@ -182,6 +389,7 @@ export default {
   },
   name: 'App',
   components: {
+    DataSourceController,
     Interface,
     Other,
     Page
@@ -195,9 +403,11 @@ export default {
     return {
       pageKey: 'pageVue', // 多处绑定 命名很容易弄错 统一规划
       interfaceKey: 'interfaceVue',
+      dataSourceControllerKey: 'dataSourceControllerVue',
       otherKey: 'otherVue',
       otherArr: [],
       ui: { // 影响页面显示的参数 统一放这里
+        tableTitle: '',
         testBtnType: 'warning', // 按钮下的 文字 状态
         testBtnMessage: '请导入数据', // 按钮下的 文字 内容
         trueBtnType: 'warning', // 按钮下的 文字 状态
@@ -269,7 +479,7 @@ export default {
     dialogUpAndDown(y) {
       window.scrollTo(0, y)
     },
-    changeData(data) {
+    changeData(data) { // 变成 统一层级
       let arr = []
       data.forEach(i => {
         let i2 = JSON.parse(JSON.stringify(i))
@@ -311,19 +521,18 @@ export default {
       }
       const that = this
       let tableData = this.changeData(that.tableData)
-      let tableDataBase = this.changeData(that.tableDataBase)
       let header = ['参数', '属性', '测试环境数据', '线上环境数据', '校验结果', '备注']
 
       let data = resetTable(tableData)
       data = data.concat(resetTable(['', '']))
 
-
-      let diffData = tableData.filter((i, index) => {
-        return JSON.stringify(i) !== JSON.stringify(tableDataBase[index])
-      })
-      diffData = resetTable(diffData)
-
-      data = data.concat(diffData)
+      // 暂时不显示 修改的地方
+      // let tableDataBase = this.changeData(that.tableDataBase)
+      // let diffData = tableData.filter((i, index) => {
+      //   return JSON.stringify(i) !== JSON.stringify(tableDataBase[index])
+      // })
+      // diffData = resetTable(diffData)
+      // data = data.concat(diffData)
 
       data = data.concat(resetTable(['', '']))
 
@@ -398,8 +607,13 @@ export default {
       }
       if (this.testValueCopy.startsWith('[')) {
         this.tabsChoice = this.pageKey
+        this.ui.tableTitle = '页面数据'
+      } else if (this.testValueCopy.includes('fwrapApiUrl')) {
+        this.tabsChoice = this.dataSourceControllerKey
+        this.ui.tableTitle = '数据源配置数据'
       } else {
         this.tabsChoice = this.interfaceKey
+        this.ui.tableTitle = '数据源接口数据'
       }
       // 2.复制的数据 是否和 tabs 选择对应
       // 3.数据传给对应 子组件 table 加载 中
@@ -411,13 +625,17 @@ export default {
         case this.interfaceKey:
           this.$refs[this.interfaceKey].checkData() // 执行子组件函数
           break
+        case this.dataSourceControllerKey:
+          this.$refs[this.dataSourceControllerKey].checkData() // 执行子组件函数
+          break
         default:
           break
       }
       this.$refs[this.otherKey].resetArray() // 执行子组件函数
 
       // 4.数据插入 table  加载完成
-      this.tableDataBase = this.tableData.map(i => { return JSON.parse(JSON.stringify(i)) })
+      this.tableDataBase = this.tableData.map(i => { return i })
+      console.log(this.tableData, '数据格式')
     },
     btnTestCopyClick() { // 导入测试数据按钮
       this.dialogTest = ''
@@ -432,7 +650,10 @@ export default {
       if (is_other) {
         this.otherArr = data
       } else {
-        this.tableData = this.addValueTitle(data)
+        data.forEach(i => {
+          i.tableData = this.addValueTitle(i.tableData)
+        })
+        this.tableData = data
         setTimeout(() => {
           this.loading = false
         }, 2)
@@ -440,6 +661,10 @@ export default {
     },
     addValueTitle(data) {
       data.forEach(i => {
+        if (typeof i.trueValue !== 'string') {
+          i.trueValue = JSON.stringify(i.trueValue)
+          i.testValue = JSON.stringify(i.testValue)
+        }
         i.trueValueStr = JSON.stringify(i.trueValue)
         i.trueValueStr = i.trueValueStr !== undefined ? i.trueValueStr : ''
 
@@ -453,6 +678,8 @@ export default {
         }
         if (i.children && i.children.length) {
           i.children = this.addValueTitle(i.children)
+        } else if (i.row && i.row.length) {
+          i.row = this.addValueTitle(i.row)
         }
         if (i.tableData && i.tableData.length) {
           i.tableData = this.addValueTitle(i.tableData)
@@ -478,6 +705,7 @@ export default {
       this.ui.randomId2 = String(Math.random())
     },
     showDetails(row) {
+      debugger
       this.tableData2 = row.tableData
       this.ui.dialogDetailVisible = true
     },
