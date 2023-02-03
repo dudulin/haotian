@@ -1,21 +1,20 @@
 
 /* 待确认：unsure    警告：warning  正常： normal */
-let demo = {
-  title: 'xxxx',
-  judgment: 'normal',
-  property: 'xxxx',
-  arrayConfig: {
-    itemKey: 'xxxx',
-    hasItem: () => { return false },
-    itmeConfig: [
-      { prop: 'name', title: '参数名称' },
-      { prop: 'text', title: '文本描述' },
-      { prop: 'aa.bb', title: '个人信息' }
-    ]
-  },
-  row: []
-}
-console.log(demo)
+// let demo = {
+//   title: 'xxxx',
+//   judgment: 'normal',
+//   property: 'xxxx',
+//   arrayConfig: {
+//     itemKey: 'xxxx',
+//     hasItem: () => { return false },
+//     itmeConfig: [
+//       { prop: 'name', title: '参数名称' },
+//       { prop: 'text', title: '文本描述' },
+//       { prop: 'aa.bb', title: '个人信息' }
+//     ]
+//   },
+//   row: []
+// }
 let config = [
   {
     title: '接口配置表',
@@ -76,6 +75,43 @@ let config = [
             ]
           }
         }]
+      },
+      {
+        title: '批量配置',
+        judgment: 'normal',
+        property: 'settingWrapper.apiSetting.batchSetting.isBatchCall',
+        row: [
+          {
+            title: '批量调用字段',
+            judgment: 'normal',
+            property: 'settingWrapper.apiSetting.batchSetting.batchParamName'
+          },
+          {
+            title: '是否2个批量',
+            judgment: 'normal',
+            property: 'settingWrapper.apiSetting.batchSetting.splitArr'
+          },
+          {
+            title: '分割符号',
+            judgment: 'normal',
+            property: 'settingWrapper.apiSetting.batchSetting.splitSymbols'
+          },
+          {
+            title: '分割属性名称',
+            judgment: 'normal',
+            property: 'settingWrapper.apiSetting.batchSetting.splitParamNames'
+          },
+          {
+            title: '忽略错误提示',
+            judgment: 'normal',
+            property: 'settingWrapper.apiSetting.batchSetting.isIgnoreErrorTip'
+          },
+          {
+            title: '最大长度限制',
+            judgment: 'normal',
+            property: 'settingWrapper.apiSetting.batchSetting.maxLengthLimit'
+          }
+        ]
       }
     ]
   }

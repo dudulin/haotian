@@ -107,8 +107,8 @@
         <el-table-column prop="type" label="是否有问题">
           <template slot-scope="scope">
             <el-link :type="scope.row.type" style="white-space: pre-wrap">{{
-    scope.row.type | changeType
-}}</el-link>
+              scope.row.type | changeType
+            }}</el-link>
           </template>
         </el-table-column>
       </el-table>
@@ -210,9 +210,9 @@
           <el-table-column
             label="校验结果"
             :filters="[
-  { text: '正常数据', value: 'normal' },
-  { text: '异常数据', value: 'abnormal' },
-]"
+              { text: '正常数据', value: 'normal' },
+              { text: '异常数据', value: 'abnormal' },
+            ]"
             :filter-method="filterTag"
           >
             <template slot-scope="scope">
@@ -293,9 +293,9 @@
       <el-table-column
         label="校验结果"
         :filters="[
-  { text: '正常数据', value: 'normal' },
-  { text: '异常数据', value: 'abnormal' },
-]"
+          { text: '正常数据', value: 'normal' },
+          { text: '异常数据', value: 'abnormal' },
+        ]"
         :filter-method="filterTag"
       >
         <template slot-scope="scope">
@@ -450,7 +450,7 @@ export default {
       trueValueCopy: null, // 复制的线上数据
       tabsChoice: 'pageVue', // tabs 选择内容
       loading: false,
-      tableData: [],
+      tableData: [{ property: '校验数据', tableData: [] }],
       tableDataBase: [],
       tableData2: [
         {
@@ -710,9 +710,15 @@ export default {
       this.ui.dialogDetailVisible = true
     },
     showDetails2(row) {
-      this.ui.memo = row.memo ? row.memo : ''
+      debugger
       this.ui.row = row
-      this.ui.dialogMemoVisible = true
+      if (row.message === '待确认') {
+        this.ui.memo = '已确认'
+        this.btn3()
+      } else {
+        this.ui.memo = row.memo ? row.memo : ''
+        this.ui.dialogMemoVisible = true
+      }
     },
     dateFormart() {
       let now = new Date()

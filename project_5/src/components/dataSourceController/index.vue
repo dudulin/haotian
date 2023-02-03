@@ -96,12 +96,17 @@ export default {
           let messageObj = Tools.getArray(i)
           i.message = messageObj.message
           i.type = messageObj.type
+          i.message = messageObj.message
+          i.normal = messageObj.normal
           i.tableData = messageObj.tableData
         } else { // 单个属性 加工
           i = Tools.checkJudgment(i)
         }
         if (i.row && i.row.length) { // 子级 加工
           i.row = this.setTableMessage(i.row)
+          i.type = i.row.every(item => { return item.type === 'info' }) ? 'info' : 'danger'
+          i.normal = i.type === 'info'
+          i.message = i.normal ? '正常' : '待确认'
         }
         let random = Math.random()
         i.id = `${i.title}${index}${random}`

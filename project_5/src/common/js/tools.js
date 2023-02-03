@@ -207,13 +207,15 @@ export default { // 对外暴露参数
 
     function findRepeat(array) {
       let arr = []
-      array.forEach((i, index) => {
-        if (index !== array.length - 1) {
-          if (i[config.key] === array[index + 1][config.key]) {
-            arr.push(i)
+      if (array) {
+        array.forEach((i, index) => {
+          if (index !== array.length - 1) {
+            if (i[config.key] === array[index + 1][config.key]) {
+              arr.push(i)
+            }
           }
-        }
-      })
+        })
+      }
       return arr
     }
 
@@ -247,12 +249,9 @@ export default { // 对外暴露参数
       判断内容：1. sameValue 相同值 2. nullValue 空值  3. contrast 对比值
     */
     let message = '正常'
-
     let arr = this.checkRepace(i.testValue, [], [], config, i.trueValue) // 测试环境数据
-    // let arr2 = this.checkRepace(i.trueValue, [], [], config, i.testValue) // 线上环境数据
     if (!config.key) { // 字符串类型
       arr = this.checkRepace2(i.testValue, i.trueValue) // 测试环境数据
-      // arr2 = this.checkRepace2(i.trueValue, i.testValue) // 线上环境数据
     }
 
     if (config.key) {
@@ -327,6 +326,7 @@ export default { // 对外暴露参数
     messageObj.type = array.every(i => { return i.type === 'info' }) ? 'info' : 'danger'
     messageObj.message = message
     messageObj.tableData = array
+    messageObj.normal = messageObj.type === 'info'
   },
   getArray(item) { // 数组的判断 和显示 方法
     let key = item.arrayConfig.itmeConfig[0].prop
@@ -401,6 +401,7 @@ export default { // 对外暴露参数
     }
     i.normal = type === 'info'
     i.message = message
+    i.type = type
     return i
   },
   checkType(obj, str) { // 判断对象类型
