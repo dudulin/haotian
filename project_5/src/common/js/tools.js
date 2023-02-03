@@ -32,7 +32,11 @@ export default { // 对外暴露参数
       if (!index) {
         obj = data[item]
       } else {
-        obj = obj[item]
+        try {
+          obj = obj[item]
+        } catch (error) {
+          return null
+        }
       }
     })
     return obj

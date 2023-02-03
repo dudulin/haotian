@@ -112,6 +112,127 @@ let config = [
             property: 'settingWrapper.apiSetting.batchSetting.maxLengthLimit'
           }
         ]
+      },
+      {
+        title: '密钥系统签名',
+        judgment: 'normal',
+        property: 'settingWrapper.apiSetting.keySysSignSetting.isKeySysSign',
+        row: [
+          {
+            title: '签名参数名称',
+            judgment: 'normal',
+            property: 'settingWrapper.apiSetting.keySysSignSetting.signParamName'
+          },
+          {
+            title: '系统KeyId',
+            judgment: 'normal',
+            property: 'settingWrapper.apiSetting.keySysSignSetting.keyId'
+          },
+          {
+            title: '算法版本',
+            judgment: 'normal',
+            property: 'settingWrapper.apiSetting.keySysSignSetting.encAlgo'
+          },
+          {
+            title: '序号',
+            judgment: 'normal',
+            property: 'settingWrapper.apiSetting.keySysSignSetting.keySeq'
+          },
+          {
+            title: '使用标准国密',
+            judgment: 'normal',
+            property: 'settingWrapper.apiSetting.keySysSignSetting.isUseStd'
+          },
+          {
+            title: '编码',
+            judgment: 'normal',
+            property: 'settingWrapper.apiSetting.keySysSignSetting.charset'
+          },
+          {
+            title: '签名规则',
+            judgment: 'normal',
+            property: 'settingWrapper.apiSetting.keySysSignSetting.signRule'
+          },
+          {
+            title: '去空',
+            judgment: 'normal',
+            property: 'settingWrapper.apiSetting.keySysSignSetting.trimSpace'
+          },
+          {
+            title: '添加时间戳',
+            judgment: 'normal',
+            property: 'settingWrapper.apiSetting.keySysSignSetting.addTimestamp'
+          },
+          {
+            title: '时间戳名称',
+            judgment: 'normal',
+            property: 'settingWrapper.apiSetting.keySysSignSetting.timestampName'
+          },
+          {
+            title: '时间戳长度',
+            judgment: 'normal',
+            property: 'settingWrapper.apiSetting.keySysSignSetting.timestampSize'
+          }
+        ]
+      },
+      {
+        title: '密钥验证签名',
+        judgment: 'normal',
+        property: 'settingWrapper.apiSetting.validSignSetting.isKeySysValidSign',
+        row: [
+          {
+            title: '签名参数名称',
+            judgment: 'normal',
+            property: 'settingWrapper.apiSetting.validSignSetting.signParamName'
+          },
+          {
+            title: '系统KeyId',
+            judgment: 'normal',
+            property: 'settingWrapper.apiSetting.validSignSetting.keyId'
+          },
+          {
+            title: '算法版本',
+            judgment: 'normal',
+            property: 'settingWrapper.apiSetting.validSignSetting.encAlgo'
+          },
+          {
+            title: '签名规则',
+            judgment: 'normal',
+            property: 'settingWrapper.apiSetting.validSignSetting.signRule'
+          },
+          {
+            title: '去空',
+            judgment: 'normal',
+            property: 'settingWrapper.apiSetting.validSignSetting.trimSpace'
+          },
+          {
+            title: '添加时间戳',
+            judgment: 'normal',
+            property: 'settingWrapper.apiSetting.validSignSetting.addTimestamp'
+          },
+          {
+            title: '时间戳名称',
+            judgment: 'normal',
+            property: 'settingWrapper.apiSetting.validSignSetting.timestampName'
+          },
+          {
+            title: '时间戳长度',
+            judgment: 'normal',
+            property: 'settingWrapper.apiSetting.validSignSetting.timestampSize'
+          }
+        ]
+      }
+    ]
+  },
+  {
+    title: '入参配置',
+    judgment: 'normal',
+    property: 'settingWrapper.requestSetting.requestParamList',
+    row: [
+      {
+        title: '时间戳长度',
+        judgment: 'normal',
+        property: 'settingWrapper.apiSetting.validSignSetting.timestampSize'
       }
     ]
   }
