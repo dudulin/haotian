@@ -227,12 +227,36 @@ let config = [
   {
     title: '入参配置',
     judgment: 'normal',
-    property: 'settingWrapper.requestSetting.requestParamList',
+    property: '',
     row: [
       {
-        title: '时间戳长度',
+        title: '参数',
         judgment: 'normal',
-        property: 'settingWrapper.apiSetting.validSignSetting.timestampSize'
+        property: 'settingWrapper.requestSetting.requestParamList',
+        arrayConfig: {
+          hasItem(i) { return false },
+          itmeConfig: [
+            { prop: 'isShow', title: '是否显示' },
+            { prop: 'transeferParam.isTransfer', title: '字典转义' },
+            { prop: 'transeferParam.dictRepositoryName', title: '字典仓库' },
+            { prop: 'transeferParam.isMoreTransfer', title: '多重转义' },
+            { prop: 'productParam.isProduct', title: '乘积' },
+            { prop: 'productParam.productMultiplier', title: '乘积倍数' },
+            { prop: 'xxx', title: 'yyyy' },
+            { prop: 'xxx', title: 'yyyy' },
+            { prop: 'xxx', title: 'yyyy' },
+            { prop: 'xxx', title: 'yyyy' },
+            { prop: 'xxx', title: 'yyyy' },
+            { prop: 'xxx', title: 'yyyy' },
+            { prop: 'xxx', title: 'yyyy' },
+            { prop: 'xxx', title: 'yyyy' },
+            { prop: 'xxx', title: 'yyyy' },
+            { prop: 'xxx', title: 'yyyy' },
+            { prop: 'xxx', title: 'yyyy' },
+            { prop: 'xxx', title: 'yyyy' },
+            { prop: 'xxx', title: 'yyyy' },
+          ]
+        }
       }
     ]
   }
